@@ -13,7 +13,7 @@ Nbvcxz is java library (and standalone console program) which is heavily inspire
 
 ## Bugs and Feedback
 
-For bugs, questions and discussions please use the [Github Issues](https://github.com/tostino/nbvcxz/issues).
+For bugs, questions and discussions please use the [Github Issues](https://github.com/GoSimpleLLC/nbvcxz/issues).
 
 ## License
 
