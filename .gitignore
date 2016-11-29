@@ -1,0 +1,21 @@
+# Intellij Specific #
+/.idea
+
+# Target #
+/target/**
+
+# Class Files #
+*.class
+
+# Package Files #
+*.jar
+!lib/**/*.jar
+*.war
+*.ear
+
+# Generic files to ignore #
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
