@@ -1,4 +1,5 @@
-# Nbvcxz - Password strength estimator
+# Nbvcxz - Password strength estimator - [![Build Status](https://travis-ci.org/GoSimpleLLC/nbvcxz.svg?branch=master)]
+
 
 Nbvcxz is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn)
 

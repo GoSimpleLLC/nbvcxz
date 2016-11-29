@@ -8,8 +8,11 @@
     <artifactId>nbvcxz</artifactId>
     <packaging>jar</packaging>
     <version>1.1.0</version>
+
     <name>nbvcxz</name>
-    <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is similar.  I built this library to be heavily extensible for every use case, but have sane defaults.</description>
+    <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is similar.
+        I built this library to be heavily extensible for every use case, but have sane defaults.</description>
+    <url>https://github.com/GoSimpleLLC/nbvcxz</url>
 
     <licenses>
         <license>
@@ -17,6 +20,21 @@
             <url>https://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Adam Brusselback</name>
+            <email>adambrusselback@gmail.com</email>
+            <organization>GoSimple</organization>
+            <organizationUrl>http://www.gosimple.me</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/GoSimpleLLC/nbvcxz.git</connection>
+        <developerConnection>scm:git:ssh://github.com/GoSimpleLLC/nbvcxz.git</developerConnection>
+        <url>https://github.com/GoSimpleLLC/nbvcxz</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
