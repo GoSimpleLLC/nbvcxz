@@ -4,13 +4,134 @@
 Nbvcxz is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn)
 
 ## Special Feature
-
 * Internationalization support for all feedback, and console output.
 * Dictionaries can be customized, and custom dictionaries can be added very easily.
+    * Exclusion dictionaries can also be built and used per-user to prevent obvious issues like using their own email or name as their password
 * Default dictionaries have excluded single character words due to many false positives
 * Additional PasswordMatchers and Matches can be implemented and configured to run without re-compiling.
 * Easy to configure how this library works through the ConfigurationBuilder.
     * You can set minimum entropy scores, locale, year patterns, custom leet tables, custom adjacency graphs, custom dictionaries, and custom password matchers.
+
+## Maven Central
+```xml
+<dependency>
+    <groupId>me.gosimple</groupId>
+    <artifactId>nbvcxz</artifactId>
+    <version>1.1.0</version>
+</dependency>
+```
+
+## How to use
+Nbvcxz can be used as a stand-alone console program, or import it as a library.
+
+### Standalone
+To use as a stand-alone program, just compile and run it by calling:
+`java -jar nbvcxz-1.1.0.jar`
+![alt text](http://imgur.com/ZpSU4Hs.png)
+
+### Library
+Nbvcxz can also be used as a library for password validation in java back-ends.
+Below is a full example of the pieces you'd need to implement within your own application.
+##### Configure and create object
+
+###### All defaults
+```java
+// With all defaults...
+Nbvcxz nbvcxz = new Nbvcxz();
+```
+
+###### Custom configuration
+Here we're creating a custom configuration with a custom exclusion dictionary and minimum entropy
+```java
+// Create a map of excluded words on a per-user basis using a hypothetical "User" object that contains this info
+int i = 0;
+HashMap<String, Integer> excludeMap = new HashMap();
+excludeMap.put(user.getFirstName(), i++);
+excludeMap.put(user.getLastName(), i++);
+excludeMap.put(user.getEmail(), i++);
+// And more...
+
+// Create a dictionary list containing all the default dictionaries
+List<Dictionary> dictionaryList = ConfigurationBuilder.getDefaultDictionaries();
+
+// Add our new exclusion dictionary to the list
+dictionaryList.add(new Dictionary("exclude", excludeMap, true));
+
+// Create our configuration object and set our custom minimum
+// entropy, and custom dictionary list
+Configuration configuration = new ConfigurationBuilder()
+        .setMinimumEntropy(40d)
+        .setDictionaries(dictionaryList)
+        .createConfiguration();
+        
+// Create our Nbvcxz object with the configuration we built
+Nbvcxz nbvcxz = new Nbvcxz(configuration);
+```
+
+##### Estimate password strength
+
+###### Simple
+```java
+// Estimate password 
+Result result = nbvcxz.estimate(password);
+
+return result.isMinimumEntropyMet();
+```
+
+###### Feedback
+This part will need to be integrated into your specific front end, and really depends on your needs. 
+Here are some of the possibilities:
+```java
+
+// Get formatted values for time to crack based on the values we 
+// input in our configuration (we used default values in this example)
+String timeToCrackOff = TimeEstimate.getTimeToCrackFormatted(result, "OFFLINE_BCRYPT_12");
+String timeToCrackOn = TimeEstimate.getTimeToCrackFormatted(result, "ONLINE_THROTTLED");
+
+// Check if the password met the minimum set within the configuration
+if(result.isMinimumEntropyMet())
+{
+    // Start building success message
+    StringBuilder successMessage = new StringBuilder();
+    successMessage.append("Password has met the minimum strength requirements.");
+    successMessage.append("<br>Time to crack - online: ").append(timeToCrackOn);
+    successMessage.append("<br>Time to crack - offline: ").append(timeToCrackOff);    
+    
+    // Example "success message" that would be displayed to the user
+    // This is obviously just a contrived example and would have to
+    // be tailored to each front-end
+    setSuccessMessage(successMessage.toString());
+    return true;
+}
+else
+{
+    // Get the feedback for the result
+    // This contains hints for the user on how to improve their password
+    // It is localized based on locale set in configuration
+    Feedback = result.getFeedback();
+    
+    // Start building error message
+    StringBuilder errorMessage = new StringBuilder();
+    errorMessage.append("Password does not meet the minimum strength requirements.");
+    errorMessage.append("<br>Time to crack - online: ").append(timeToCrackOn);
+    errorMessage.append("<br>Time to crack - offline: ").append(timeToCrackOff);
+    
+    if(feedback != null)
+    {
+        if (feedback.getWarning() != null)
+            errorMessage.append("<br>Warning: ").append(feedback.getWarning());
+        for (String suggestion : feedback.getSuggestion())
+        {
+            errorMessage.append("<br>Suggestion: ").append(suggestion);
+        }
+    }
+    // Example "error message" that would be displayed to the user
+    // This is obviously just a contrived example and would have to
+    // be tailored to each front-end
+    setErrorMessage(errorMessage.toString());
+    return false;
+}
+```
 
 ## Bugs and Feedback
 
