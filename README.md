@@ -1,9 +1,42 @@
 # Nbvcxz - Password strength estimator - [![Build Status](https://travis-ci.org/GoSimpleLLC/nbvcxz.svg?branch=master)]
+`nbvcxz` is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn)
+Password strength estimation is a bit of an art and science.  Strength estimation is accomplished by running 
+a password through different algorithms looking for matches in any part of the password on: `word lists`, 
+`common dates`, `common years`, `spacial patterns`, `repeating characters`. `repeating sets of characters`,
+and `alphabetic sequences`.
+ 
+Each of these represent ways an attacker may try to crack a password.  To be vigilant, we must adapt to
+new methods in password cracking and implement new methods to identify passwords susceptible to 
+each new method.
 
+## A Rant On Arbitrary Password Policies 
+Lets think up an example scenario which I expect some of you may have run into way too often. 
+We are a company `NewStartup!` and we are creating the next big web application. We 
+want to ensure our users don't choose an easily guessable password, so we implement an arbitrary
+policy which says a password must have:
+  an __eight character minimum__ and contain __upper case__, __lower case__, __numbers__, and __special characters__
+  
+Now lets see how that policy applies to two passwords which are at opposite ends of the spectrum.
 
-Nbvcxz is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn)
+  Password #1: `Passw0rd!` - This password was chosen to get around an arbitrary policy
+  Password #2: `5fa83b7e1r39xfa8hmiz0` - This was randomly generated using lowercase alphanumeric
 
-## Special Feature
+  Password #1 meets all of the rules in the policy and passes with flying colors.
+  Password #2 does not contain __upper case__, or __special characters__, and thus the policy fails this password.
+  
+Was password #1 actually more secure than password #2 by any metric?  That would be a hard argument to make.
+
+In fact, password #1 is likely to be cracked quite quickly. `password` is one of the top passwords in all password 
+lists an attacker is likely to try using a rule based dictionary attack.  If the attacker knows that our policy requires: 
+__eight character minimum__, __upper case__, __lower case__, __numbers__, and __special characters__ 
+they will then use rules like `toggle case`, `l33t substitution`, and `suffix/prefix special characters` 
+to augment their dictionary list for the attack.
+
+It's quite likely password #1 would fall to an attacker even in a rate limited online attack.
+
+Password #2, while not allowed by our policy, is only susceptible to a brute force attack (if a secure hashing algorithm is used).
+
+## Differentiating Features
 * Internationalization support for all feedback, and console output.
 * Dictionaries can be customized, and custom dictionaries can be added very easily.
     * Exclusion dictionaries can also be built and used per-user to prevent obvious issues like using their own email or name as their password
@@ -22,7 +55,7 @@ Nbvcxz is java library (and standalone console program) which is heavily inspire
 ```
 
 ## How to use
-Nbvcxz can be used as a stand-alone console program, or import it as a library.
+`nbvcxz` can be used as a stand-alone console program, or import it as a library.
 
 ### Standalone
 To use as a stand-alone program, just compile and run it by calling:
@@ -30,7 +63,7 @@ To use as a stand-alone program, just compile and run it by calling:
 ![alt text](http://imgur.com/ZpSU4Hs.png)
 
 ### Library
-Nbvcxz can also be used as a library for password validation in java back-ends.
+`nbvcxz` can also be used as a library for password validation in java back-ends.
 Below is a full example of the pieces you'd need to implement within your own application.
 ##### Configure and create object
 
