@@ -18,8 +18,9 @@ policy which says a password must have:
   
 Now lets see how that policy applies to two passwords which are at opposite ends of the spectrum.
 
-  Password #1: `Passw0rd!` - This password was chosen to get around an arbitrary policy
-  Password #2: `5fa83b7e1r39xfa8hmiz0` - This was randomly generated using lowercase alphanumeric
+  Password #1: `Passw0rd!` - This password was chosen to get around an arbitrary policy 
+  
+  Password #2: `5fa83b7e1r39xfa8hmiz0` - This was randomly generated using lowercase alphanumeric 
 
   Password #1 meets all of the rules in the policy and passes with flying colors.
   Password #2 does not contain __upper case__, or __special characters__, and thus the policy fails this password.
@@ -39,7 +40,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 ## Differentiating Features
 * Internationalization support for all feedback, and console output.
 * Dictionaries can be customized, and custom dictionaries can be added very easily.
-    * Exclusion dictionaries can also be built and used per-user to prevent obvious issues like using their own email or name as their password
+    * Exclusion dictionaries can also be built and tailored per-user to prevent obvious issues like using their own email or name as their password
 * Default dictionaries have excluded single character words due to many false positives
 * Additional PasswordMatchers and Matches can be implemented and configured to run without re-compiling.
 * Easy to configure how this library works through the ConfigurationBuilder.
@@ -58,7 +59,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 `nbvcxz` can be used as a stand-alone console program, or import it as a library.
 
 ### Standalone
-To use as a stand-alone program, just compile and run it by calling:
+To use as a stand-alone program, just compile, and run it by calling:
 `java -jar nbvcxz-1.1.0.jar`
 ![alt text](http://imgur.com/ZpSU4Hs.png)
 
