@@ -1,5 +1,6 @@
 # Nbvcxz - Password strength estimator - [![Build Status](https://travis-ci.org/GoSimpleLLC/nbvcxz.svg?branch=master)]
-`nbvcxz` is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn)
+`nbvcxz` is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn).
+
 Password strength estimation is a bit of an art and science.  Strength estimation is accomplished by running 
 a password through different algorithms looking for matches in any part of the password on: `word lists`, 
 `common dates`, `common years`, `spacial patterns`, `repeating characters`. `repeating sets of characters`,
