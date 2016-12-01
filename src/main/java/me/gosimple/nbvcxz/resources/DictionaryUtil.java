@@ -40,6 +40,8 @@ public class DictionaryUtil
      * Read a resource file with a list of entries (sorted by frequency) and use
      * it to create a ranked dictionary.
      *
+     * Dictionaries are loaded case insensitively.
+     *
      * @param fileName the name of the file
      * @return the ranked dictionary (a {@code HashMap} which associated a
      * rank to each entry
@@ -58,7 +60,7 @@ public class DictionaryUtil
             int i = 1;
             while ((line = br.readLine()) != null)
             {
-                ranked.put(line, i++);
+                ranked.put(line.toLowerCase(), i++);
             }
         }
         catch (IOException e)

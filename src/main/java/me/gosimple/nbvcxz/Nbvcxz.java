@@ -191,7 +191,7 @@ public class Nbvcxz
      * Console application which will run with default configurations.
      * @param args arguments which are ignored!
      */
-    public static void main(String... args)
+    public static void main2(String... args)
     {
         Nbvcxz nbvcxz = new Nbvcxz();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
@@ -246,5 +246,24 @@ public class Nbvcxz
             System.out.println(match.getDetails());
         }
         System.out.println("----------------------------------------------------------");
+    }
+
+    public static void main(String... args)
+    {
+
+        Nbvcxz nbvcxz = new Nbvcxz();
+
+        long start = System.currentTimeMillis();
+        double entropyCalculated = 0;
+        String val = "password";
+        for(int i = 0; i < 1000; i++)
+        {
+            Result result = nbvcxz.estimate(val);
+            entropyCalculated += result.getEntropy();
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println("Entropy calculated: " + entropyCalculated);
+        System.out.println("Time to calculate: " + (end - start) + " ms");
     }
 }

@@ -13,6 +13,7 @@ public class Dictionary
     private final String dictionary_name;
     private final HashMap<String, Integer> dictonary;
     private final boolean exclusion;
+    private final boolean distance;
 
 
     /**
@@ -20,12 +21,14 @@ public class Dictionary
      * @param dictionary_name unique name of dictionary.
      * @param dictonary {@code Map} with the word and it's rank.
      * @param exclusion {@code true} when desiring to disallow any password contained in this dictionary; {@code false} otherwise.
+     * @param distance {@code true} when desiring to enable Levenshtein distance matching for this dictionary.
      */
-    public Dictionary(final String dictionary_name, final HashMap<String, Integer> dictonary, final boolean exclusion)
+    public Dictionary(final String dictionary_name, final HashMap<String, Integer> dictonary, final boolean exclusion, final boolean distance)
     {
         this.dictionary_name = dictionary_name;
         this.dictonary = dictonary;
         this.exclusion = exclusion;
+        this.distance = distance;
     }
 
     /**
@@ -54,5 +57,14 @@ public class Dictionary
     public String getDictionaryName()
     {
         return this.dictionary_name;
+    }
+
+    /**
+     *
+     * @return true if distance calculation is enabled
+     */
+    public boolean isDistance()
+    {
+        return distance;
     }
 }
