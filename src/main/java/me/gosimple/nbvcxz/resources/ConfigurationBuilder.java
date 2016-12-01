@@ -20,6 +20,7 @@ public class ConfigurationBuilder
     private Pattern yearPattern;
     private Double minimumEntropy;
     private Locale locale;
+    private Boolean distanceCalc;
 
     /**
      * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
@@ -115,6 +116,19 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Distance based dictionary calculations which provide support for misspelling
+     * detection, at the expense of performance.  This will slow down calculations
+     * by an order of magnitude.
+     * @param distanceCalc true to enable distance based dictionary calculations
+     * @return Builder
+     */
+    public ConfigurationBuilder setDistanceCalc(final Boolean distanceCalc)
+    {
+        this.distanceCalc = distanceCalc;
+        return this;
+    }
+
+    /**
      * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
      * @return Configuration object from builder
      */
@@ -152,7 +166,11 @@ public class ConfigurationBuilder
         {
             locale = Locale.getDefault();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale);
+        if(distanceCalc == null)
+        {
+            distanceCalc = getDefaultDistanceCalc();
+        }
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc);
     }
 
     /**
@@ -198,11 +216,11 @@ public class ConfigurationBuilder
     public static List<Dictionary> getDefaultDictionaries()
     {
         List<Dictionary> tmpDictionaries = new ArrayList<>();
-        tmpDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadDictionary(DictionaryUtil.passwords), false, true));
-        tmpDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadDictionary(DictionaryUtil.male_names), false, true));
-        tmpDictionaries.add(new Dictionary("female_names", DictionaryUtil.loadDictionary(DictionaryUtil.female_names), false, true));
-        tmpDictionaries.add(new Dictionary("surnames", DictionaryUtil.loadDictionary(DictionaryUtil.surnames), false, true));
-        tmpDictionaries.add(new Dictionary("english", DictionaryUtil.loadDictionary(DictionaryUtil.english), false, true));
+        tmpDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadDictionary(DictionaryUtil.passwords), false));
+        tmpDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadDictionary(DictionaryUtil.male_names), false));
+        tmpDictionaries.add(new Dictionary("female_names", DictionaryUtil.loadDictionary(DictionaryUtil.female_names), false));
+        tmpDictionaries.add(new Dictionary("surnames", DictionaryUtil.loadDictionary(DictionaryUtil.surnames), false));
+        tmpDictionaries.add(new Dictionary("english", DictionaryUtil.loadDictionary(DictionaryUtil.english), false));
         return tmpDictionaries;
     }
 
@@ -263,6 +281,15 @@ public class ConfigurationBuilder
     public static double getDefaultMinimumEntropy()
     {
         return 35D;
+    }
+
+    /**
+     *
+     * @return the default is false
+     */
+    public static Boolean getDefaultDistanceCalc()
+    {
+        return false;
     }
 
 

@@ -191,9 +191,10 @@ public class Nbvcxz
      * Console application which will run with default configurations.
      * @param args arguments which are ignored!
      */
-    public static void main2(String... args)
+    public static void main(String... args)
     {
-        Nbvcxz nbvcxz = new Nbvcxz();
+        Configuration configuration = new ConfigurationBuilder().setDistanceCalc(true).createConfiguration();
+        Nbvcxz nbvcxz = new Nbvcxz(configuration);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
         Scanner scanner = new Scanner(System.in);
         System.out.println(resourceBundle.getString("main.howToQuit"));
@@ -248,7 +249,7 @@ public class Nbvcxz
         System.out.println("----------------------------------------------------------");
     }
 
-    public static void main(String... args)
+    public static void main2(String... args)
     {
 
         Nbvcxz nbvcxz = new Nbvcxz();

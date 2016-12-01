@@ -83,7 +83,7 @@ public final class DictionaryMatcher implements PasswordMatcher
 
                     // Only if we haven't found a match yet.
                     {
-                        if(!dictionary.isDistance())
+                        if(!configuration.isDistanceCalc())
                             continue;
 
                         // Do not continue unless matching the whole password

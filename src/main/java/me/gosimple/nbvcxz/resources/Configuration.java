@@ -27,6 +27,7 @@ public class Configuration
     private final Pattern yearPattern;
     private final Double minimumEntropy;
     private final Locale locale;
+    private final boolean distanceCalc;
     private final ResourceBundle mainResource;
     private final ResourceBundle feedbackResource;
 
@@ -41,7 +42,7 @@ public class Configuration
      * @param minimumEntropy Minimum entropy value passwords should meet
      * @param locale Locale for localized text and feedback
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
@@ -51,6 +52,7 @@ public class Configuration
         this.yearPattern = yearPattern;
         this.minimumEntropy = minimumEntropy;
         this.locale = locale;
+        this.distanceCalc = distanceCalc;
         this.mainResource = ResourceBundle.getBundle("main", locale);
         this.feedbackResource = ResourceBundle.getBundle("feedback", locale);
     }
@@ -125,6 +127,15 @@ public class Configuration
     public Locale getLocale()
     {
         return locale;
+    }
+
+    /**
+     *
+     * @return if dictionary distance calculations are enabled or not
+     */
+    public boolean isDistanceCalc()
+    {
+        return distanceCalc;
     }
 
     /**
