@@ -184,4 +184,4 @@ MIT License
 
 ## Application using this library
 
-- [GoSimple](https://gosimple.me/)
+- [GoSimple](http://gosimple.me/)
