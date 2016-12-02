@@ -29,13 +29,7 @@ public final class DictionaryMatcher implements PasswordMatcher
         {
             for (int end = start + 1; end <= password.length(); end++)
             {
-                // For each sub-sequence get all the possible leet substitutions
                 String split_password = password.substring(start, end);
-                String lower_part = split_password.toLowerCase();
-                String unleet_part = translateLeet(configuration, lower_part);
-                String reversed_part = new StringBuilder(lower_part).reverse().toString();
-                String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
-                List<Character[]> subs = getLeetSub(configuration, split_password);
 
                 // Iterate through all our dictionaries
                 for (Dictionary dictionary : configuration.getDictionaries())
@@ -44,7 +38,18 @@ public final class DictionaryMatcher implements PasswordMatcher
                     if(dictionary.isExclusion() && (start != 0 || end != password.length()))
                         continue;
 
+                    // Match exact
+                    {
+                        Integer lower_rank = dictionary.getDictonary().get(split_password);
+                        if (lower_rank != null)
+                        {
+                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, split_password, lower_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
+                            continue;
+                        }
+                    }
+
                     // Match on lower
+                    String lower_part = split_password.toLowerCase();
                     {
                         Integer lower_rank = dictionary.getDictonary().get(lower_part);
                         if (lower_rank != null)
@@ -53,16 +58,8 @@ public final class DictionaryMatcher implements PasswordMatcher
                             continue;
                         }
                     }
-                    // Only do unleet if it's different than the regular lower.
-                    {
-                        Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
-                        if (unleet_rank != null)
-                        {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, unleet_part, unleet_rank, subs, dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
-                            continue;
-                        }
-                    }
                     // Only do reversed if it's different than the regular lower.
+                    String reversed_part = new StringBuilder(lower_part).reverse().toString();
                     {
                         Integer reversed_rank = dictionary.getDictonary().get(reversed_part);
                         if (reversed_rank != null)
@@ -71,7 +68,22 @@ public final class DictionaryMatcher implements PasswordMatcher
                             continue;
                         }
                     }
+
+                    // Create substitutions for unleet
+                    List<Character[]> subs = getLeetSub(configuration, split_password);
+
+                    // Only do unleet if it's different than the regular lower.
+                    String unleet_part = translateLeet(configuration, lower_part);
+                    {
+                        Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
+                        if (unleet_rank != null)
+                        {
+                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, unleet_part, unleet_rank, subs, dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
+                            continue;
+                        }
+                    }
                     // Only do reversed if it's different than unleet.
+                    String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
                     {
                         Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
                         if (reversed_unleet_rank != null)
