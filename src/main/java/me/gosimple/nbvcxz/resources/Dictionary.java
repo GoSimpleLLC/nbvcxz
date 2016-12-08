@@ -1,6 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Object used for dictionary matching.  This allows users to implement custom dictionaries for different languages
@@ -11,7 +11,9 @@ import java.util.HashMap;
 public class Dictionary
 {
     private final String dictionary_name;
-    private final HashMap<String, Integer> dictonary;
+    private final Map<String, Integer> dictonary;
+    private final ArrayList<String> sorted_dictionary;
+    private final Map<Integer, Integer> sorted_dictionary_length_lookup;
     private final boolean exclusion;
 
 
@@ -26,15 +28,62 @@ public class Dictionary
         this.dictionary_name = dictionary_name;
         this.dictonary = dictonary;
         this.exclusion = exclusion;
+
+        // This is to optimize the distance calculation stuff
+        this.sorted_dictionary = new ArrayList<>(dictonary.keySet());
+        this.sorted_dictionary.sort(Comparator.comparing(String::length).thenComparing(String::compareTo));
+        this.sorted_dictionary_length_lookup = new HashMap<>();
+        for(int i = 0; i < sorted_dictionary.size(); i++)
+        {
+            String key = sorted_dictionary.get(i);
+            if(sorted_dictionary_length_lookup.containsKey(key.length()))
+                continue;
+            else
+            {
+                sorted_dictionary_length_lookup.put(key.length(), i);
+            }
+        }
+
+        for(int i = 0; i < sorted_dictionary_length_lookup.size(); i++)
+        {
+            if(!sorted_dictionary_length_lookup.containsKey(i))
+            {
+                int next_key = i;
+                while (!sorted_dictionary_length_lookup.containsKey(next_key))
+                {
+                    next_key++;
+                }
+                sorted_dictionary_length_lookup.put(i, sorted_dictionary_length_lookup.get(next_key));
+            }
+        }
     }
 
     /**
      * The values within this dictionary.
-     * @return The values in the dictionary
+     * @return key = values in the dictionary; value = rank
      */
-    public HashMap<String, Integer> getDictonary()
+    public Map<String, Integer> getDictonary()
     {
         return dictonary;
+    }
+
+    /**
+     * This contains the same values as in getDictionary, but is sorted for optimizing the speed
+     * of the distance calculation
+     * @return A list of dictionary values sorted by length then alphabetical
+     */
+    public List<String> getSortedDictionary()
+    {
+        return sorted_dictionary;
+    }
+
+    /**
+     * A map containing different lengths, and the first index they appear in the sorted dictionary.
+     * @return key = length; value = first index that length appears
+     */
+    public Map<Integer, Integer> getSortedDictionaryLengthLookup()
+    {
+        return sorted_dictionary_length_lookup;
     }
 
     /**

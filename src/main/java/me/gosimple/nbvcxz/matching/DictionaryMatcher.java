@@ -58,6 +58,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                             continue;
                         }
                     }
+
                     // Only do reversed if it's different than the regular lower.
                     String reversed_part = new StringBuilder(lower_part).reverse().toString();
                     {
@@ -82,6 +83,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                             continue;
                         }
                     }
+
                     // Only do reversed if it's different than unleet.
                     String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
                     {
@@ -93,7 +95,8 @@ public final class DictionaryMatcher implements PasswordMatcher
                         }
                     }
 
-                    // Only if we haven't found a match yet.
+                    // Run distance match
+                    // Only if we haven't found a match yet
                     {
                         if(!configuration.isDistanceCalc())
                             continue;
@@ -106,17 +109,36 @@ public final class DictionaryMatcher implements PasswordMatcher
                         if(password.length() < 3)
                             continue;
 
+
+                        // How far off the distance is allowed to be
+                        int threshold = password.length() / 4;
+
+                        // Indexes to iterate over only a portion of the dictionary
+                        int start_index;
+                        if(dictionary.getSortedDictionaryLengthLookup().containsKey(password.length() - threshold))
+                            start_index = dictionary.getSortedDictionaryLengthLookup().get(password.length() - threshold);
+                        else
+                            start_index = dictionary.getSortedDictionary().size();
+                        int end_index;
+                        if(dictionary.getSortedDictionaryLengthLookup().containsKey(password.length() + threshold + 1))
+                            end_index = dictionary.getSortedDictionaryLengthLookup().get(password.length() + threshold + 1);
+                        else
+                            end_index = dictionary.getSortedDictionary().size();
+
+                        // Values for the matches found
                         int dist_min = Integer.MAX_VALUE;
                         String dist_val = null;
                         Integer dist_rank = null;
-                        int threshold = lower_part.length() / 3;
 
-                        for(String key : dictionary.getDictonary().keySet())
+                        // Iterate over the subset of the dictionary (based on length) which could
+                        // possibly contain matches for the password
+                        for(String key : dictionary.getSortedDictionary().subList(start_index, end_index))
                         {
-                            int dist_curr = distance(lower_part, key, threshold);
+                            int dist_curr = distance(password, key, threshold);
                             if(dist_curr != -1)
                             {
                                 Integer dist_curr_rank = dictionary.getDictonary().get(key);
+                                // If true, set the vars which contain the lowest values found so far
                                 if (dist_curr <= dist_min && (dist_rank == null || dist_curr_rank <= dist_rank))
                                 {
                                     dist_min = dist_curr;
@@ -126,7 +148,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                             }
                         }
 
-
+                        // Add the match if one was found
                         if (dist_rank != null)
                         {
                              matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, dist_val, dist_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), dist_min));

@@ -289,7 +289,7 @@ public class ConfigurationBuilder
      */
     public static Boolean getDefaultDistanceCalc()
     {
-        return false;
+        return true;
     }
 
 
