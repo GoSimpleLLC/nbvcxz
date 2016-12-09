@@ -1,9 +1,12 @@
 package me.gosimple.nbvcxz.matching.match;
 
+import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.resources.Configuration;
+import me.gosimple.nbvcxz.scoring.BruteForceUtil;
 
 import java.util.List;
 import java.util.ResourceBundle;
+
 
 /**
  * @author Adam Brusselback
@@ -11,10 +14,12 @@ import java.util.ResourceBundle;
 public final class DictionaryMatch extends BaseMatch
 {
     private final String dictionary_name;
-    private final boolean excluded;
+    private final String dictionary_value;
     private final int rank;
+    private final boolean excluded;
     private final List<Character[]> leetSubstitution;
     private final boolean reversed;
+    private final int distance;
 
 
     /**
@@ -30,14 +35,16 @@ public final class DictionaryMatch extends BaseMatch
      * @param reversed if the password was reversed to match
      * @param dictionary_name the name of the dictionary matched
      */
-    public DictionaryMatch(final String match, Configuration configuration, final int start_index, final int end_index, final int rank, final List<Character[]> leetSubstitution, final boolean excluded, final boolean reversed, final String dictionary_name)
+    public DictionaryMatch(final String match, Configuration configuration, final int start_index, final int end_index, final String dictionary_value, final int rank, final List<Character[]> leetSubstitution, final boolean excluded, final boolean reversed, final String dictionary_name, final int distance)
     {
         super(match, configuration, start_index, end_index);
+        this.dictionary_value = dictionary_value;
         this.rank = rank;
         this.leetSubstitution = leetSubstitution;
         this.excluded = excluded;
         this.dictionary_name = dictionary_name;
         this.reversed = reversed;
+        this.distance = distance;
     }
 
 
@@ -46,12 +53,33 @@ public final class DictionaryMatch extends BaseMatch
     {
         // If this is an excluded password, return with no entropy.
         if(excluded)
-            return 0;
+            return 0d;
 
         // First the base entropy based on the rank
         double baseEntropy = log2(rank);
 
-        return Math.max(0, baseEntropy + uppercaseEntropy() + leetEntropy() + reversedEntropy());
+        return Math.max(0, baseEntropy + uppercaseEntropy() + leetEntropy() + reversedEntropy() + distanceEntropy());
+    }
+
+    /**
+     * @return the additional entropy provided by distance between the token and dictionaryValue
+     */
+    private double distanceEntropy()
+    {
+        if(getDistance() == 0)
+            return 0d;
+        else
+        {
+            int len_diff = getToken().length() - getDictionaryValue().length();
+            int char_shift = getDistance() - Math.abs(len_diff);
+
+            if(len_diff + char_shift <= 0)
+                // if the length is shortened, give a little entropy
+                return 1d;
+            else
+                // if the length is not shortened then we can add even more
+                return log2(BruteForceUtil.getBrutForceCardinality(getToken()) * (len_diff + char_shift));
+        }
     }
 
 
@@ -218,6 +246,22 @@ public final class DictionaryMatch extends BaseMatch
         return reversed;
     }
 
+    /**
+     * @return the distance from the dictionary entry the match was made with
+     */
+    public int getDistance()
+    {
+        return distance;
+    }
+
+    /**
+     * @return the value in the dictionary that the token matched (may not match exactly)
+     */
+    public String getDictionaryValue()
+    {
+        return dictionary_value;
+    }
+
     public String getDetails()
     {
         ResourceBundle mainResource = configuration.getMainResource();
@@ -226,6 +270,8 @@ public final class DictionaryMatch extends BaseMatch
         detailBuilder.append("\n");
         detailBuilder.append(mainResource.getString("main.match.dictionary")).append(" ").append(getDictionaryName());
         detailBuilder.append("\n");
+        detailBuilder.append(mainResource.getString("main.match.dictionaryValue")).append(" ").append(getDictionaryValue());
+        detailBuilder.append("\n");
         detailBuilder.append(mainResource.getString("main.match.rank")).append(" ").append(getRank());
         detailBuilder.append("\n");
         detailBuilder.append(mainResource.getString("main.match.length")).append(" ").append(getLength());
@@ -233,6 +279,8 @@ public final class DictionaryMatch extends BaseMatch
         detailBuilder.append(mainResource.getString("main.match.leetSub")).append(" ").append(isLeet());
         detailBuilder.append("\n");
         detailBuilder.append(mainResource.getString("main.match.reversed")).append(" ").append(isReversed());
+        detailBuilder.append("\n");
+        detailBuilder.append(mainResource.getString("main.match.distance")).append(" ").append(getDistance());
         return detailBuilder.toString();
     }
 

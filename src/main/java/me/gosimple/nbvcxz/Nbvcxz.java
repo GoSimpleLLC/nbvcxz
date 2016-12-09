@@ -193,7 +193,8 @@ public class Nbvcxz
      */
     public static void main(String... args)
     {
-        Nbvcxz nbvcxz = new Nbvcxz();
+        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Nbvcxz nbvcxz = new Nbvcxz(configuration);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
         Scanner scanner = new Scanner(System.in);
         System.out.println(resourceBundle.getString("main.howToQuit"));

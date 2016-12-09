@@ -20,6 +20,7 @@ public class ConfigurationBuilder
     private Pattern yearPattern;
     private Double minimumEntropy;
     private Locale locale;
+    private Boolean distanceCalc;
 
     /**
      * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
@@ -115,6 +116,19 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Distance based dictionary calculations which provide support for misspelling
+     * detection, at the expense of performance.  This will slow down calculations
+     * by an order of magnitude.
+     * @param distanceCalc true to enable distance based dictionary calculations
+     * @return Builder
+     */
+    public ConfigurationBuilder setDistanceCalc(final Boolean distanceCalc)
+    {
+        this.distanceCalc = distanceCalc;
+        return this;
+    }
+
+    /**
      * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
      * @return Configuration object from builder
      */
@@ -152,7 +166,11 @@ public class ConfigurationBuilder
         {
             locale = Locale.getDefault();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale);
+        if(distanceCalc == null)
+        {
+            distanceCalc = getDefaultDistanceCalc();
+        }
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc);
     }
 
     /**
@@ -263,6 +281,15 @@ public class ConfigurationBuilder
     public static double getDefaultMinimumEntropy()
     {
         return 35D;
+    }
+
+    /**
+     *
+     * @return the default is false
+     */
+    public static Boolean getDefaultDistanceCalc()
+    {
+        return true;
     }
 
 
