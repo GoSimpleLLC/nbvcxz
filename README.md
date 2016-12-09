@@ -2,7 +2,7 @@
 `nbvcxz` is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn).
 
 Password strength estimation is a bit of an art and science.  Strength estimation is accomplished by running 
-a password through different algorithms looking for matches in any part of the password on: `word lists`, 
+a password through different algorithms looking for matches in any part of the password on: `word lists` (with fuzzy matching), 
 `common dates`, `common years`, `spacial patterns`, `repeating characters`. `repeating sets of characters`,
 and `alphabetic sequences`.
  
@@ -40,6 +40,8 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ## Differentiating Features
 * Internationalization support for all feedback, and console output.
+* Dictionary matching has the ability to use Levenshtein Distance (LD) calculations to match passwords which are non-exact matches to a dictionary entry.
+    * LD calculations happen on full passwords only, and have a `threshold` of 1/4th the length of the password.
 * Dictionaries can be customized, and custom dictionaries can be added very easily.
     * Exclusion dictionaries can also be built and tailored per-user to prevent obvious issues like using their own email or name as their password
 * Default dictionaries have excluded single character words due to many false positives
