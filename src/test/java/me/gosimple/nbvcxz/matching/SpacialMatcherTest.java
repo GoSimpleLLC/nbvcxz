@@ -30,28 +30,22 @@ public class SpacialMatcherTest
         matches = matcher.match(configuration, password);
 
         assert matches.get(0).getToken().equals("aw3e");
-        assert matches.get(1).getToken().equals("nb");
-        assert matches.get(2).getToken().equals("ft6y");
+        assert matches.get(1).getToken().equals("ft6y");
         assert SpacialMatch.class.cast(matches.get(0)).getShiftedNumber() == 0;
         assert SpacialMatch.class.cast(matches.get(1)).getShiftedNumber() == 0;
-        assert SpacialMatch.class.cast(matches.get(2)).getShiftedNumber() == 0;
         assert SpacialMatch.class.cast(matches.get(0)).getTurns() == 2;
-        assert SpacialMatch.class.cast(matches.get(1)).getTurns() == 1;
-        assert SpacialMatch.class.cast(matches.get(2)).getTurns() == 2;
+        assert SpacialMatch.class.cast(matches.get(1)).getTurns() == 2;
 
 
         password = "aW3ennbfT6y";
         matches = matcher.match(configuration, password);
 
         assert matches.get(0).getToken().equals("aW3e");
-        assert matches.get(1).getToken().equals("nb");
-        assert matches.get(2).getToken().equals("fT6y");
+        assert matches.get(1).getToken().equals("fT6y");
         assert SpacialMatch.class.cast(matches.get(0)).getShiftedNumber() == 1;
-        assert SpacialMatch.class.cast(matches.get(1)).getShiftedNumber() == 0;
-        assert SpacialMatch.class.cast(matches.get(2)).getShiftedNumber() == 1;
+        assert SpacialMatch.class.cast(matches.get(1)).getShiftedNumber() == 1;
         assert SpacialMatch.class.cast(matches.get(0)).getTurns() == 2;
-        assert SpacialMatch.class.cast(matches.get(1)).getTurns() == 1;
-        assert SpacialMatch.class.cast(matches.get(2)).getTurns() == 2;
+        assert SpacialMatch.class.cast(matches.get(1)).getTurns() == 2;
 
 
         password = "h";

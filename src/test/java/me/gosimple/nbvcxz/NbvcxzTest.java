@@ -10,6 +10,47 @@ import org.junit.Test;
 public class NbvcxzTest
 {
     /**
+     * Tests the time taken to estimate for a number of passwords to catch speed regressions.
+     */
+    @Test
+    public void testTimeToEstimate()
+    {
+        final Nbvcxz nbvcxz = new Nbvcxz();
+        long start_time;
+        long end_time;
+        start_time = System.currentTimeMillis();
+        nbvcxz.estimate("thi$isAtestPasswrd");
+        end_time = System.currentTimeMillis() - start_time;
+        Assert.assertTrue(end_time <= 300);
+
+        start_time = System.currentTimeMillis();
+        nbvcxz.estimate("1qaz2wsx");
+        end_time = System.currentTimeMillis() - start_time;
+        Assert.assertTrue(end_time <= 150);
+
+        start_time = System.currentTimeMillis();
+        nbvcxz.estimate("6c891879ed0a0bbf701d5ca8af39a766");
+        end_time = System.currentTimeMillis() - start_time;
+        Assert.assertTrue(end_time <= 60);
+
+        start_time = System.currentTimeMillis();
+        nbvcxz.estimate("ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653");
+        end_time = System.currentTimeMillis() - start_time;
+        Assert.assertTrue(end_time <= 100);
+
+        String password = "thi$isAtestPasswrd";
+
+        start_time = System.currentTimeMillis();
+        for(int i = 0; i < 50; i++)
+        {
+            nbvcxz.estimate(password);
+        }
+        end_time = System.currentTimeMillis() - start_time;
+        Assert.assertTrue(end_time <= 1000);
+    }
+
+
+    /**
      * Test of estimate method, of class Nbvcxz.
      */
     @Test
@@ -28,7 +69,7 @@ public class NbvcxzTest
 
             password = "a.b.c.defy";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(40.220343449501975D, result.getEntropy(), 40.220343449501975D * tolerance);
+            Assert.assertEquals(48.036260385063D, result.getEntropy(), 48.036260385063D * tolerance);
 
             password = "helpimaliveinhere";
             result = nbvcxz.estimate(password);
@@ -36,7 +77,7 @@ public class NbvcxzTest
 
             password = "damnwindowsandpaper";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(33.77114539390665D, result.getEntropy(), 33.77114539390665D * tolerance);
+            Assert.assertEquals(31.086623767089435D, result.getEntropy(), 31.086623767089435D * tolerance);
 
             password = "zxcvbnm";
             result = nbvcxz.estimate(password);
@@ -48,7 +89,7 @@ public class NbvcxzTest
 
             password = "temppass22";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(22.272273249390718D, result.getEntropy(), 22.272273249390718D * tolerance);
+            Assert.assertEquals(16.892495383759368D, result.getEntropy(), 16.892495383759368D * tolerance);
 
             password = "briansmith";
             result = nbvcxz.estimate(password);
@@ -72,23 +113,23 @@ public class NbvcxzTest
 
             password = "scorpions";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(13.67529549909406D, result.getEntropy(), 13.67529549909406D * tolerance);
+            Assert.assertEquals(12.938844457466171D, result.getEntropy(), 12.938844457466171D * tolerance);
 
             password = "ScoRpions";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(19.198857455151074D, result.getEntropy(), 19.198857455151074D * tolerance);
+            Assert.assertEquals(18.14829782309512D, result.getEntropy(), 18.14829782309512D * tolerance);
 
             password = "ScoRpi0ns";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(20.46971136544417D, result.getEntropy(), 20.46971136544417D * tolerance);
+            Assert.assertEquals(19.3817879533149D, result.getEntropy(), 19.3817879533149D * tolerance);
 
             password = "6c891879ed0a0bbf701d5ca8af39a766";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(119.05744928118723D, result.getEntropy(), 119.05744928118723D * tolerance);
+            Assert.assertEquals(124.22235013869417D, result.getEntropy(), 124.22235013869417D * tolerance);
 
             password = "ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(238.52749501268573D, result.getEntropy(), 238.52749501268573D * tolerance);
+            Assert.assertEquals(247.06618865413472D, result.getEntropy(), 247.06618865413472D * tolerance);
 
         }
         catch (Exception e)
