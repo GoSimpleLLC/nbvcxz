@@ -9,46 +9,6 @@ import org.junit.Test;
  */
 public class NbvcxzTest
 {
-    /**
-     * Tests the time taken to estimate for a number of passwords to catch speed regressions.
-     */
-    @Test
-    public void testTimeToEstimate()
-    {
-        final Nbvcxz nbvcxz = new Nbvcxz();
-        long start_time;
-        long end_time;
-        start_time = System.currentTimeMillis();
-        nbvcxz.estimate("thi$isAtestPasswrd");
-        end_time = System.currentTimeMillis() - start_time;
-        Assert.assertTrue(end_time <= 300);
-
-        start_time = System.currentTimeMillis();
-        nbvcxz.estimate("1qaz2wsx");
-        end_time = System.currentTimeMillis() - start_time;
-        Assert.assertTrue(end_time <= 150);
-
-        start_time = System.currentTimeMillis();
-        nbvcxz.estimate("6c891879ed0a0bbf701d5ca8af39a766");
-        end_time = System.currentTimeMillis() - start_time;
-        Assert.assertTrue(end_time <= 60);
-
-        start_time = System.currentTimeMillis();
-        nbvcxz.estimate("ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653");
-        end_time = System.currentTimeMillis() - start_time;
-        Assert.assertTrue(end_time <= 100);
-
-        String password = "thi$isAtestPasswrd";
-
-        start_time = System.currentTimeMillis();
-        for(int i = 0; i < 50; i++)
-        {
-            nbvcxz.estimate(password);
-        }
-        end_time = System.currentTimeMillis() - start_time;
-        Assert.assertTrue(end_time <= 1000);
-    }
-
 
     /**
      * Test of estimate method, of class Nbvcxz.
