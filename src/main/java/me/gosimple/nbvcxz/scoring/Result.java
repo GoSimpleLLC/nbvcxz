@@ -1,5 +1,6 @@
 package me.gosimple.nbvcxz.scoring;
 
+import me.gosimple.nbvcxz.matching.match.BruteForceMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.Feedback;
@@ -104,6 +105,24 @@ public class Result
     public boolean isMinimumEntropyMet()
     {
         return this.getEntropy().compareTo(configuration.getMinimumEntropy()) >= 0;
+    }
+
+    /**
+     * Returns whether the password is considered to be random.
+     * @return true if the password is considered random, false otherwise.
+     */
+    public boolean isRandom()
+    {
+        boolean is_random = true;
+        for(Match match : matches)
+        {
+            if(!(match instanceof BruteForceMatch))
+            {
+                is_random = false;
+                break;
+            }
+        }
+        return is_random;
     }
 
     /**

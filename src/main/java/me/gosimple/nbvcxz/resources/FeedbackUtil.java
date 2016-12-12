@@ -79,10 +79,6 @@ public class FeedbackUtil
                 return new Feedback(configuration, "feedback.spatial.warning.straightRowsOfKeys", "feedback.spatial.suggestions.UseLongerKeyboardPattern", "feedback.extra.suggestions.addAnotherWord");
             }
         }
-        if(match instanceof DigitMatch)
-        {
-            return new Feedback(configuration, "feedback.digit.warning.digits", "feedback.digit.suggestions.avoidDigits", "feedback.extra.suggestions.addAnotherWord");
-        }
         if(match instanceof DictionaryMatch)
         {
             DictionaryMatch dictionaryMatch = DictionaryMatch.class.cast(match);

@@ -52,7 +52,7 @@ public final class SpacialMatcher implements PasswordMatcher
                     if (!added)
                     {
                         builder.append(character);
-                        if (builder.length() > 1)
+                        if (builder.length() > 2)
                         {
                             matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph,  AdjacencyGraphUtil.getTurns(adjacencyGraph, builder.toString()), AdjacencyGraphUtil.getShifts(adjacencyGraph, builder.toString())));
                         }
@@ -63,7 +63,7 @@ public final class SpacialMatcher implements PasswordMatcher
                 else
                 {
                     builder.append(character);
-                    if (builder.length() > 1)
+                    if (builder.length() > 2)
                     {
                         matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph, AdjacencyGraphUtil.getTurns(adjacencyGraph, builder.toString()), AdjacencyGraphUtil.getShifts(adjacencyGraph, builder.toString())));
                     }

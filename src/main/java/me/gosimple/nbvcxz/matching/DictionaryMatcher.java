@@ -40,10 +40,10 @@ public final class DictionaryMatcher implements PasswordMatcher
 
                     // Match exact
                     {
-                        Integer lower_rank = dictionary.getDictonary().get(split_password);
-                        if (lower_rank != null)
+                        Integer exact_rank = dictionary.getDictonary().get(split_password);
+                        if (exact_rank != null)
                         {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, split_password, lower_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
+                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, split_password, exact_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
                             continue;
                         }
                     }

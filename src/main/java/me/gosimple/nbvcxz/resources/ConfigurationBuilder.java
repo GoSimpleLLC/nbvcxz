@@ -182,7 +182,6 @@ public class ConfigurationBuilder
         List<PasswordMatcher> passwordMatchers = new ArrayList<>();
         passwordMatchers.add(new DateMatcher());
         passwordMatchers.add(new YearMatcher());
-        passwordMatchers.add(new DigitMatcher());
         passwordMatchers.add(new RepeatMatcher());
         passwordMatchers.add(new SequenceMatcher());
         passwordMatchers.add(new SpacialMatcher());
