@@ -7,7 +7,7 @@
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 
     <name>nbvcxz</name>
     <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is similar.
@@ -172,6 +172,12 @@
             <version>LATEST</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>
