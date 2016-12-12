@@ -37,7 +37,7 @@ public class ConfigurationBuilder
 
     /**
      * Guess types are used to calculate how long an attack would take using that method using guesses/sec.
-     * @param guessTypes Map of guessTypes
+     * @param guessTypes key is a description of the type of guess, value is how many guesses per second
      * @return Builder
      */
     public ConfigurationBuilder setGuessTypes(Map<String, Long> guessTypes)
