@@ -186,6 +186,7 @@ public class ConfigurationBuilder
         passwordMatchers.add(new SequenceMatcher());
         passwordMatchers.add(new SpacialMatcher());
         passwordMatchers.add(new DictionaryMatcher());
+        passwordMatchers.add(new SeparatorMatcher());
         return  passwordMatchers;
     }
 
