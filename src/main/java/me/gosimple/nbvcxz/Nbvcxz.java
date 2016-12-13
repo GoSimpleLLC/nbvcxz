@@ -1,8 +1,5 @@
 package me.gosimple.nbvcxz;
 
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
 import me.gosimple.nbvcxz.matching.PasswordMatcher;
 import me.gosimple.nbvcxz.matching.match.BruteForceMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
@@ -23,10 +20,10 @@ import java.util.stream.Collectors;
  * instance should be used for subsequent password estimates.
  *
  * @author Adam Brusselback
- *
  */
 public class Nbvcxz
 {
+    private static StartIndexComparator comparator = new StartIndexComparator();
     private Configuration configuration;
 
     /**
@@ -39,39 +36,12 @@ public class Nbvcxz
 
     /**
      * Creates a new instance with a custom configuration.
+     *
      * @param configuration a {@code Configuration} to be used in all estimates.
      */
     public Nbvcxz(Configuration configuration)
     {
         this.configuration = configuration;
-    }
-
-    /**
-     * Gets the current configuration.
-     * @return returns {@code Configuration}
-     */
-    public Configuration getConfiguration()
-    {
-        return configuration;
-    }
-
-    /**
-     * Sets the configuration.
-     * @param configuration a {@code Configuration} to be used in all estimates.
-     */
-    public void setConfiguration(Configuration configuration)
-    {
-        this.configuration = configuration;
-    }
-
-    /**
-     * Guess the entropy of a password with the configuration provided.
-     * @param password The password you would like to attempt to estimate on.
-     * @return Result object that contains info about the password.
-     */
-    public Result estimate(final String password)
-    {
-        return guessEntropy(this.configuration, password);
     }
 
     /**
@@ -84,7 +54,7 @@ public class Nbvcxz
      * The result object is guaranteed to match the original password, or throw an exception if it doesn't.
      *
      * @param configuration the configuration file used to estimate entropy.
-     * @param password the password you are guessing entropy for.
+     * @param password      the password you are guessing entropy for.
      * @return the {@code Result} of this estimate.
      */
     private static Result guessEntropy(final Configuration configuration, final String password)
@@ -94,14 +64,14 @@ public class Nbvcxz
         return final_result;
     }
 
-
     /**
      * Returns the best combination of matches based on multiple methods.  We run the password through the
      * {@code findGoodEnoughCombination} method test to see if is considered "random".  If it isn't, we
      * run it through the {@code findBestCombination} method, which is much more expensive for large
      * passwords.
+     *
      * @param configuration the configuration
-     * @param password the password
+     * @param password      the password
      * @return the best list of matches, sorted by start index.
      */
     private static List<Match> getBestCombination(final Configuration configuration, final String password)
@@ -111,11 +81,10 @@ public class Nbvcxz
         {
             List<Match> brute_force_matches = new ArrayList<>();
             backfillBruteForce(configuration, password, brute_force_matches);
-            brute_force_matches.sort(new startIndexComparator());
+            brute_force_matches.sort(comparator);
             return brute_force_matches;
         }
-        Collections.sort(all_matches, new startIndexComparator());
-
+        Collections.sort(all_matches, comparator);
         return findBestCombination(configuration, password, all_matches);
     }
 
@@ -123,9 +92,10 @@ public class Nbvcxz
      * This is the original algorithm for finding the best matches.  It was much faster, but had the possibility of returning
      * non-optimal lists of matches.  I kept it around to run preliminarily to pass the results to {@code isRandom} so we can
      * see if the password is random and short circuit the more expensive calculations
+     *
      * @param configuration the configuration
-     * @param password the password
-     * @param all_matches all matches which have been found for this password
+     * @param password      the password
+     * @param all_matches   all matches which have been found for this password
      * @return a list of matches which is good enough for most uses
      */
     private static List<Match> findGoodEnoughCombination(final Configuration configuration, final String password, final List<Match> all_matches)
@@ -174,32 +144,36 @@ public class Nbvcxz
 
     /**
      * Finds the most optimal matches by recursively building out every combination possible and returning the best.
+     *
      * @param configuration the configuration
-     * @param password the password
-     * @param all_matches all matches which have been found for this password
+     * @param password      the password
+     * @param all_matches   all matches which have been found for this password
      * @return the best possible combination of matches for this password
      */
     private static List<Match> findBestCombination(final Configuration configuration, final String password, final List<Match> all_matches)
     {
-        final Map<Match, Range> range_map = new HashMap<>();
         final Map<Match, Set<Match>> non_intersecting_matches = new HashMap<>();
 
-        for (Match match : all_matches)
+        for (int i = 0; i < all_matches.size(); i++)
         {
-            range_map.put(match, Range.closed(match.getStartIndex(), match.getEndIndex()));
-        }
-
-        for(Match match : all_matches)
-        {
-            RangeSet range_set = TreeRangeSet.create();
-            Range range = range_map.get(match);
-            range_set.add(range);
+            Match match = all_matches.get(i);
             Set<Match> forward_non_intersecting_match_set = new HashSet<>();
-            for(Match next_match : all_matches)
+
+            for (int n = i + 1; n < all_matches.size(); n++)
             {
-                if(next_match.getStartIndex() > match.getEndIndex())
+                Match next_match = all_matches.get(n);
+                if (next_match.getStartIndex() > match.getEndIndex() && !(next_match.getStartIndex() < match.getEndIndex() && match.getStartIndex() < next_match.getEndIndex()))
                 {
-                    if (!range_set.intersects(range_map.get(next_match)))
+                    boolean to_add = true;
+                    for (Match non_intersecting_match : forward_non_intersecting_match_set)
+                    {
+                        if (next_match.getStartIndex() > non_intersecting_match.getEndIndex())
+                        {
+                            to_add = false;
+                            break;
+                        }
+                    }
+                    if (to_add)
                     {
                         forward_non_intersecting_match_set.add(next_match);
                     }
@@ -208,54 +182,78 @@ public class Nbvcxz
             non_intersecting_matches.put(match, forward_non_intersecting_match_set);
         }
 
-
-        List<Match> lowest_entropy_matches = new ArrayList<>();
-        for(Match match : all_matches)
+        Set<Match> seed_matches = new HashSet<>();
+        for (Match match : all_matches)
         {
-            generateMatches(configuration, password, match, non_intersecting_matches, range_map, new ArrayList<>(), lowest_entropy_matches);
+            boolean seed = true;
+            for (Set<Match> matchSet : non_intersecting_matches.values())
+            {
+                for (Match m : matchSet)
+                {
+                    if (m.equals(match))
+                    {
+                        seed = false;
+                    }
+                }
+            }
+            if (seed)
+            {
+                seed_matches.add(match);
+            }
         }
 
-        lowest_entropy_matches.sort(new startIndexComparator());
+        final List<Match> lowest_entropy_matches = new ArrayList<>();
+
+        for (Match match : seed_matches)
+        {
+            generateMatches(configuration, password, match, non_intersecting_matches, new ArrayList<>(), lowest_entropy_matches);
+        }
+
+        lowest_entropy_matches.sort(comparator);
 
         return lowest_entropy_matches;
     }
 
     /**
      * Recursive function to generate match combinations to get an optimal match.
-     * @param configuration the configuration
-     * @param password the password
-     * @param match a match to start with (or the next match in line)
+     *
+     * @param configuration            the configuration
+     * @param password                 the password
+     * @param match                    a match to start with (or the next match in line)
      * @param non_intersecting_matches map of all non-intersecting matches
-     * @param range_map map of all match ranges
-     * @param matches the list of matches being built
-     * @param lowest_entropy_matches the lowest entropy match will be set to this variable
+     * @param matches                  the list of matches being built
+     * @param lowest_entropy_matches   the lowest entropy match will be set to this variable
      */
-    private static void generateMatches(final Configuration configuration, final String password, final Match match, final Map<Match, Set<Match>> non_intersecting_matches, final Map<Match, Range> range_map, final List<Match> matches, List<Match> lowest_entropy_matches)
+    private static void generateMatches(final Configuration configuration, final String password, final Match match, final Map<Match, Set<Match>> non_intersecting_matches, final List<Match> matches, List<Match> lowest_entropy_matches)
     {
-        if(matches.contains(match))
-            return;
-
         matches.add(match);
 
-        if(!lowest_entropy_matches.isEmpty() && calcEntropy(matches) > calcEntropy(lowest_entropy_matches))
-            return;
-
-        RangeSet range_set = TreeRangeSet.create();
-        for(Match m : matches)
+        if (!lowest_entropy_matches.isEmpty() && calcEntropy(matches) > calcEntropy(lowest_entropy_matches))
         {
-            range_set.add(range_map.get(m));
+            return;
         }
 
         boolean found_next = false;
-        for(Match next_match : non_intersecting_matches.get(match))
+        for (Match next_match : non_intersecting_matches.get(match))
         {
-            if(range_set.intersects(range_map.get(next_match)))
+            boolean intersects = false;
+            for (Match existing_match : matches)
+            {
+                if (next_match.getStartIndex() < existing_match.getEndIndex() && existing_match.getStartIndex() < next_match.getEndIndex())
+                {
+                    intersects = true;
+                    break;
+                }
+            }
+            if (intersects)
+            {
                 continue;
-            generateMatches(configuration, password, next_match, non_intersecting_matches, range_map, new ArrayList<>(matches), lowest_entropy_matches);
+            }
+            generateMatches(configuration, password, next_match, non_intersecting_matches, new ArrayList<>(matches), lowest_entropy_matches);
             found_next = true;
         }
 
-        if(!found_next)
+        if (!found_next)
         {
             backfillBruteForce(configuration, password, matches);
             if (lowest_entropy_matches.isEmpty() || calcEntropy(matches) < calcEntropy(lowest_entropy_matches))
@@ -269,44 +267,54 @@ public class Nbvcxz
 
     /**
      * Method to determine if the password should be considered random, and to just use brute force matches.
-     *
+     * <p>
      * We determine a password to be random if the matches cover less than 50% of the password, or if they cover less than 80%
      * but the max length for a match is no more than 25% of the total length of the password.
+     *
      * @param password the password
-     * @param matches the final list of matches
+     * @param matches  the final list of matches
      * @return true if determined to be random
      */
     private static boolean isRandom(final String password, final List<Match> matches)
     {
         int matched_length = 0;
         int max_matched_length = 0;
-        for(Match match : matches)
+        for (Match match : matches)
         {
-            if(!(match instanceof BruteForceMatch))
+            if (!(match instanceof BruteForceMatch))
             {
                 matched_length += match.getLength();
-                if(match.getLength() > max_matched_length)
+                if (match.getLength() > max_matched_length)
+                {
                     max_matched_length = match.getLength();
+                }
             }
         }
 
-        if(matched_length < (password.length() * 0.5))
+        if (matched_length < (password.length() * 0.5))
+        {
             return true;
+        }
         else if (matched_length < (password.length() * 0.8) && password.length() * 0.25 > max_matched_length)
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 
     /**
      * Helper method to calculate entropy from a list of matches.
+     *
      * @param matches the list of matches
      * @return the sum of the entropy in the list passed in
      */
     private static double calcEntropy(List<Match> matches)
     {
         double entropy = 0;
-        for(Match match : matches)
+        for (Match match : matches)
         {
             entropy += match.calculateEntropy();
         }
@@ -316,9 +324,10 @@ public class Nbvcxz
     /**
      * Fills in the matches array passed in with {@link BruteForceMatch} in every missing spot.
      * Returns them unsorted.
+     *
      * @param configuration the configuration
-     * @param password the password
-     * @param matches the list of matches to fill in
+     * @param password      the password
+     * @param matches       the list of matches to fill in
      */
     private static void backfillBruteForce(final Configuration configuration, final String password, final List<Match> matches)
     {
@@ -327,9 +336,9 @@ public class Nbvcxz
         while (index < password.length())
         {
             boolean has_match = false;
-            for(Match match : matches)
+            for (Match match : matches)
             {
-                if(index >= match.getStartIndex() && index <= match.getEndIndex())
+                if (index >= match.getStartIndex() && index <= match.getEndIndex())
                 {
                     has_match = true;
                 }
@@ -344,55 +353,55 @@ public class Nbvcxz
     }
 
     /**
-     * Sorts matches by starting index, and average entropy per character
-     */
-    private static class startIndexComparator implements Comparator<Match>
-    {
-            public int compare(Match match_1, Match match_2)
-            {
-                if (match_1.getStartIndex() < match_2.getStartIndex())
-                {
-                    return -1;
-                }
-                else if (match_1.getStartIndex() > match_2.getStartIndex())
-                {
-                    return 1;
-                }
-                else if (match_1.getStartIndex() == match_2.getStartIndex())
-                {
-                    if(match_1.calculateEntropy() / match_1.getToken().length() < match_2.calculateEntropy() / match_2.getToken().length())
-                        return -1;
-                    else
-                        return 1;
-                }
-                return 0;
-            }
-    }
-
-    /**
      * Gets all matches for a given password.
+     *
      * @param configuration the configuration file used to estimate entropy.
-     * @param password the password to get matches for.
+     * @param password      the password to get matches for.
      * @return a {@code List} of {@code Match} objects for the supplied password.
      */
     private static List<Match> getAllMatches(final Configuration configuration, final String password)
     {
         List<Match> matches = new ArrayList<>();
 
-        for(PasswordMatcher passwordMatcher : configuration.getPasswordMatchers())
+        for (PasswordMatcher passwordMatcher : configuration.getPasswordMatchers())
         {
             matches.addAll(passwordMatcher.match(configuration, password));
         }
-
+        keepLowestMatches(matches);
         return matches;
+    }
+
+    /**
+     * Keeps the lowest entropy matches for the specific start / end index
+     *
+     * @param matches List of matches to remove duplicate higher entropy matches from.
+     */
+    private static void keepLowestMatches(final List<Match> matches)
+    {
+        Set<Match> to_remove = new HashSet<>();
+        for (Match match : matches)
+        {
+            for (Match to_compare : matches)
+            {
+                if (match.getStartIndex() == to_compare.getStartIndex() && match.getEndIndex() == to_compare.getEndIndex())
+                {
+                    if (match.calculateEntropy() / match.getLength() > to_compare.calculateEntropy() / to_compare.getLength())
+                    {
+                        to_remove.add(match);
+                        break;
+                    }
+                }
+            }
+        }
+        matches.removeAll(to_remove);
     }
 
     /**
      * Creates a brute force match for a portion of the password.
      *
-     * @param password the password to create brute match for
+     * @param password    the password to create brute match for
      * @param start_index the index start of the password part that needs a {@code Match}
-     * @param end_index the index end of the password part that needs a {@code Match}
+     * @param end_index   the index end of the password part that needs a {@code Match}
      * @return a {@code Match} object
      */
     private static Match createBruteForceMatch(final String password, final Configuration configuration, final int start_index, final int end_index)
@@ -404,7 +413,6 @@ public class Nbvcxz
      * Gets the entropy from the number of guesses passed in.
      *
      * @param guesses a {@code BigDecimal} representing the number of guesses.
-     *
      * @return entropy {@code Double} that is calculated based on the guesses.
      */
     public static Double getEntropyFromGuesses(final BigDecimal guesses)
@@ -418,7 +426,6 @@ public class Nbvcxz
      * Gets the number of guesses from the entropy passed in.
      *
      * @param entropy a {@code Double} representing the number of guesses.
-     *
      * @return guesses {@code BigDecimal} that is calculated based on the entropy.
      */
     public static BigDecimal getGuessesFromEntropy(final Double entropy)
@@ -429,6 +436,7 @@ public class Nbvcxz
 
     /**
      * Console application which will run with default configurations.
+     *
      * @param args arguments which are ignored!
      */
     public static void main(String... args)
@@ -441,12 +449,14 @@ public class Nbvcxz
 
         String password;
 
-        while(true)
+        while (true)
         {
             System.out.println(resourceBundle.getString("main.startPrompt"));
             password = scanner.nextLine();
-            if("\\quit".equals(password))
+            if ("\\quit".equals(password))
+            {
                 break;
+            }
             printEstimationInfo(nbvcxz, password);
         }
         System.out.println(resourceBundle.getString("main.quitPrompt") + " ");
@@ -466,9 +476,11 @@ public class Nbvcxz
         System.out.println(resourceBundle.getString("main.password") + " " + password);
         System.out.println(resourceBundle.getString("main.entropy") + " " + result.getEntropy());
         Feedback feedback = FeedbackUtil.getFeedback(result);
-        if(feedback.getWarning() != null)
+        if (feedback.getWarning() != null)
+        {
             System.out.println(resourceBundle.getString("main.feedback.warning") + " " + feedback.getWarning());
-        for(String suggestion : feedback.getSuggestion())
+        }
+        for (String suggestion : feedback.getSuggestion())
         {
             System.out.println(resourceBundle.getString("main.feedback.suggestion") + " " + suggestion);
         }
@@ -477,15 +489,76 @@ public class Nbvcxz
                         .sorted(Map.Entry.comparingByValue())
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                                 (e1, e2) -> e1, LinkedHashMap::new));
-        for(Map.Entry<String, Long> guessType : sortedMap.entrySet())
+        for (Map.Entry<String, Long> guessType : sortedMap.entrySet())
         {
             System.out.println(resourceBundle.getString("main.timeToCrack") + " " + guessType.getKey() + ": " + TimeEstimate.getTimeToCrackFormatted(result, guessType.getKey()));
         }
-        for(Match match : result.getMatches())
+        for (Match match : result.getMatches())
         {
             System.out.println("-----------------------------------");
             System.out.println(match.getDetails());
         }
         System.out.println("----------------------------------------------------------");
+    }
+
+    /**
+     * Gets the current configuration.
+     *
+     * @return returns {@code Configuration}
+     */
+    public Configuration getConfiguration()
+    {
+        return configuration;
+    }
+
+    /**
+     * Sets the configuration.
+     *
+     * @param configuration a {@code Configuration} to be used in all estimates.
+     */
+    public void setConfiguration(Configuration configuration)
+    {
+        this.configuration = configuration;
+    }
+
+    /**
+     * Guess the entropy of a password with the configuration provided.
+     *
+     * @param password The password you would like to attempt to estimate on.
+     * @return Result object that contains info about the password.
+     */
+    public Result estimate(final String password)
+    {
+        return guessEntropy(this.configuration, password);
+    }
+
+    /**
+     * Sorts matches by starting index, and average entropy per character
+     */
+    private static class StartIndexComparator implements Comparator<Match>
+    {
+        public int compare(Match match_1, Match match_2)
+        {
+            if (match_1.getStartIndex() < match_2.getStartIndex())
+            {
+                return -1;
+            }
+            else if (match_1.getStartIndex() > match_2.getStartIndex())
+            {
+                return 1;
+            }
+            else if (match_1.getStartIndex() == match_2.getStartIndex())
+            {
+                if (match_1.calculateEntropy() / match_1.getToken().length() < match_2.calculateEntropy() / match_2.getToken().length())
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            return 0;
+        }
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -10,8 +10,10 @@
     <version>1.2.0</version>
 
     <name>nbvcxz</name>
-    <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is similar.
-        I built this library to be heavily extensible for every use case, but have sane defaults.</description>
+    <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is
+        similar.
+        I built this library to be heavily extensible for every use case, but have sane defaults.
+    </description>
     <url>https://github.com/GoSimpleLLC/nbvcxz</url>
 
     <licenses>
@@ -172,12 +174,6 @@
             <version>LATEST</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>20.0</version>
-        </dependency>
-
     </dependencies>
 
 </project>

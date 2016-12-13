@@ -29,7 +29,7 @@ public class NbvcxzTest
 
             password = "a.b.c.defy";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(48.036260385063D, result.getEntropy(), 48.036260385063D * tolerance);
+            Assert.assertEquals(35.05294537608871D, result.getEntropy(), 35.05294537608871D * tolerance);
 
             password = "helpimaliveinhere";
             result = nbvcxz.estimate(password);
@@ -82,6 +82,18 @@ public class NbvcxzTest
             password = "ScoRpi0ns";
             result = nbvcxz.estimate(password);
             Assert.assertEquals(19.3817879533149D, result.getEntropy(), 19.3817879533149D * tolerance);
+
+            password = "thereisneveragoodmonday";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(41.58420930363401D, result.getEntropy(), 41.58420930363401D * tolerance);
+
+            password = "forgetthatchristmaspartytheotheryear";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(39.519621936739505D, result.getEntropy(), 39.519621936739505D * tolerance);
+
+            password = "A Fool and His Money Are Soon Parted";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(90.52463096817459D, result.getEntropy(), 90.52463096817459D * tolerance);
 
             password = "6c891879ed0a0bbf701d5ca8af39a766";
             result = nbvcxz.estimate(password);
