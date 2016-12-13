@@ -40,6 +40,8 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ## Differentiating Features
 * Internationalization support for all feedback, and console output.
+* Better match generation algorithm which will find the absolute lowest entropy combination of the matches.
+* Support for ranked and un-ranked dictionaries.
 * Dictionary matching has the ability to use Levenshtein Distance (LD) calculations to match passwords which are non-exact matches to a dictionary entry.
     * LD calculations happen on full passwords only, and have a `threshold` of 1/4th the length of the password.
 * Dictionaries can be customized, and custom dictionaries can be added very easily.
@@ -54,7 +56,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -63,7 +65,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.1.0.jar`
+`java -jar nbvcxz-1.2.0.jar`
 ![alt text](http://imgur.com/ZpSU4Hs.png)
 
 ### Library
