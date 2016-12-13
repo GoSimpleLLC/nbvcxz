@@ -24,7 +24,7 @@ public class Dictionary
      * @param dictonary       {@code Map} with the word and it's rank.
      * @param exclusion       {@code true} when desiring to disallow any password contained in this dictionary; {@code false} otherwise.
      */
-    public Dictionary(final String dictionary_name, final HashMap<String, Integer> dictonary, final boolean exclusion)
+    public Dictionary(final String dictionary_name, final Map<String, Integer> dictonary, final boolean exclusion)
     {
         this.dictionary_name = dictionary_name;
         this.dictonary = dictonary;

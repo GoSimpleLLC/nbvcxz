@@ -4,6 +4,7 @@ import me.gosimple.nbvcxz.matching.match.DictionaryMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
+import me.gosimple.nbvcxz.resources.Dictionary;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +16,21 @@ import java.util.List;
  */
 public class DictionaryMatcherTest
 {
-    final Configuration configuration = new ConfigurationBuilder().createConfiguration();
+    final Configuration configuration;
+
+    public DictionaryMatcherTest()
+    {
+        final List<Dictionary> dictionaries = new ArrayList<>();
+        for (Dictionary dictionary : ConfigurationBuilder.getDefaultDictionaries())
+        {
+            if (!dictionary.getDictionaryName().equals("eff_large"))
+            {
+                dictionaries.add(dictionary);
+            }
+        }
+
+        this.configuration = new ConfigurationBuilder().setDictionaries(dictionaries).createConfiguration();
+    }
 
 
     /**

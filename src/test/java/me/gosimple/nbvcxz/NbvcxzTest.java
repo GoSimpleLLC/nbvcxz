@@ -93,7 +93,7 @@ public class NbvcxzTest
 
             password = "A Fool and His Money Are Soon Parted";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(90.52463096817459D, result.getEntropy(), 90.52463096817459D * tolerance);
+            Assert.assertEquals(85.78482345112074D, result.getEntropy(), 85.78482345112074D * tolerance);
 
             password = "6c891879ed0a0bbf701d5ca8af39a766";
             result = nbvcxz.estimate(password);

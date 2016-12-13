@@ -30,7 +30,7 @@ public class DictionaryUtilTest
         {
             String value = entry.getKey();
             Integer expected = entry.getValue();
-            Integer computed = DictionaryUtil.loadDictionary(DictionaryUtil.passwords).get(value);
+            Integer computed = DictionaryUtil.loadRankedDictionary(DictionaryUtil.passwords).get(value);
             Assert.assertEquals(expected, computed);
         }
     }

@@ -65,11 +65,12 @@ public class ConfigurationBuilder
     public static List<Dictionary> getDefaultDictionaries()
     {
         List<Dictionary> tmpDictionaries = new ArrayList<>();
-        tmpDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadDictionary(DictionaryUtil.passwords), false));
-        tmpDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadDictionary(DictionaryUtil.male_names), false));
-        tmpDictionaries.add(new Dictionary("female_names", DictionaryUtil.loadDictionary(DictionaryUtil.female_names), false));
-        tmpDictionaries.add(new Dictionary("surnames", DictionaryUtil.loadDictionary(DictionaryUtil.surnames), false));
-        tmpDictionaries.add(new Dictionary("english", DictionaryUtil.loadDictionary(DictionaryUtil.english), false));
+        tmpDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadRankedDictionary(DictionaryUtil.passwords), false));
+        tmpDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.male_names), false));
+        tmpDictionaries.add(new Dictionary("female_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.female_names), false));
+        tmpDictionaries.add(new Dictionary("surnames", DictionaryUtil.loadRankedDictionary(DictionaryUtil.surnames), false));
+        tmpDictionaries.add(new Dictionary("english", DictionaryUtil.loadRankedDictionary(DictionaryUtil.english), false));
+        tmpDictionaries.add(new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false));
         return tmpDictionaries;
     }
 
