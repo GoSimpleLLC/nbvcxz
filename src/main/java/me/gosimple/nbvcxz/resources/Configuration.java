@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
  * Used to set any configurable parameters when estimating password strength.
  *
  * @author Adam Brusselback.
- *
  */
 public class Configuration
 {
@@ -32,15 +31,14 @@ public class Configuration
     private final ResourceBundle feedbackResource;
 
     /**
-     *
      * @param passwordMatchers The list of {@link PasswordMatcher}s which will be used for matching
-     * @param guessTypes Map of types of guesses, and associated guesses/sec
-     * @param dictionaries List of {@link Dictionary} to use for the {@link DictionaryMatcher}
-     * @param adjacencyGraphs List of adjacency graphs to be used by the {@link SpacialMatcher}
-     * @param leetTable Leet table for use with {@link DictionaryMatcher}
-     * @param yearPattern Regex {@link Pattern} for use with {@link YearMatcher}
-     * @param minimumEntropy Minimum entropy value passwords should meet
-     * @param locale Locale for localized text and feedback
+     * @param guessTypes       Map of types of guesses, and associated guesses/sec
+     * @param dictionaries     List of {@link Dictionary} to use for the {@link DictionaryMatcher}
+     * @param adjacencyGraphs  List of adjacency graphs to be used by the {@link SpacialMatcher}
+     * @param leetTable        Leet table for use with {@link DictionaryMatcher}
+     * @param yearPattern      Regex {@link Pattern} for use with {@link YearMatcher}
+     * @param minimumEntropy   Minimum entropy value passwords should meet
+     * @param locale           Locale for localized text and feedback
      */
     public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc)
     {
@@ -58,7 +56,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return The list of {@link PasswordMatcher}s which will be used for matching
      */
     public List<PasswordMatcher> getPasswordMatchers()
@@ -67,7 +64,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Map of types of guesses, and associated guesses/sec
      */
     public Map<String, Long> getGuessTypes()
@@ -76,7 +72,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return List of {@link Dictionary} to use for the {@link DictionaryMatcher}
      */
     public List<Dictionary> getDictionaries()
@@ -85,7 +80,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return List of adjacency graphs to be used by the {@link SpacialMatcher}
      */
     public List<AdjacencyGraph> getAdjacencyGraphs()
@@ -94,7 +88,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Leet table for use with {@link DictionaryMatcher}
      */
     public Map<Character, Character> getLeetTable()
@@ -103,7 +96,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Regex {@link Pattern} for use with {@link YearMatcher}
      */
     public Pattern getYearPattern()
@@ -112,7 +104,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Minimum entropy value passwords should meet
      */
     public Double getMinimumEntropy()
@@ -121,7 +112,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Locale for localized text and feedback
      */
     public Locale getLocale()
@@ -130,7 +120,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return if dictionary distance calculations are enabled or not
      */
     public boolean isDistanceCalc()
@@ -139,7 +128,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Return the resource bundle which contains the text for everything but feedback
      */
     public ResourceBundle getMainResource()
@@ -148,7 +136,6 @@ public class Configuration
     }
 
     /**
-     *
      * @return Return the resource bundle which contains the text for feedback
      */
     public ResourceBundle getFeedbackResource()

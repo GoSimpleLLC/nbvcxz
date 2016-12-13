@@ -31,18 +31,6 @@ public final class DateMatcher implements PasswordMatcher
             + "\\2"                               // Same separator
             + "(\\d{1,2})$");                      // Month (or day)
 
-
-    public List<Match> match(final Configuration configuration, final String password)
-    {
-
-        List<Match> dateMatches = new ArrayList<>();
-        dateMatches.addAll(matchDatesWithoutSeparator(configuration, password));
-        dateMatches.addAll(matchDatesWithSeparator(configuration, password));
-
-        return dateMatches;
-    }
-
-
     /**
      * Extract all the possible dates without separator from a password
      *
@@ -154,7 +142,6 @@ public final class DateMatcher implements PasswordMatcher
 
     }
 
-
     /**
      * Extract all the possible dates with a separator
      * ("-", "/", " ", "\", "_" or ".") from a password
@@ -206,7 +193,6 @@ public final class DateMatcher implements PasswordMatcher
 
     }
 
-
     /**
      * Verify that a date is valid. Year must be
      * two digit or four digit and between 1900 and 2029.
@@ -240,6 +226,15 @@ public final class DateMatcher implements PasswordMatcher
         }
     }
 
+    public List<Match> match(final Configuration configuration, final String password)
+    {
+
+        List<Match> dateMatches = new ArrayList<>();
+        dateMatches.addAll(matchDatesWithoutSeparator(configuration, password));
+        dateMatches.addAll(matchDatesWithSeparator(configuration, password));
+
+        return dateMatches;
+    }
 
     // Represent a partial match during the parsing (contains the date and month
     // concatenated and the year)

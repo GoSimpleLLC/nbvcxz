@@ -10,18 +10,17 @@ import me.gosimple.nbvcxz.scoring.Result;
 public class FeedbackUtil
 {
     /**
-     *
      * @param result result object
      * @return feedback object
      */
     public static Feedback getFeedback(final Result result)
     {
-        if(result.isMinimumEntropyMet())
+        if (result.isMinimumEntropyMet())
         {
             return new Feedback(result.getConfiguration());
         }
 
-        if(result.getPassword().length() == 0)
+        if (result.getPassword().length() == 0)
         {
             return getDefaultFeedback(result.getConfiguration());
         }
@@ -29,7 +28,7 @@ public class FeedbackUtil
         Match longestMatch = null;
         for (Match match : result.getMatches())
         {
-            if(longestMatch == null)
+            if (longestMatch == null)
             {
                 longestMatch = match;
             }
@@ -48,29 +47,29 @@ public class FeedbackUtil
     {
         Configuration configuration = result.getConfiguration();
 
-        if(match instanceof DateMatch)
+        if (match instanceof DateMatch)
         {
             return new Feedback(configuration, "feedback.date.warning.dates", "feedback.date.suggestions.avoidDates", "feedback.extra.suggestions.addAnotherWord");
         }
-        if(match instanceof YearMatch)
+        if (match instanceof YearMatch)
         {
             return new Feedback(configuration, "feedback.year.warning.recentYears", "feedback.year.suggestions.avoidYears", "feedback.extra.suggestions.addAnotherWord");
         }
-        if(match instanceof RepeatMatch && RepeatMatch.class.cast(match).getRepeatingCharacters().length() == 1)
+        if (match instanceof RepeatMatch && RepeatMatch.class.cast(match).getRepeatingCharacters().length() == 1)
         {
             return new Feedback(configuration, "feedback.repeat.warning.likeAAA", "feedback.repeat.suggestions.avoidRepeated", "feedback.extra.suggestions.addAnotherWord");
         }
-        if(match instanceof RepeatMatch && RepeatMatch.class.cast(match).getRepeatingCharacters().length() != 1)
+        if (match instanceof RepeatMatch && RepeatMatch.class.cast(match).getRepeatingCharacters().length() != 1)
         {
             return new Feedback(configuration, "feedback.repeat.warning.likeABCABCABC", "feedback.repeat.suggestions.avoidRepeated", "feedback.extra.suggestions.addAnotherWord");
         }
-        if(match instanceof SequenceMatch)
+        if (match instanceof SequenceMatch)
         {
             return new Feedback(configuration, "feedback.sequence.warning.sequenceWarning", "feedback.sequence.suggestions.avoidSequences", "feedback.extra.suggestions.addAnotherWord");
         }
-        if(match instanceof SpacialMatch)
+        if (match instanceof SpacialMatch)
         {
-            if(SpacialMatch.class.cast(match).getTurns() > 0)
+            if (SpacialMatch.class.cast(match).getTurns() > 0)
             {
                 return new Feedback(configuration, "feedback.spatial.warning.shortKeyboardPatterns", "feedback.spatial.suggestions.UseLongerKeyboardPattern", "feedback.extra.suggestions.addAnotherWord");
             }
@@ -79,26 +78,26 @@ public class FeedbackUtil
                 return new Feedback(configuration, "feedback.spatial.warning.straightRowsOfKeys", "feedback.spatial.suggestions.UseLongerKeyboardPattern", "feedback.extra.suggestions.addAnotherWord");
             }
         }
-        if(match instanceof DictionaryMatch)
+        if (match instanceof DictionaryMatch)
         {
             DictionaryMatch dictionaryMatch = DictionaryMatch.class.cast(match);
             String dictionaryName = dictionaryMatch.getDictionaryName();
-            for(Dictionary dictionary : result.getConfiguration().getDictionaries())
+            for (Dictionary dictionary : result.getConfiguration().getDictionaries())
             {
-                if(dictionary.getDictionaryName().equals(dictionaryName))
+                if (dictionary.getDictionaryName().equals(dictionaryName))
                 {
-                    if(dictionary.isExclusion())
+                    if (dictionary.isExclusion())
                     {
                         return new Feedback(configuration, "feedback.dictionary.warning.passwords.notAllowed", "feedback.dictionary.suggestions.passwords.notAllowed");
                     }
                 }
             }
             String warning;
-            if(dictionaryMatch.getRank() <= 10)
+            if (dictionaryMatch.getRank() <= 10)
             {
                 warning = "feedback.dictionary.warning.passwords.top10";
             }
-            else if(dictionaryMatch.getRank() <= 100)
+            else if (dictionaryMatch.getRank() <= 100)
             {
                 warning = "feedback.dictionary.warning.passwords.top100";
             }

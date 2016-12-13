@@ -1,7 +1,7 @@
 package me.gosimple.nbvcxz.matching;
 
-import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.matching.match.DateMatch;
+import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
 import org.junit.Test;

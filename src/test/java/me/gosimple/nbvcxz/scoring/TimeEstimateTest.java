@@ -1,7 +1,6 @@
 package me.gosimple.nbvcxz.scoring;
 
 import me.gosimple.nbvcxz.Nbvcxz;
-import me.gosimple.nbvcxz.resources.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +30,7 @@ public class TimeEstimateTest
         final String ONLINE_UNTHROTTLED = "ONLINE_UNTHROTTLED";
         final String ONLINE_THROTTLED = "ONLINE_THROTTLED";
         final Nbvcxz nbvcxz = new Nbvcxz();
-        
+
         try
         {
             password = "p4ssword";

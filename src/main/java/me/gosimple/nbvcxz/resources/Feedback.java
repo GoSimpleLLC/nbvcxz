@@ -1,6 +1,8 @@
 package me.gosimple.nbvcxz.resources;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Adam Brusselback.
@@ -12,7 +14,6 @@ public class Feedback
     private final Configuration configuration;
 
     /**
-     *
      * @param configuration the {@link Configuration} object.
      */
     public Feedback(final Configuration configuration)
@@ -23,10 +24,9 @@ public class Feedback
     }
 
     /**
-     *
      * @param configuration the {@link Configuration} object.
-     * @param warning warning string
-     * @param suggestions suggestions
+     * @param warning       warning string
+     * @param suggestions   suggestions
      */
     public Feedback(final Configuration configuration, final String warning, final String... suggestions)
     {
@@ -37,7 +37,6 @@ public class Feedback
     }
 
     /**
-     *
      * @return the warning (nullable)
      */
     public String getWarning()
@@ -53,13 +52,12 @@ public class Feedback
     }
 
     /**
-     *
      * @return list of suggestions (list is not null)
      */
     public List<String> getSuggestion()
     {
         List<String> convertedSuggestions = new ArrayList<>();
-        for(String suggestion : suggestions)
+        for (String suggestion : suggestions)
         {
             convertedSuggestions.add(configuration.getFeedbackResource().getString(suggestion));
         }

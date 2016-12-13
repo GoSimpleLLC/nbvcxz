@@ -10,6 +10,7 @@ import me.gosimple.nbvcxz.matching.PasswordMatcher;
  * <br><br>
  * Additionally it should be able to return a string with details about the match to display to a user with relevant
  * information pertaining to the type of {@code Match}.
+ *
  * @author Adam Brusselback
  */
 public interface Match
@@ -49,6 +50,7 @@ public interface Match
 
     /**
      * Returns details about this match in the form of a String to be printed directly
+     *
      * @return all specific details about this {@code Match} in printable String format.
      */
     String getDetails();

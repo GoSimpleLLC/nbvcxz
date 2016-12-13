@@ -11,9 +11,9 @@ import java.math.RoundingMode;
 import java.util.List;
 
 /**
- * @author Adam Brusselback
- *
  * This class contains all info about the entropy calculation.
+ *
+ * @author Adam Brusselback
  */
 public class Result
 {
@@ -22,10 +22,9 @@ public class Result
     final List<Match> matches;
 
     /**
-     *
      * @param configuration the {@link Configuration} object.
-     * @param password the password this result was generated for
-     * @param matches list of matches which when combined make up the original password
+     * @param password      the password this result was generated for
+     * @param matches       list of matches which when combined make up the original password
      * @throws IllegalStateException if the matches do not equal the original password, this will be thrown.
      */
     public Result(final Configuration configuration, final String password, final List<Match> matches) throws IllegalStateException
@@ -58,6 +57,7 @@ public class Result
 
     /**
      * Returns the entropy for this {@code Result}.
+     *
      * @return the estimated entropy as a {@code double}.
      */
     public Double getEntropy()
@@ -72,6 +72,7 @@ public class Result
 
     /**
      * The estimated number of tries required to crack this password
+     *
      * @return the estimated number of guesses as a {@code BigDecimal}
      */
     public BigDecimal getGuesses()
@@ -82,6 +83,7 @@ public class Result
 
     /**
      * The matches that comprise this result.
+     *
      * @return a {@code List} of {@code Match} that were used in this result estimation.
      */
     public List<Match> getMatches()
@@ -91,6 +93,7 @@ public class Result
 
     /**
      * The original password passed in.
+     *
      * @return {@code String} of the original password.
      */
     public String getPassword()
@@ -100,6 +103,7 @@ public class Result
 
     /**
      * Returns whether the minimum entropy specified in the config was met.
+     *
      * @return {@code true} if minimum entropy is met; {@code false} if not.
      */
     public boolean isMinimumEntropyMet()
@@ -109,14 +113,15 @@ public class Result
 
     /**
      * Returns whether the password is considered to be random.
+     *
      * @return true if the password is considered random, false otherwise.
      */
     public boolean isRandom()
     {
         boolean is_random = true;
-        for(Match match : matches)
+        for (Match match : matches)
         {
-            if(!(match instanceof BruteForceMatch))
+            if (!(match instanceof BruteForceMatch))
             {
                 is_random = false;
                 break;
@@ -127,6 +132,7 @@ public class Result
 
     /**
      * Returns the configuration used to generate this result.
+     *
      * @return {@code Configuration} that was used to generate this {@code Result}.
      */
     public Configuration getConfiguration()
@@ -136,6 +142,7 @@ public class Result
 
     /**
      * Returns feedback to the user to suggest ways to improve their password.
+     *
      * @return a {@code Feedback} object with suggestions for the user.
      */
     public Feedback getFeedback()

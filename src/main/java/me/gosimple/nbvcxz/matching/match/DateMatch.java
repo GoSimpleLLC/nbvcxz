@@ -20,14 +20,14 @@ public final class DateMatch extends BaseMatch
     /**
      * Create a new {@code DateMatch}
      *
-     * @param match the {@code String} we are creating the {@code DateMatch} from.
+     * @param match         the {@code String} we are creating the {@code DateMatch} from.
      * @param configuration the {@link Configuration} object.
-     * @param day the day of month
-     * @param month the month
-     * @param year the year
-     * @param separator separator used
-     * @param start_index the start index in the password for this match.
-     * @param end_index the end index in the password for this match.
+     * @param day           the day of month
+     * @param month         the month
+     * @param year          the year
+     * @param separator     separator used
+     * @param start_index   the start index in the password for this match.
+     * @param end_index     the end index in the password for this match.
      */
     public DateMatch(String match, Configuration configuration, int day, int month, int year, String separator, int start_index, int end_index)
     {

@@ -15,6 +15,7 @@ public class SpacialMatcherTest
 {
 
     final Configuration configuration = new ConfigurationBuilder().createConfiguration();
+
     /**
      * Test of match method, of class DateMatcher.
      */

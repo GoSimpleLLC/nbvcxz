@@ -1,9 +1,8 @@
-
-
 package me.gosimple.nbvcxz.scoring;
 
 /**
  * Util class for brute force calculations.
+ *
  * @author Adam Brusselback
  */
 public class BruteForceUtil

@@ -144,9 +144,9 @@ public class DictionaryMatcherTest
             calculatedHash += match.getRank();
             calculatedHash += match.getStartIndex();
             calculatedHash += match.getEndIndex();
-            for(Character[] chars : match.getLeetSubstitution())
+            for (Character[] chars : match.getLeetSubstitution())
             {
-                for(Character leet : chars)
+                for (Character leet : chars)
                 {
                     calculatedHash += leet.hashCode();
                 }

@@ -66,6 +66,20 @@ public class BaseMatchTest
         Assert.assertEquals(Double.POSITIVE_INFINITY, BaseMatch.log2(Double.POSITIVE_INFINITY), 0.000000000000001);
     }
 
+    /**
+     * Test of nCk method, of class BaseMatch.
+     */
+    @Test
+    public void testNCk()
+    {
+        System.out.println("Test of nCk method, of class BaseMatch.");
+        Assert.assertEquals(0L, BaseMatch.nCk(2, 3));
+        Assert.assertEquals(1L, BaseMatch.nCk(10, 0));
+        Assert.assertEquals(120L, BaseMatch.nCk(10, 3));
+        Assert.assertEquals(120L, BaseMatch.nCk(10, 7));
+        Assert.assertEquals(1646492110120L, BaseMatch.nCk(80, 10));
+        Assert.assertEquals(26252279997448736L, BaseMatch.nCk(58, 27));
+    }
 
     public class BaseMatchImpl extends BaseMatch
     {
@@ -80,22 +94,6 @@ public class BaseMatchTest
         {
             return 0;
         }
-    }
-
-
-    /**
-     * Test of nCk method, of class BaseMatch.
-     */
-    @Test
-    public void testNCk()
-    {
-        System.out.println("Test of nCk method, of class BaseMatch.");
-        Assert.assertEquals(0L, BaseMatch.nCk(2, 3));
-        Assert.assertEquals(1L, BaseMatch.nCk(10, 0));
-        Assert.assertEquals(120L, BaseMatch.nCk(10, 3));
-        Assert.assertEquals(120L, BaseMatch.nCk(10, 7));
-        Assert.assertEquals(1646492110120L, BaseMatch.nCk(80, 10));
-        Assert.assertEquals(26252279997448736L, BaseMatch.nCk(58, 27));
     }
 
 

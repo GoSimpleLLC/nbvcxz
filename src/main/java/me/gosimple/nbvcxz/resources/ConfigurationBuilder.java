@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Builder class for creating {@link Configuration}.
+ *
  * @author Adam Brusselback.
  */
 public class ConfigurationBuilder
@@ -23,159 +24,7 @@ public class ConfigurationBuilder
     private Boolean distanceCalc;
 
     /**
-     * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
-     * <br>
-     * Users of this library can implement their own {@link PasswordMatcher} and {@link Match} classes, here is where you would register them.
-     * @param passwordMatchers List of matchers
-     * @return Builder
-     */
-    public ConfigurationBuilder setPasswordMatchers(List<PasswordMatcher> passwordMatchers)
-    {
-        this.passwordMatchers = passwordMatchers;
-        return this;
-    }
-
-    /**
-     * Guess types are used to calculate how long an attack would take using that method using guesses/sec.
-     * @param guessTypes key is a description of the type of guess, value is how many guesses per second
-     * @return Builder
-     */
-    public ConfigurationBuilder setGuessTypes(Map<String, Long> guessTypes)
-    {
-        this.guessTypes = guessTypes;
-        return this;
-    }
-
-    /**
-     * Dictionaries are used by the {@link DictionaryMatcher} to find common words, names, and known passwords within the password.
-     * @param dictionaries List of dictionaries
-     * @return Builder
-     */
-    public ConfigurationBuilder setDictionaries(List<Dictionary> dictionaries)
-    {
-        this.dictionaries = dictionaries;
-        return this;
-    }
-
-    /**
-     * {@link AdjacencyGraph}s are used to find spacial patterns within passwords (e.g. asdfghj).
-     * @param adjacencyGraphs List of adjacencyGraphs
-     * @return Builder
-     */
-    public ConfigurationBuilder setAdjacencyGraphs(List<AdjacencyGraph> adjacencyGraphs)
-    {
-        this.adjacencyGraphs = adjacencyGraphs;
-        return this;
-    }
-
-    /**
-     * The leet table is used to check within a password for common character substitutions (e.g. s to $).
-     * @param leetTable Map for leetTable
-     * @return Builder
-     */
-    public ConfigurationBuilder setLeetTable(Map<Character, Character> leetTable)
-    {
-        this.leetTable = leetTable;
-        return this;
-    }
-
-    /**
-     * Year patterns are used to look for years within a password.
-     * @param yearPattern Pattern for year matching
-     * @return Builder
-     */
-    public ConfigurationBuilder setYearPattern(Pattern yearPattern)
-    {
-        this.yearPattern = yearPattern;
-        return this;
-    }
-
-    /**
-     * Used to check if the password is secure enough, and give feedback if not.
-     * <br>
-     * Should be a positive value.
-     * @param minimumEntropy Value for minimumEntropy
-     * @return Builder
-     */
-    public ConfigurationBuilder setMinimumEntropy(Double minimumEntropy)
-    {
-        this.minimumEntropy = minimumEntropy;
-        return this;
-    }
-
-    /**
-     * Supported locales are en, and fr. <br>
-     * Default locale is en.
-     * @param locale Locale for localization
-     * @return Builder
-     */
-    public ConfigurationBuilder setLocale(Locale locale)
-    {
-        this.locale = locale;
-        return this;
-    }
-
-    /**
-     * Distance based dictionary calculations which provide support for misspelling
-     * detection, at the expense of performance.  This will slow down calculations
-     * by an order of magnitude.
-     * @param distanceCalc true to enable distance based dictionary calculations
-     * @return Builder
-     */
-    public ConfigurationBuilder setDistanceCalc(final Boolean distanceCalc)
-    {
-        this.distanceCalc = distanceCalc;
-        return this;
-    }
-
-    /**
-     * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
-     * @return Configuration object from builder
-     */
-    public Configuration createConfiguration()
-    {
-        if(passwordMatchers == null)
-        {
-            passwordMatchers = getDefaultPasswordMatchers();
-        }
-        if(guessTypes == null)
-        {
-            guessTypes = getDefaultGuessTypes();
-        }
-        if(dictionaries == null)
-        {
-            dictionaries = getDefaultDictionaries();
-        }
-        if(adjacencyGraphs == null)
-        {
-            adjacencyGraphs = getDefaultAdjacencyGraphs();
-        }
-        if(leetTable == null)
-        {
-            leetTable = getDefaultLeetTable();
-        }
-        if(yearPattern == null)
-        {
-            yearPattern = getDefaultYearPattern();
-        }
-        if(minimumEntropy == null)
-        {
-            minimumEntropy = getDefaultMinimumEntropy();
-        }
-        if(locale == null)
-        {
-            locale = Locale.getDefault();
-        }
-        if(distanceCalc == null)
-        {
-            distanceCalc = getDefaultDistanceCalc();
-        }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc);
-    }
-
-    /**
      * @return Includes all standard password matchers included with Nbvcxz.
-     *
      */
     public static List<PasswordMatcher> getDefaultPasswordMatchers()
     {
@@ -187,7 +36,7 @@ public class ConfigurationBuilder
         passwordMatchers.add(new SpacialMatcher());
         passwordMatchers.add(new DictionaryMatcher());
         passwordMatchers.add(new SeparatorMatcher());
-        return  passwordMatchers;
+        return passwordMatchers;
     }
 
     /**
@@ -226,7 +75,6 @@ public class ConfigurationBuilder
 
     /**
      * @return Default keyboard adjacency graphs for standard querty, standard keypad, and mac keypad
-     *
      */
     public static List<AdjacencyGraph> getDefaultAdjacencyGraphs()
     {
@@ -239,7 +87,6 @@ public class ConfigurationBuilder
 
     /**
      * @return The default table of common english leet substitutions
-     *
      */
     public static Map<Character, Character> getDefaultLeetTable()
     {
@@ -284,12 +131,172 @@ public class ConfigurationBuilder
     }
 
     /**
-     *
      * @return the default is false
      */
     public static Boolean getDefaultDistanceCalc()
     {
         return true;
+    }
+
+    /**
+     * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
+     * <br>
+     * Users of this library can implement their own {@link PasswordMatcher} and {@link Match} classes, here is where you would register them.
+     *
+     * @param passwordMatchers List of matchers
+     * @return Builder
+     */
+    public ConfigurationBuilder setPasswordMatchers(List<PasswordMatcher> passwordMatchers)
+    {
+        this.passwordMatchers = passwordMatchers;
+        return this;
+    }
+
+    /**
+     * Guess types are used to calculate how long an attack would take using that method using guesses/sec.
+     *
+     * @param guessTypes key is a description of the type of guess, value is how many guesses per second
+     * @return Builder
+     */
+    public ConfigurationBuilder setGuessTypes(Map<String, Long> guessTypes)
+    {
+        this.guessTypes = guessTypes;
+        return this;
+    }
+
+    /**
+     * Dictionaries are used by the {@link DictionaryMatcher} to find common words, names, and known passwords within the password.
+     *
+     * @param dictionaries List of dictionaries
+     * @return Builder
+     */
+    public ConfigurationBuilder setDictionaries(List<Dictionary> dictionaries)
+    {
+        this.dictionaries = dictionaries;
+        return this;
+    }
+
+    /**
+     * {@link AdjacencyGraph}s are used to find spacial patterns within passwords (e.g. asdfghj).
+     *
+     * @param adjacencyGraphs List of adjacencyGraphs
+     * @return Builder
+     */
+    public ConfigurationBuilder setAdjacencyGraphs(List<AdjacencyGraph> adjacencyGraphs)
+    {
+        this.adjacencyGraphs = adjacencyGraphs;
+        return this;
+    }
+
+    /**
+     * The leet table is used to check within a password for common character substitutions (e.g. s to $).
+     *
+     * @param leetTable Map for leetTable
+     * @return Builder
+     */
+    public ConfigurationBuilder setLeetTable(Map<Character, Character> leetTable)
+    {
+        this.leetTable = leetTable;
+        return this;
+    }
+
+    /**
+     * Year patterns are used to look for years within a password.
+     *
+     * @param yearPattern Pattern for year matching
+     * @return Builder
+     */
+    public ConfigurationBuilder setYearPattern(Pattern yearPattern)
+    {
+        this.yearPattern = yearPattern;
+        return this;
+    }
+
+    /**
+     * Used to check if the password is secure enough, and give feedback if not.
+     * <br>
+     * Should be a positive value.
+     *
+     * @param minimumEntropy Value for minimumEntropy
+     * @return Builder
+     */
+    public ConfigurationBuilder setMinimumEntropy(Double minimumEntropy)
+    {
+        this.minimumEntropy = minimumEntropy;
+        return this;
+    }
+
+    /**
+     * Supported locales are en, and fr. <br>
+     * Default locale is en.
+     *
+     * @param locale Locale for localization
+     * @return Builder
+     */
+    public ConfigurationBuilder setLocale(Locale locale)
+    {
+        this.locale = locale;
+        return this;
+    }
+
+    /**
+     * Distance based dictionary calculations which provide support for misspelling
+     * detection, at the expense of performance.  This will slow down calculations
+     * by an order of magnitude.
+     *
+     * @param distanceCalc true to enable distance based dictionary calculations
+     * @return Builder
+     */
+    public ConfigurationBuilder setDistanceCalc(final Boolean distanceCalc)
+    {
+        this.distanceCalc = distanceCalc;
+        return this;
+    }
+
+    /**
+     * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
+     *
+     * @return Configuration object from builder
+     */
+    public Configuration createConfiguration()
+    {
+        if (passwordMatchers == null)
+        {
+            passwordMatchers = getDefaultPasswordMatchers();
+        }
+        if (guessTypes == null)
+        {
+            guessTypes = getDefaultGuessTypes();
+        }
+        if (dictionaries == null)
+        {
+            dictionaries = getDefaultDictionaries();
+        }
+        if (adjacencyGraphs == null)
+        {
+            adjacencyGraphs = getDefaultAdjacencyGraphs();
+        }
+        if (leetTable == null)
+        {
+            leetTable = getDefaultLeetTable();
+        }
+        if (yearPattern == null)
+        {
+            yearPattern = getDefaultYearPattern();
+        }
+        if (minimumEntropy == null)
+        {
+            minimumEntropy = getDefaultMinimumEntropy();
+        }
+        if (locale == null)
+        {
+            locale = Locale.getDefault();
+        }
+        if (distanceCalc == null)
+        {
+            distanceCalc = getDefaultDistanceCalc();
+        }
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc);
     }
 
 

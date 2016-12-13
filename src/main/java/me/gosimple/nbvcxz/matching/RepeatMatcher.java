@@ -26,14 +26,16 @@ public final class RepeatMatcher implements PasswordMatcher
         int lastIndex = 0;
         Matcher greedyMatch = greedy.matcher(password);
         Matcher lazyMatch = lazy.matcher(password);
-        while(lastIndex < password.length())
+        while (lastIndex < password.length())
         {
             if (!greedyMatch.find())
+            {
                 break;
+            }
             Matcher match;
             String baseToken;
             String repeatCharacters;
-            if(greedyMatch.group(0).length() > (lazyMatch.find() ? lazyMatch.group(0).length() : 0))
+            if (greedyMatch.group(0).length() > (lazyMatch.find() ? lazyMatch.group(0).length() : 0))
             {
                 match = greedyMatch;
                 Matcher matcher = lazyAnchored.matcher(match.group(0));

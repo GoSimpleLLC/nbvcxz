@@ -21,13 +21,13 @@ public final class SpacialMatch extends BaseMatch
      * Create a new {@code SpacialMatch} which is a sequence of characters
      * following themselves on the keyboard/keypad
      *
-     * @param match the part of the password that was matched.
-     * @param configuration the {@link Configuration} object.
-     * @param start_index the starting index of this {@code SpacialMatch}.
-     * @param end_index the ending index of this {@code SpacialMatch}.
+     * @param match          the part of the password that was matched.
+     * @param configuration  the {@link Configuration} object.
+     * @param start_index    the starting index of this {@code SpacialMatch}.
+     * @param end_index      the ending index of this {@code SpacialMatch}.
      * @param adjacencyGraph the graph used for this {@code SpacialMatch}.
-     * @param turns the number of turns in this {@code SpacialMatch}.
-     * @param shiftedNumber the number of shifts in this {@code SpacialMatch}.
+     * @param turns          the number of turns in this {@code SpacialMatch}.
+     * @param shiftedNumber  the number of shifts in this {@code SpacialMatch}.
      */
     public SpacialMatch(String match, Configuration configuration, int start_index, int end_index, AdjacencyGraph adjacencyGraph, int turns, int shiftedNumber)
     {

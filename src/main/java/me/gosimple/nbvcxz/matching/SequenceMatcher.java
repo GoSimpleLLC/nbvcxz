@@ -99,7 +99,7 @@ public final class SequenceMatcher implements PasswordMatcher
             if (builder.length() > 0)
             {
                 builder.append(current_character);
-                if(builder.length() > 2)
+                if (builder.length() > 2)
                 {
                     matches.add(new SequenceMatch(builder.toString(), configuration, i - builder.length() + 1, i));
                 }

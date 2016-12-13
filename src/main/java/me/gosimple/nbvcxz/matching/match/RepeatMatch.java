@@ -17,11 +17,11 @@ public final class RepeatMatch extends BaseMatch
     /**
      * Create a new {@code RepeatMatch}
      *
-     * @param match the {@code String} we are creating the {@code RepeatMatch} from.
-     * @param configuration the {@link Configuration} object.
+     * @param match               the {@code String} we are creating the {@code RepeatMatch} from.
+     * @param configuration       the {@link Configuration} object.
      * @param repeatingCharacters the characters which were repeated
-     * @param start_index the start index in the password for this match.
-     * @param end_index the end index in the password for this match.
+     * @param start_index         the start index in the password for this match.
+     * @param end_index           the end index in the password for this match.
      */
     public RepeatMatch(String match, Configuration configuration, String repeatingCharacters, int start_index, int end_index)
     {

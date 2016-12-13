@@ -49,14 +49,14 @@ public class DictionaryMatchTest
         Assert.assertEquals(match.getToken(), 13.779924501967908D, entropy, 13.779924501967908D * tolerance);
         sub.clear();
 
-        sub.add(new Character[] {'3', 'e'});
-        sub.add(new Character[] {'4', 'a'});
+        sub.add(new Character[]{'3', 'e'});
+        sub.add(new Character[]{'4', 'a'});
         match = new DictionaryMatch("R43", configuration, 0, 4, "Rae", 716, sub, false, false, "test", 0);
         entropy = match.calculateEntropy();
         Assert.assertEquals(match.getToken(), 11.483815777264256D, entropy, 11.483815777264256D * tolerance);
         sub.clear();
 
-        sub.add(new Character[] {'0', 'o'});
+        sub.add(new Character[]{'0', 'o'});
         match = new DictionaryMatch("h0rs", configuration, 0, 4, "hors", 7646, sub, false, false, "test", 0);
         entropy = match.calculateEntropy();
         Assert.assertEquals(match.getToken(), 13.900489484834651D, entropy, 13.900489484834651D * tolerance);

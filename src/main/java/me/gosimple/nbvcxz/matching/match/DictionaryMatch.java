@@ -1,6 +1,5 @@
 package me.gosimple.nbvcxz.matching.match;
 
-import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.scoring.BruteForceUtil;
 
@@ -13,6 +12,10 @@ import java.util.ResourceBundle;
  */
 public final class DictionaryMatch extends BaseMatch
 {
+    private static final String START_UPPER = "^[A-Z][^A-Z]+";
+    private static final String END_UPPER = "^[^A-Z]+[A-Z]$";
+    private static final String ALL_UPPER = "^[^a-z]+$";
+    private static final String ALL_LOWER = "^[^A-Z]+$";
     private final String dictionary_name;
     private final String dictionary_value;
     private final int rank;
@@ -21,19 +24,18 @@ public final class DictionaryMatch extends BaseMatch
     private final boolean reversed;
     private final int distance;
 
-
     /**
      * Create a new {@code DictionaryMatch}
      *
-     * @param match the {@code String} we are creating the {@code DictionaryMatch} from.
-     * @param configuration the {@link Configuration} object.
-     * @param start_index the start index in the password for this match.
-     * @param end_index the end index in the password for this match.
-     * @param rank The rank of the match in the dictionary
+     * @param match            the {@code String} we are creating the {@code DictionaryMatch} from.
+     * @param configuration    the {@link Configuration} object.
+     * @param start_index      the start index in the password for this match.
+     * @param end_index        the end index in the password for this match.
+     * @param rank             The rank of the match in the dictionary
      * @param leetSubstitution If leet substitution was used or not
-     * @param excluded if the dictionary was an exclusion dictionary
-     * @param reversed if the password was reversed to match
-     * @param dictionary_name the name of the dictionary matched
+     * @param excluded         if the dictionary was an exclusion dictionary
+     * @param reversed         if the password was reversed to match
+     * @param dictionary_name  the name of the dictionary matched
      */
     public DictionaryMatch(final String match, Configuration configuration, final int start_index, final int end_index, final String dictionary_value, final int rank, final List<Character[]> leetSubstitution, final boolean excluded, final boolean reversed, final String dictionary_name, final int distance)
     {
@@ -47,13 +49,14 @@ public final class DictionaryMatch extends BaseMatch
         this.distance = distance;
     }
 
-
     @Override
     public double calculateEntropy()
     {
         // If this is an excluded password, return with no entropy.
-        if(excluded)
+        if (excluded)
+        {
             return 0d;
+        }
 
         // First the base entropy based on the rank
         double baseEntropy = log2(rank);
@@ -66,22 +69,27 @@ public final class DictionaryMatch extends BaseMatch
      */
     private double distanceEntropy()
     {
-        if(getDistance() == 0)
+        if (getDistance() == 0)
+        {
             return 0d;
+        }
         else
         {
             int len_diff = getToken().length() - getDictionaryValue().length();
             int char_shift = getDistance() - Math.abs(len_diff);
 
-            if(len_diff + char_shift <= 0)
-                // if the length is shortened, give a little entropy
+            if (len_diff + char_shift <= 0)
+            // if the length is shortened, give a little entropy
+            {
                 return 1d;
+            }
             else
-                // if the length is not shortened then we can add even more
+            // if the length is not shortened then we can add even more
+            {
                 return log2(BruteForceUtil.getBrutForceCardinality(getToken()) * (len_diff + char_shift));
+            }
         }
     }
-
 
     /**
      * @return the additional entropy provided by uppercase
@@ -140,12 +148,6 @@ public final class DictionaryMatch extends BaseMatch
         return Math.max(log2(possiblities), 1);
     }
 
-    private static final String START_UPPER = "^[A-Z][^A-Z]+";
-    private static final String END_UPPER = "^[^A-Z]+[A-Z]$";
-    private static final String ALL_UPPER = "^[^a-z]+$";
-    private static final String ALL_LOWER = "^[^A-Z]+$";
-
-
     /**
      * @return the additional entropy provided by leet formatting
      */
@@ -189,11 +191,12 @@ public final class DictionaryMatch extends BaseMatch
 
     /**
      * Returns an extra bit of entropy if it was a reverse match, because it would likely double the key space to check.
+     *
      * @return the extra entropy bits if it's reversed
      */
     private double reversedEntropy()
     {
-        if(isReversed())
+        if (isReversed())
         {
             return 1D;
         }

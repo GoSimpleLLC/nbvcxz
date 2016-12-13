@@ -9,7 +9,6 @@ import me.gosimple.nbvcxz.resources.Configuration;
 import java.util.*;
 
 /**
- *
  * Look for every part of the password that is spacial pattern
  * <br>
  * This will only return matches where there are at least two consecutive characters.
@@ -23,7 +22,7 @@ public final class SpacialMatcher implements PasswordMatcher
         List<Match> matches = new ArrayList<>();
         Map<Integer, Set<Character>> neighbors = new HashMap<>();
 
-        for(AdjacencyGraph adjacencyGraph : configuration.getAdjacencyGraphs())
+        for (AdjacencyGraph adjacencyGraph : configuration.getAdjacencyGraphs())
         {
             // Get all the neighbors for each character
             for (int i = 0; i < password.length(); i++)
@@ -54,7 +53,7 @@ public final class SpacialMatcher implements PasswordMatcher
                         builder.append(character);
                         if (builder.length() > 2)
                         {
-                            matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph,  AdjacencyGraphUtil.getTurns(adjacencyGraph, builder.toString()), AdjacencyGraphUtil.getShifts(adjacencyGraph, builder.toString())));
+                            matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph, AdjacencyGraphUtil.getTurns(adjacencyGraph, builder.toString()), AdjacencyGraphUtil.getShifts(adjacencyGraph, builder.toString())));
                         }
                         builder.setLength(0);
                     }

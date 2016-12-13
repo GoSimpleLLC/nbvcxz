@@ -19,9 +19,10 @@ public class Dictionary
 
     /**
      * Object used for dictionary matching.
+     *
      * @param dictionary_name unique name of dictionary.
-     * @param dictonary {@code Map} with the word and it's rank.
-     * @param exclusion {@code true} when desiring to disallow any password contained in this dictionary; {@code false} otherwise.
+     * @param dictonary       {@code Map} with the word and it's rank.
+     * @param exclusion       {@code true} when desiring to disallow any password contained in this dictionary; {@code false} otherwise.
      */
     public Dictionary(final String dictionary_name, final HashMap<String, Integer> dictonary, final boolean exclusion)
     {
@@ -33,20 +34,22 @@ public class Dictionary
         this.sorted_dictionary = new ArrayList<>(dictonary.keySet());
         this.sorted_dictionary.sort(Comparator.comparing(String::length).thenComparing(String::compareTo));
         this.sorted_dictionary_length_lookup = new HashMap<>();
-        for(int i = 0; i < sorted_dictionary.size(); i++)
+        for (int i = 0; i < sorted_dictionary.size(); i++)
         {
             String key = sorted_dictionary.get(i);
-            if(sorted_dictionary_length_lookup.containsKey(key.length()))
+            if (sorted_dictionary_length_lookup.containsKey(key.length()))
+            {
                 continue;
+            }
             else
             {
                 sorted_dictionary_length_lookup.put(key.length(), i);
             }
         }
 
-        for(int i = 0; i < sorted_dictionary_length_lookup.size(); i++)
+        for (int i = 0; i < sorted_dictionary_length_lookup.size(); i++)
         {
-            if(!sorted_dictionary_length_lookup.containsKey(i))
+            if (!sorted_dictionary_length_lookup.containsKey(i))
             {
                 int next_key = i;
                 while (!sorted_dictionary_length_lookup.containsKey(next_key))
@@ -60,6 +63,7 @@ public class Dictionary
 
     /**
      * The values within this dictionary.
+     *
      * @return key = values in the dictionary; value = rank
      */
     public Map<String, Integer> getDictonary()
@@ -70,6 +74,7 @@ public class Dictionary
     /**
      * This contains the same values as in getDictionary, but is sorted for optimizing the speed
      * of the distance calculation
+     *
      * @return A list of dictionary values sorted by length then alphabetical
      */
     public List<String> getSortedDictionary()
@@ -79,6 +84,7 @@ public class Dictionary
 
     /**
      * A map containing different lengths, and the first index they appear in the sorted dictionary.
+     *
      * @return key = length; value = first index that length appears
      */
     public Map<Integer, Integer> getSortedDictionaryLengthLookup()
@@ -89,6 +95,7 @@ public class Dictionary
     /**
      * Returns if this dictionary is used for password exclusion or not. <br> <br>
      * If true, a password which matches to one of the values in the dictionary will always return 0 entropy for the portion which matches.
+     *
      * @return true if excluded
      */
     public boolean isExclusion()
@@ -98,6 +105,7 @@ public class Dictionary
 
     /**
      * A description of the values contained in the dictionary.
+     *
      * @return The dictionary name
      */
     public String getDictionaryName()

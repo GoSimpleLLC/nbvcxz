@@ -11,8 +11,7 @@ public class AdjacencyGraph
     private final String name;
 
     /**
-     *
-     * @param name the name of the graph
+     * @param name   the name of the graph
      * @param keyMap the keyMap for the graph
      */
     public AdjacencyGraph(String name, HashMap<Character, String[]> keyMap)
@@ -22,7 +21,6 @@ public class AdjacencyGraph
     }
 
     /**
-     *
      * @return The key map for this adjacency graph
      */
     public HashMap<Character, String[]> getKeyMap()
@@ -43,7 +41,6 @@ public class AdjacencyGraph
     }
 
     /**
-     *
      * @return Returns the name
      */
     public String getName()

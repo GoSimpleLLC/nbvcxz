@@ -1,4 +1,3 @@
-
 package me.gosimple.nbvcxz.resources;
 
 import java.util.HashMap;
@@ -18,6 +17,18 @@ public class AdjacencyGraphUtil
      * Adjacency graph for the qwerty keyboard
      */
     public static final HashMap<Character, String[]> qwerty;
+    /**
+     * Adjacency graph for the dvorak keyboard
+     */
+    public static final HashMap<Character, String[]> dvorak;
+    /**
+     * Adjacency graph for the keypad
+     */
+    public static final HashMap<Character, String[]> standardKeypad;
+    /**
+     * Adjacency graph for the macKeypad
+     */
+    public static final HashMap<Character, String[]> macKeypad;
 
     static
     {
@@ -118,12 +129,6 @@ public class AdjacencyGraphUtil
         qwerty.put('~', new String[]{null, null, null, "1!", null, null});
     }
 
-
-    /**
-     * Adjacency graph for the dvorak keyboard
-     */
-    public static final HashMap<Character, String[]> dvorak;
-
     static
     {
         dvorak = new HashMap<>();
@@ -223,12 +228,6 @@ public class AdjacencyGraphUtil
         dvorak.put('~', new String[]{null, null, null, "1!", null, null});
     }
 
-
-    /**
-     * Adjacency graph for the keypad
-     */
-    public static final HashMap<Character, String[]> standardKeypad;
-
     static
     {
         standardKeypad = new HashMap<>();
@@ -248,12 +247,6 @@ public class AdjacencyGraphUtil
         standardKeypad.put('.', new String[]{"0", "2", "3", null, null, null, null, null});
         standardKeypad.put('/', new String[]{null, null, null, null, "*", "9", "8", "7"});
     }
-
-
-    /**
-     * Adjacency graph for the macKeypad
-     */
-    public static final HashMap<Character, String[]> macKeypad;
 
     static
     {
@@ -317,11 +310,12 @@ public class AdjacencyGraphUtil
 
     /**
      * Returns a set of neighbors for a specific character.
+     *
      * @param adjacencyGraph the graph you are using to get the neighbors.
-     * @param key the character you are getting neighbors for.
+     * @param key            the character you are getting neighbors for.
      * @return A set of characters which are neighbors to the passed in character.
      */
-    public static  Set<Character> getNeighbors(final AdjacencyGraph adjacencyGraph, final Character key)
+    public static Set<Character> getNeighbors(final AdjacencyGraph adjacencyGraph, final Character key)
     {
         final Set<Character> neighbors = new HashSet<>();
 
@@ -345,8 +339,9 @@ public class AdjacencyGraphUtil
 
     /**
      * Returns the number of turns in the part passed in based on the adjacency graph.
+     *
      * @param adjacencyGraph the graph you are using to get the neighbors.
-     * @param part the string you are getting turns for.
+     * @param part           the string you are getting turns for.
      * @return the number of turns in this string for the {@code AdjacencyGraph}
      */
     public static int getTurns(final AdjacencyGraph adjacencyGraph, final String part)
@@ -396,8 +391,9 @@ public class AdjacencyGraphUtil
 
     /**
      * Returns the number of shifts in case in the part passed in.
+     *
      * @param adjacencyGraph the graph you are using to get the neighbors
-     * @param part the string you are getting shifts for.
+     * @param part           the string you are getting shifts for.
      * @return the number of shifts in this string for the {@code AdjacencyGraph}
      */
     public static int getShifts(final AdjacencyGraph adjacencyGraph, final String part)
