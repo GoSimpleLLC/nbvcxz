@@ -36,7 +36,14 @@ public final class RepeatMatch extends BaseMatch
     private double getEntropy()
     {
         int cardinality = BruteForceUtil.getBrutForceCardinality(getRepeatingCharacters());
-        return Math.max(0, log2(cardinality * getRepeat()));
+        if(getRepeat() != getRepeatingCharacters().length())
+        {
+            return Math.max(0, log2(cardinality * getRepeat() * getRepeatingCharacters().length()));
+        }
+        else
+        {
+            return Math.max(0, log2(cardinality * getRepeat()));
+        }
     }
 
 

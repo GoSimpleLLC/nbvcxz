@@ -4,8 +4,7 @@ import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.matching.match.RepeatMatch;
 import me.gosimple.nbvcxz.resources.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +49,16 @@ public final class RepeatMatcher implements PasswordMatcher
             }
             int startIndex = match.start(0);
             int endIndex = match.end(0) - 1;
-            matches.add(new RepeatMatch(baseToken, configuration, repeatCharacters, startIndex, endIndex));
+
+            Set<Character> character_set = new HashSet<>();
+            for(char character : repeatCharacters.toCharArray())
+            {
+                character_set.add(character);
+            }
+            if(character_set.size() <= 4)
+            {
+                matches.add(new RepeatMatch(baseToken, configuration, repeatCharacters, startIndex, endIndex));
+            }
             lastIndex = endIndex + 1;
         }
         return matches;
