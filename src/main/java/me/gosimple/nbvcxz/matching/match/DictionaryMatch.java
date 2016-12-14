@@ -5,6 +5,8 @@ import me.gosimple.nbvcxz.scoring.BruteForceUtil;
 
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -12,10 +14,6 @@ import java.util.ResourceBundle;
  */
 public final class DictionaryMatch extends BaseMatch
 {
-    private static final String START_UPPER = "^[A-Z][^A-Z]+";
-    private static final String END_UPPER = "^[^A-Z]+[A-Z]$";
-    private static final String ALL_UPPER = "^[^a-z]+$";
-    private static final String ALL_LOWER = "^[^A-Z]+$";
     private final String dictionary_name;
     private final String dictionary_value;
     private final int rank;
@@ -23,6 +21,7 @@ public final class DictionaryMatch extends BaseMatch
     private final List<Character[]> leetSubstitution;
     private final boolean reversed;
     private final int distance;
+    private final double entropy;
 
     /**
      * Create a new {@code DictionaryMatch}
@@ -47,6 +46,8 @@ public final class DictionaryMatch extends BaseMatch
         this.dictionary_name = dictionary_name;
         this.reversed = reversed;
         this.distance = distance;
+        // Pre calculate the entropy so it's less expensive later when calling it a ton
+        this.entropy = log2(rank) + uppercaseEntropy() + leetEntropy() + reversedEntropy() + distanceEntropy();
     }
 
     @Override
@@ -58,10 +59,7 @@ public final class DictionaryMatch extends BaseMatch
             return 0d;
         }
 
-        // First the base entropy based on the rank
-        double baseEntropy = log2(rank);
-
-        return Math.max(0, baseEntropy + uppercaseEntropy() + leetEntropy() + reversedEntropy() + distanceEntropy());
+        return Math.max(0, entropy);
     }
 
     /**
@@ -97,28 +95,31 @@ public final class DictionaryMatch extends BaseMatch
     private double uppercaseEntropy()
     {
         String password = getToken();
+        char[] password_array = password.toCharArray();
 
         // Common uppercase pattern
-        if (password.matches(ALL_LOWER))
+        if (password.toLowerCase().equals(password))
         {
             return 0d;
         }
-        if (password.matches(START_UPPER))
+        if (password.toUpperCase().equals(password))
         {
             return 1d;
         }
-        if (password.matches(ALL_UPPER))
+        String first_upper = password.substring(1);
+        if (Character.isUpperCase(password_array[0]) && first_upper.toLowerCase().equals(first_upper))
         {
             return 1d;
         }
-        if (password.matches(END_UPPER))
+        String last_upper = password.substring(0, password.length() - 2);
+        if (Character.isUpperCase(password_array[password.length() - 1]) && last_upper.toLowerCase().equals(last_upper))
         {
             return 1d;
         }
 
         // Count the number of upper case characters
         int upperCount = 0;
-        for (char c : password.toCharArray())
+        for (char c : password_array)
         {
             if (Character.isUpperCase(c))
             {
@@ -128,7 +129,7 @@ public final class DictionaryMatch extends BaseMatch
 
         // Count the number of lower case characters
         int lowerCount = 0;
-        for (char c : password.toCharArray())
+        for (char c : password_array)
         {
             if (Character.isLowerCase(c))
             {
