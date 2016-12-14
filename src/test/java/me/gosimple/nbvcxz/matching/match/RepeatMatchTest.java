@@ -58,17 +58,17 @@ public class RepeatMatchTest
         repeatMap.put("éééééééééé", "é");
         entropyMap.put("éééééééééééééééééééééééééééééééééééééééé", 11.965784284662087);
         repeatMap.put("éééééééééééééééééééééééééééééééééééééééé", "é");
-        entropyMap.put("igfigf", 5.700439718141093);
+        entropyMap.put("igfigf", 7.285402218862249);
         repeatMap.put("igfigf", "igf");
         entropyMap.put("igfigfigf", 6.285402218862249);
         repeatMap.put("igfigfigf", "igf");
-        entropyMap.put("6p", 5.169925001442312);
+        entropyMap.put("6p", 6.169925001442312);
         repeatMap.put("6p", "6p");
         entropyMap.put("6p6p", 6.169925001442312);
         repeatMap.put("6p6p", "6p");
-        entropyMap.put("6p6p6p", 6.754887502163469);
+        entropyMap.put("6p6p6p", 7.754887502163469);
         repeatMap.put("6p6p6p", "6p");
-        entropyMap.put("6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p", 9.339850002884624);
+        entropyMap.put("6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p", 10.339850002884624);
         repeatMap.put("6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p", "6p");
 
         // Test the fixture
