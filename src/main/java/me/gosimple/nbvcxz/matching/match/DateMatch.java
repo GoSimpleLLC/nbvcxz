@@ -36,11 +36,11 @@ public final class DateMatch extends BaseMatch
         this.month = month;
         this.year = year;
         this.separator = separator;
+
+        super.setEntropy(getEntropy());
     }
 
-
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
         double entropy;
 
@@ -61,7 +61,7 @@ public final class DateMatch extends BaseMatch
             entropy += 2;
         }
 
-        return Math.max(0, entropy);
+        return entropy;
     }
 
 

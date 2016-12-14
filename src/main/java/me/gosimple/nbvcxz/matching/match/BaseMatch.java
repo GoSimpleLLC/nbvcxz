@@ -22,6 +22,7 @@ public abstract class BaseMatch implements Match
     private final String token;
     private final int start_index;
     private final int end_index;
+    private double entropy;
 
 
     /**
@@ -81,6 +82,17 @@ public abstract class BaseMatch implements Match
         return result;
     }
 
+    protected void setEntropy(double entropy)
+    {
+        this.entropy = entropy;
+    }
+
+    @Override
+    final public double calculateEntropy()
+    {
+        return  Math.max(0, entropy);
+    }
+
     @Override
     public String getToken()
     {
@@ -122,6 +134,4 @@ public abstract class BaseMatch implements Match
         detailBuilder.append(mainResource.getString("main.match.length")).append(" ").append(getLength());
         return detailBuilder.toString();
     }
-
-
 }

@@ -28,11 +28,12 @@ public final class RepeatMatch extends BaseMatch
         super(match, configuration, start_index, end_index);
         this.repeatingCharacters = repeatingCharacters;
         this.repeat = match.length() / repeatingCharacters.length();
+
+        super.setEntropy(this.getEntropy());
     }
 
 
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
         int cardinality = BruteForceUtil.getBrutForceCardinality(getRepeatingCharacters());
         return Math.max(0, log2(cardinality * getRepeat()));

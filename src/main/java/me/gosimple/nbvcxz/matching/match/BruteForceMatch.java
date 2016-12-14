@@ -19,10 +19,10 @@ public final class BruteForceMatch extends BaseMatch
     public BruteForceMatch(String match, Configuration configuration, int start_index, int end_index)
     {
         super(match, configuration, start_index, end_index);
+        super.setEntropy(getEntropy());
     }
 
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
         int cardinality = BruteForceUtil.getBrutForceCardinality(getToken());
         return Math.max(0, log2(cardinality * getToken().length()));

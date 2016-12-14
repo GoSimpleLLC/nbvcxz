@@ -20,12 +20,6 @@ public final class SeparatorMatch extends BaseMatch
     public SeparatorMatch(String match, Configuration configuration, int start_index, int end_index)
     {
         super(match, configuration, start_index, end_index);
-    }
-
-
-    @Override
-    public double calculateEntropy()
-    {
-        return LOG_10;
+        super.setEntropy(LOG_10);
     }
 }

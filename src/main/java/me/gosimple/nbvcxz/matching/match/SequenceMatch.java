@@ -24,11 +24,12 @@ public final class SequenceMatch extends BaseMatch
     {
         super(match, configuration, start_index, end_index);
         this.firstCharacter = match.charAt(0);
+
+        super.setEntropy(this.getEntropy());
     }
 
 
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
         char firstChar = getFirstCharacter();
         double baseEntropy;
@@ -54,7 +55,7 @@ public final class SequenceMatch extends BaseMatch
             baseEntropy = LOG_26 + 1d;
         }
 
-        return Math.max(0, baseEntropy + log2(getLength()));
+        return baseEntropy + log2(getLength());
     }
 
 

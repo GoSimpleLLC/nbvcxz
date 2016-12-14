@@ -21,7 +21,6 @@ public final class DictionaryMatch extends BaseMatch
     private final List<Character[]> leetSubstitution;
     private final boolean reversed;
     private final int distance;
-    private final double entropy;
 
     /**
      * Create a new {@code DictionaryMatch}
@@ -47,19 +46,20 @@ public final class DictionaryMatch extends BaseMatch
         this.reversed = reversed;
         this.distance = distance;
         // Pre calculate the entropy so it's less expensive later when calling it a ton
-        this.entropy = log2(rank) + uppercaseEntropy() + leetEntropy() + reversedEntropy() + distanceEntropy();
+        // If this is an excluded password, return with no entropy.
+        super.setEntropy(this.getEntropy());
     }
 
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
-        // If this is an excluded password, return with no entropy.
         if (excluded)
         {
             return 0d;
         }
-
-        return Math.max(0, entropy);
+        else
+        {
+            return log2(rank) + uppercaseEntropy() + leetEntropy() + reversedEntropy() + distanceEntropy();
+        }
     }
 
     /**

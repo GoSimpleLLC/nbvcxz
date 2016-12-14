@@ -20,11 +20,12 @@ public final class YearMatch extends BaseMatch
     public YearMatch(String match, Configuration configuration, int start_index, int end_index)
     {
         super(match, configuration, start_index, end_index);
+
+        super.setEntropy(this.getEntropy());
     }
 
 
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
         return LOG_129;
     }

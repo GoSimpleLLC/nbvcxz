@@ -35,10 +35,11 @@ public final class SpacialMatch extends BaseMatch
         this.adjacencyGraph = adjacencyGraph;
         this.turns = turns;
         this.shiftedCount = shiftedNumber;
+
+        super.setEntropy(this.getEntropy());
     }
 
-    @Override
-    public double calculateEntropy()
+    private double getEntropy()
     {
         // Size of the keyboard used
         int size = adjacencyGraph.getKeyMap().size();

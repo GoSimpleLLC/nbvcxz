@@ -88,12 +88,6 @@ public class BaseMatchTest
         {
             super(s, new ConfigurationBuilder().createConfiguration(), 0, s == null ? 0 : s.length() - 1);
         }
-
-        @Override
-        public double calculateEntropy()
-        {
-            return 0;
-        }
     }
 
 
