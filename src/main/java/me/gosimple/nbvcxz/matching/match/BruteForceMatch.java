@@ -13,18 +13,17 @@ public final class BruteForceMatch extends BaseMatch
      *
      * @param match         the {@code String} we are creating the {@code BruteForceMatch} from.
      * @param configuration the {@link Configuration} object.
-     * @param start_index   the start index in the password for this match.
-     * @param end_index     the end index in the password for this match.
+     * @param index   the index in the password for this match.
      */
-    public BruteForceMatch(String match, Configuration configuration, int start_index, int end_index)
+    public BruteForceMatch(char match, Configuration configuration, int index)
     {
-        super(match, configuration, start_index, end_index);
-        super.setEntropy(getEntropy());
+        super(Character.toString(match), configuration, index, index);
+        super.setEntropy(getEntropy(match));
     }
 
-    private double getEntropy()
+    private double getEntropy(char character)
     {
-        int cardinality = BruteForceUtil.getBrutForceCardinality(getToken());
+        int cardinality = BruteForceUtil.getBrutForceCardinality(character);
         return Math.max(0, log2(cardinality * getToken().length()));
     }
 }

@@ -77,15 +77,20 @@ public class Nbvcxz
     private static List<Match> getBestCombination(final Configuration configuration, final String password)
     {
         final List<Match> all_matches = getAllMatches(configuration, password);
-        if (all_matches == null || all_matches.size() == 0 || isRandom(password, findGoodEnoughCombination(configuration, password, all_matches)))
+        final Map<Integer, Match> brute_force_matches = new HashMap<>();
+        for (int i = 0; i < password.length(); i++)
         {
-            List<Match> brute_force_matches = new ArrayList<>();
-            backfillBruteForce(configuration, password, brute_force_matches);
-            brute_force_matches.sort(comparator);
-            return brute_force_matches;
+            brute_force_matches.put(i, createBruteForceMatch(password, configuration, i));
+        }
+        if (all_matches == null || all_matches.size() == 0 || isRandom(password, findGoodEnoughCombination(password, all_matches, brute_force_matches)))
+        {
+            List<Match> matches = new ArrayList<>();
+            backfillBruteForce(password, brute_force_matches, matches);
+            matches.sort(comparator);
+            return matches;
         }
         Collections.sort(all_matches, comparator);
-        return findBestCombination(configuration, password, all_matches);
+        return findBestCombination(password, all_matches, brute_force_matches);
     }
 
     /**
@@ -93,12 +98,12 @@ public class Nbvcxz
      * non-optimal lists of matches.  I kept it around to run preliminarily to pass the results to {@code isRandom} so we can
      * see if the password is random and short circuit the more expensive calculations
      *
-     * @param configuration the configuration
-     * @param password      the password
-     * @param all_matches   all matches which have been found for this password
+     * @param password            the password
+     * @param all_matches         all matches which have been found for this password
+     * @param brute_force_matches map of index and brute force match to fit that index
      * @return a list of matches which is good enough for most uses
      */
-    private static List<Match> findGoodEnoughCombination(final Configuration configuration, final String password, final List<Match> all_matches)
+    private static List<Match> findGoodEnoughCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
     {
         int length = password.length();
         Match[] match_at_index = new Match[length];
@@ -129,7 +134,7 @@ public class Nbvcxz
             Match match = match_at_index[k];
             if (match == null)
             {
-                match_list.add(createBruteForceMatch(password, configuration, k, k));
+                match_list.add(brute_force_matches.get(k));
                 k--;
                 continue;
             }
@@ -145,19 +150,19 @@ public class Nbvcxz
     /**
      * Finds the most optimal matches by recursively building out every combination possible and returning the best.
      *
-     * @param configuration the configuration
-     * @param password      the password
-     * @param all_matches   all matches which have been found for this password
+     * @param password            the password
+     * @param all_matches         all matches which have been found for this password
+     * @param brute_force_matches map of index and brute force match to fit that index
      * @return the best possible combination of matches for this password
      */
-    private static List<Match> findBestCombination(final Configuration configuration, final String password, final List<Match> all_matches)
+    private static List<Match> findBestCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
     {
-        final Map<Match, Set<Match>> non_intersecting_matches = new HashMap<>();
+        final Map<Match, List<Match>> non_intersecting_matches = new HashMap<>();
 
         for (int i = 0; i < all_matches.size(); i++)
         {
             Match match = all_matches.get(i);
-            Set<Match> forward_non_intersecting_match_set = new HashSet<>();
+            List<Match> forward_non_intersecting_matches = new ArrayList<>();
 
             for (int n = i + 1; n < all_matches.size(); n++)
             {
@@ -165,7 +170,7 @@ public class Nbvcxz
                 if (next_match.getStartIndex() > match.getEndIndex() && !(next_match.getStartIndex() < match.getEndIndex() && match.getStartIndex() < next_match.getEndIndex()))
                 {
                     boolean to_add = true;
-                    for (Match non_intersecting_match : forward_non_intersecting_match_set)
+                    for (Match non_intersecting_match : forward_non_intersecting_matches)
                     {
                         if (next_match.getStartIndex() > non_intersecting_match.getEndIndex())
                         {
@@ -175,20 +180,21 @@ public class Nbvcxz
                     }
                     if (to_add)
                     {
-                        forward_non_intersecting_match_set.add(next_match);
+                        forward_non_intersecting_matches.add(next_match);
                     }
                 }
             }
-            non_intersecting_matches.put(match, forward_non_intersecting_match_set);
+            forward_non_intersecting_matches.sort(comparator);
+            non_intersecting_matches.put(match, forward_non_intersecting_matches);
         }
 
-        Set<Match> seed_matches = new HashSet<>();
+        List<Match> seed_matches = new ArrayList<>();
         for (Match match : all_matches)
         {
             boolean seed = true;
-            for (Set<Match> matchSet : non_intersecting_matches.values())
+            for (List<Match> match_list : non_intersecting_matches.values())
             {
-                for (Match m : matchSet)
+                for (Match m : match_list)
                 {
                     if (m.equals(match))
                     {
@@ -201,12 +207,13 @@ public class Nbvcxz
                 seed_matches.add(match);
             }
         }
+        seed_matches.sort(comparator);
 
         final List<Match> lowest_entropy_matches = new ArrayList<>();
 
         for (Match match : seed_matches)
         {
-            generateMatches(configuration, password, match, non_intersecting_matches, new ArrayList<>(), lowest_entropy_matches);
+            generateMatches(password, match, non_intersecting_matches, brute_force_matches, new ArrayList<>(), lowest_entropy_matches);
         }
 
         lowest_entropy_matches.sort(comparator);
@@ -217,21 +224,16 @@ public class Nbvcxz
     /**
      * Recursive function to generate match combinations to get an optimal match.
      *
-     * @param configuration            the configuration
      * @param password                 the password
      * @param match                    a match to start with (or the next match in line)
      * @param non_intersecting_matches map of all non-intersecting matches
+     * @param brute_force_matches      map of index and brute force match to fit that index
      * @param matches                  the list of matches being built
      * @param lowest_entropy_matches   the lowest entropy match will be set to this variable
      */
-    private static void generateMatches(final Configuration configuration, final String password, final Match match, final Map<Match, Set<Match>> non_intersecting_matches, final List<Match> matches, List<Match> lowest_entropy_matches)
+    private static void generateMatches(final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, List<Match> lowest_entropy_matches)
     {
         matches.add(match);
-
-        if (!lowest_entropy_matches.isEmpty() && calcEntropy(matches) > calcEntropy(lowest_entropy_matches))
-        {
-            return;
-        }
 
         boolean found_next = false;
         for (Match next_match : non_intersecting_matches.get(match))
@@ -249,19 +251,21 @@ public class Nbvcxz
             {
                 continue;
             }
-            generateMatches(configuration, password, next_match, non_intersecting_matches, new ArrayList<>(matches), lowest_entropy_matches);
+            generateMatches(password, next_match, non_intersecting_matches, brute_force_matches, new ArrayList<>(matches), lowest_entropy_matches);
             found_next = true;
         }
 
         if (!found_next)
         {
-            backfillBruteForce(configuration, password, matches);
-            if (lowest_entropy_matches.isEmpty() || calcEntropy(matches) < calcEntropy(lowest_entropy_matches))
+            final int lowest_matches_length = getLength(lowest_entropy_matches, false);
+            final int matches_length = getLength(matches, false);
+            // We always look for the most complete match, even if it's not the lowest entropy.
+            if (lowest_entropy_matches.isEmpty() || (matches_length >= lowest_matches_length && (calcEntropy(matches, false) / matches_length) < (calcEntropy(lowest_entropy_matches, false) / lowest_matches_length)))
             {
+                backfillBruteForce(password, brute_force_matches, matches);
                 lowest_entropy_matches.clear();
                 lowest_entropy_matches.addAll(matches);
             }
-
         }
     }
 
@@ -311,27 +315,49 @@ public class Nbvcxz
      * @param matches the list of matches
      * @return the sum of the entropy in the list passed in
      */
-    private static double calcEntropy(List<Match> matches)
+    private static double calcEntropy(final List<Match> matches, final boolean include_brute_force)
     {
         double entropy = 0;
         for (Match match : matches)
         {
-            entropy += match.calculateEntropy();
+            if (include_brute_force || !(match instanceof BruteForceMatch))
+            {
+                entropy += match.calculateEntropy();
+            }
         }
         return entropy;
+    }
+
+    /**
+     * Helper method to get the length of password matched from a list of matches.
+     *
+     * @param matches the list of matches
+     * @return the length of the tokens matched
+     */
+    private static int getLength(final List<Match> matches, final boolean include_brute_force)
+    {
+        int length = 0;
+        for (Match match : matches)
+        {
+            if (include_brute_force || !(match instanceof BruteForceMatch))
+            {
+                length += match.getLength();
+            }
+        }
+        return length;
     }
 
     /**
      * Fills in the matches array passed in with {@link BruteForceMatch} in every missing spot.
      * Returns them unsorted.
      *
-     * @param configuration the configuration
-     * @param password      the password
-     * @param matches       the list of matches to fill in
+     * @param password            the password
+     * @param brute_force_matches map of index and brute force match to fit that index
+     * @param matches             the list of matches to fill in
      */
-    private static void backfillBruteForce(final Configuration configuration, final String password, final List<Match> matches)
+    private static void backfillBruteForce(final String password, final Map<Integer, Match> brute_force_matches, final List<Match> matches)
     {
-        Set<Match> brute_force_matches = new HashSet<>();
+        Set<Match> bf_matches = new HashSet<>();
         int index = 0;
         while (index < password.length())
         {
@@ -345,11 +371,11 @@ public class Nbvcxz
             }
             if (!has_match)
             {
-                brute_force_matches.add(createBruteForceMatch(password, configuration, index, index));
+                bf_matches.add(brute_force_matches.get(index));
             }
             index++;
         }
-        matches.addAll(brute_force_matches);
+        matches.addAll(bf_matches);
     }
 
     /**
@@ -399,14 +425,14 @@ public class Nbvcxz
     /**
      * Creates a brute force match for a portion of the password.
      *
-     * @param password    the password to create brute match for
-     * @param start_index the index start of the password part that needs a {@code Match}
-     * @param end_index   the index end of the password part that needs a {@code Match}
+     * @param password      the password to create brute match for
+     * @param configuration the configuration
+     * @param index         the index of the password part that needs a {@code BruteForceMatch}
      * @return a {@code Match} object
      */
-    private static Match createBruteForceMatch(final String password, final Configuration configuration, final int start_index, final int end_index)
+    private static Match createBruteForceMatch(final String password, final Configuration configuration, final int index)
     {
-        return new BruteForceMatch(password.substring(start_index, end_index + 1), configuration, start_index, end_index);
+        return new BruteForceMatch(password.charAt(index), configuration, index);
     }
 
     /**
@@ -533,7 +559,7 @@ public class Nbvcxz
     }
 
     /**
-     * Sorts matches by starting index, and average entropy per character
+     * Sorts matches by starting index, and length
      */
     private static class StartIndexComparator implements Comparator<Match>
     {
@@ -549,7 +575,7 @@ public class Nbvcxz
             }
             else if (match_1.getStartIndex() == match_2.getStartIndex())
             {
-                if (match_1.calculateEntropy() / match_1.getToken().length() < match_2.calculateEntropy() / match_2.getToken().length())
+                if (match_1.getToken().length() < match_2.getToken().length())
                 {
                     return -1;
                 }

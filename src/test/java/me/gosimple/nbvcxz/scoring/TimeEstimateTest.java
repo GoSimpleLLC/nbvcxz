@@ -71,15 +71,15 @@ public class TimeEstimateTest
 
             password = "helpimaliveinhere";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(new BigDecimal(7), TimeEstimate.getTimeToCrack(result, OFFLINE_MD5));
-            Assert.assertEquals(new BigDecimal(24), TimeEstimate.getTimeToCrack(result, OFFLINE_SHA1));
-            Assert.assertEquals(new BigDecimal(183), TimeEstimate.getTimeToCrack(result, OFFLINE_SHA512));
-            Assert.assertEquals(new BigDecimal(14309707), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_5));
-            Assert.assertEquals(new BigDecimal(457910645), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_10));
-            Assert.assertEquals(new BigDecimal(1831642582), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_12));
-            Assert.assertEquals(new BigDecimal(7326570331L), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_14));
-            Assert.assertEquals(new BigDecimal(9158212914L), TimeEstimate.getTimeToCrack(result, ONLINE_UNTHROTTLED));
-            Assert.assertEquals(new BigDecimal(457910645712L), TimeEstimate.getTimeToCrack(result, ONLINE_THROTTLED));
+            Assert.assertEquals(new BigDecimal(12), TimeEstimate.getTimeToCrack(result, OFFLINE_MD5));
+            Assert.assertEquals(new BigDecimal(38), TimeEstimate.getTimeToCrack(result, OFFLINE_SHA1));
+            Assert.assertEquals(new BigDecimal(285), TimeEstimate.getTimeToCrack(result, OFFLINE_SHA512));
+            Assert.assertEquals(new BigDecimal(22305885), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_5));
+            Assert.assertEquals(new BigDecimal(713788324), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_10));
+            Assert.assertEquals(new BigDecimal(2855153297L), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_12));
+            Assert.assertEquals(new BigDecimal(11420613188L), TimeEstimate.getTimeToCrack(result, OFFLINE_BCRYPT_14));
+            Assert.assertEquals(new BigDecimal(14275766485L), TimeEstimate.getTimeToCrack(result, ONLINE_UNTHROTTLED));
+            Assert.assertEquals(new BigDecimal(713788324296L), TimeEstimate.getTimeToCrack(result, ONLINE_THROTTLED));
 
             password = "a.b.c.defy";
             result = nbvcxz.estimate(password);

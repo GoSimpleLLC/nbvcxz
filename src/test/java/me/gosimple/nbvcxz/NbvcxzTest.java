@@ -33,7 +33,7 @@ public class NbvcxzTest
 
             password = "helpimaliveinhere";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(39.736275149583484D, result.getEntropy(), 39.736275149583484D * tolerance);
+            Assert.assertEquals(40.376705346635696D, result.getEntropy(), 40.376705346635696D * tolerance);
 
             password = "damnwindowsandpaper";
             result = nbvcxz.estimate(password);
@@ -73,23 +73,23 @@ public class NbvcxzTest
 
             password = "scorpions";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(12.938844457466171D, result.getEntropy(), 12.938844457466171D * tolerance);
+            Assert.assertEquals(13.67529549909406D, result.getEntropy(), 13.67529549909406D * tolerance);
 
             password = "ScoRpions";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(18.14829782309512D, result.getEntropy(), 18.14829782309512D * tolerance);
+            Assert.assertEquals(19.198857455151074D, result.getEntropy(), 19.198857455151074D * tolerance);
 
             password = "ScoRpi0ns";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(19.3817879533149D, result.getEntropy(), 19.3817879533149D * tolerance);
+            Assert.assertEquals(20.46971136544417D, result.getEntropy(), 20.46971136544417D * tolerance);
 
             password = "thereisneveragoodmonday";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(41.58420930363401D, result.getEntropy(), 41.58420930363401D * tolerance);
+            Assert.assertEquals(44.52675492064834D, result.getEntropy(), 44.52675492064834D * tolerance);
 
             password = "forgetthatchristmaspartytheotheryear";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(39.519621936739505D, result.getEntropy(), 39.519621936739505D * tolerance);
+            Assert.assertEquals(42.69087661112469D, result.getEntropy(), 42.69087661112469D * tolerance);
 
             password = "A Fool and His Money Are Soon Parted";
             result = nbvcxz.estimate(password);
