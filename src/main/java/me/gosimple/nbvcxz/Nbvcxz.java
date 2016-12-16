@@ -25,6 +25,8 @@ public class Nbvcxz
 {
     private static StartIndexComparator comparator = new StartIndexComparator();
     private Configuration configuration;
+    private final List<Match> best_matches = new ArrayList<>();
+    private int best_matches_length = 0;
 
     /**
      * Creates new instance with a default configuration.
@@ -57,13 +59,22 @@ public class Nbvcxz
      * @param password      the password you are guessing entropy for.
      * @return the {@code Result} of this estimate.
      */
-    private static Result guessEntropy(final Configuration configuration, final String password)
+    private Result guessEntropy(final Configuration configuration, final String password)
     {
+        resetVariables();
         Result final_result = new Result(configuration, password, getBestCombination(configuration, password));
 
         return final_result;
     }
 
+    /**
+     * Ensure the instance variables are reset between runs.
+     */
+    private void resetVariables()
+    {
+        this.best_matches.clear();
+        this.best_matches_length = 0;
+    }
     /**
      * Returns the best combination of matches based on multiple methods.  We run the password through the
      * {@code findGoodEnoughCombination} method test to see if is considered "random".  If it isn't, we
@@ -74,8 +85,10 @@ public class Nbvcxz
      * @param password      the password
      * @return the best list of matches, sorted by start index.
      */
-    private static List<Match> getBestCombination(final Configuration configuration, final String password)
+    private List<Match> getBestCombination(final Configuration configuration, final String password)
     {
+        this.best_matches.clear();
+        this.best_matches_length = 0;
         final List<Match> all_matches = getAllMatches(configuration, password);
         final Map<Integer, Match> brute_force_matches = new HashMap<>();
         for (int i = 0; i < password.length(); i++)
@@ -103,7 +116,7 @@ public class Nbvcxz
      * @param brute_force_matches map of index and brute force match to fit that index
      * @return a list of matches which is good enough for most uses
      */
-    private static List<Match> findGoodEnoughCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
+    private List<Match> findGoodEnoughCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
     {
         int length = password.length();
         Match[] match_at_index = new Match[length];
@@ -155,7 +168,7 @@ public class Nbvcxz
      * @param brute_force_matches map of index and brute force match to fit that index
      * @return the best possible combination of matches for this password
      */
-    private static List<Match> findBestCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
+    private List<Match> findBestCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
     {
         final Map<Match, List<Match>> non_intersecting_matches = new HashMap<>();
 
@@ -213,16 +226,14 @@ public class Nbvcxz
         seed_matches.sort(comparator);
 
         // Run the recursive function for each seed, and the lowest entropy matches will be set with the best combination.
-        final List<Match> lowest_entropy_matches = new ArrayList<>();
-
         for (Match match : seed_matches)
         {
-            generateMatches(password, match, non_intersecting_matches, brute_force_matches, new ArrayList<>(), lowest_entropy_matches);
+            generateMatches(password, match, non_intersecting_matches, brute_force_matches, new ArrayList<>(), 0);
         }
 
-        lowest_entropy_matches.sort(comparator);
+        best_matches.sort(comparator);
 
-        return lowest_entropy_matches;
+        return best_matches;
     }
 
     /**
@@ -233,44 +244,40 @@ public class Nbvcxz
      * @param non_intersecting_matches map of all non-intersecting matches
      * @param brute_force_matches      map of index and brute force match to fit that index
      * @param matches                  the list of matches being built
-     * @param lowest_entropy_matches   the lowest entropy match will be set to this variable
+     * @param matches_length           the length of the password the matches  take up
      */
-    private static void generateMatches(final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, final List<Match> lowest_entropy_matches)
+    private void generateMatches(final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, int matches_length)
     {
         int index = matches.size();
         matches.add(match);
+        matches_length += match.getLength();
+
         boolean found_next = false;
         for (Match next_match : non_intersecting_matches.get(match))
         {
-            boolean intersects = false;
-            for (Match existing_match : matches)
+            if (matches.size() > 1)
             {
-                if (next_match.getStartIndex() < existing_match.getEndIndex() && existing_match.getStartIndex() < next_match.getEndIndex())
+                Match last_match = matches.get(matches.size() - 2);
+                if (next_match.getStartIndex() < last_match.getEndIndex() && last_match.getStartIndex() < next_match.getEndIndex())
                 {
-                    intersects = true;
-                    break;
+                    continue;
                 }
             }
-            if (intersects)
-            {
-                continue;
-            }
-            generateMatches(password, next_match, non_intersecting_matches, brute_force_matches, matches, lowest_entropy_matches);
+            generateMatches(password, next_match, non_intersecting_matches, brute_force_matches, matches, matches_length);
             found_next = true;
         }
 
         if (!found_next)
         {
-            final int lowest_matches_length = getLength(lowest_entropy_matches, false);
-            final int matches_length = getLength(matches, false);
             // We always look for the most complete match, even if it's not the lowest entropy.
-            if (lowest_entropy_matches.isEmpty() ||
-                    (matches_length >= lowest_matches_length
-                    && (calcEntropy(matches, false) / matches_length) < (calcEntropy(lowest_entropy_matches, false) / lowest_matches_length)))
+            if (best_matches.isEmpty() ||
+                    (matches_length >= best_matches_length
+                    && (calcEntropy(matches, false) / matches_length) < (calcEntropy(best_matches, false) / best_matches_length)))
             {
-                lowest_entropy_matches.clear();
-                lowest_entropy_matches.addAll(matches);
-                backfillBruteForce(password, brute_force_matches, lowest_entropy_matches);
+                best_matches.clear();
+                best_matches.addAll(matches);
+                best_matches_length = matches_length;
+                backfillBruteForce(password, brute_force_matches, best_matches);
             }
         }
         // Leave the array in the same state we found it in at the start.
@@ -287,7 +294,7 @@ public class Nbvcxz
      * @param matches  the final list of matches
      * @return true if determined to be random
      */
-    private static boolean isRandom(final String password, final List<Match> matches)
+    private boolean isRandom(final String password, final List<Match> matches)
     {
         int matched_length = 0;
         int max_matched_length = 0;
@@ -323,7 +330,7 @@ public class Nbvcxz
      * @param matches the list of matches
      * @return the sum of the entropy in the list passed in
      */
-    private static double calcEntropy(final List<Match> matches, final boolean include_brute_force)
+    private double calcEntropy(final List<Match> matches, final boolean include_brute_force)
     {
         double entropy = 0;
         for (Match match : matches)
@@ -337,25 +344,6 @@ public class Nbvcxz
     }
 
     /**
-     * Helper method to get the length of password matched from a list of matches.
-     *
-     * @param matches the list of matches
-     * @return the length of the tokens matched
-     */
-    private static int getLength(final List<Match> matches, final boolean include_brute_force)
-    {
-        int length = 0;
-        for (Match match : matches)
-        {
-            if (include_brute_force || !(match instanceof BruteForceMatch))
-            {
-                length += match.getLength();
-            }
-        }
-        return length;
-    }
-
-    /**
      * Fills in the matches array passed in with {@link BruteForceMatch} in every missing spot.
      * Returns them unsorted.
      *
@@ -363,7 +351,7 @@ public class Nbvcxz
      * @param brute_force_matches map of index and brute force match to fit that index
      * @param matches             the list of matches to fill in
      */
-    private static void backfillBruteForce(final String password, final Map<Integer, Match> brute_force_matches, final List<Match> matches)
+    private void backfillBruteForce(final String password, final Map<Integer, Match> brute_force_matches, final List<Match> matches)
     {
         Set<Match> bf_matches = new HashSet<>();
         int index = 0;
@@ -393,7 +381,7 @@ public class Nbvcxz
      * @param password      the password to get matches for.
      * @return a {@code List} of {@code Match} objects for the supplied password.
      */
-    private static List<Match> getAllMatches(final Configuration configuration, final String password)
+    private List<Match> getAllMatches(final Configuration configuration, final String password)
     {
         List<Match> matches = new ArrayList<>();
 
@@ -410,7 +398,7 @@ public class Nbvcxz
      *
      * @param matches List of matches to remove duplicate higher entropy matches from.
      */
-    private static void keepLowestMatches(final List<Match> matches)
+    private void keepLowestMatches(final List<Match> matches)
     {
         Set<Match> to_remove = new HashSet<>();
         for (Match match : matches)
