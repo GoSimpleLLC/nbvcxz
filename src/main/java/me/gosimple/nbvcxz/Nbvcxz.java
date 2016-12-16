@@ -159,6 +159,7 @@ public class Nbvcxz
     {
         final Map<Match, List<Match>> non_intersecting_matches = new HashMap<>();
 
+        // Build lists of non-intersecting matches for each match which start at a higher index than the current match.
         for (int i = 0; i < all_matches.size(); i++)
         {
             Match match = all_matches.get(i);
@@ -188,6 +189,8 @@ public class Nbvcxz
             non_intersecting_matches.put(match, forward_non_intersecting_matches);
         }
 
+        // Find all matches we should consider as a seed for the recursive function.
+        // There is no need to start the function with a match that is half way through the password.
         List<Match> seed_matches = new ArrayList<>();
         for (Match match : all_matches)
         {
@@ -209,6 +212,7 @@ public class Nbvcxz
         }
         seed_matches.sort(comparator);
 
+        // Run the recursive function for each seed, and the lowest entropy matches will be set with the best combination.
         final List<Match> lowest_entropy_matches = new ArrayList<>();
 
         for (Match match : seed_matches)
@@ -231,10 +235,10 @@ public class Nbvcxz
      * @param matches                  the list of matches being built
      * @param lowest_entropy_matches   the lowest entropy match will be set to this variable
      */
-    private static void generateMatches(final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, List<Match> lowest_entropy_matches)
+    private static void generateMatches(final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, final List<Match> lowest_entropy_matches)
     {
+        int index = matches.size();
         matches.add(match);
-
         boolean found_next = false;
         for (Match next_match : non_intersecting_matches.get(match))
         {
@@ -251,7 +255,7 @@ public class Nbvcxz
             {
                 continue;
             }
-            generateMatches(password, next_match, non_intersecting_matches, brute_force_matches, new ArrayList<>(matches), lowest_entropy_matches);
+            generateMatches(password, next_match, non_intersecting_matches, brute_force_matches, matches, lowest_entropy_matches);
             found_next = true;
         }
 
@@ -260,13 +264,17 @@ public class Nbvcxz
             final int lowest_matches_length = getLength(lowest_entropy_matches, false);
             final int matches_length = getLength(matches, false);
             // We always look for the most complete match, even if it's not the lowest entropy.
-            if (lowest_entropy_matches.isEmpty() || (matches_length >= lowest_matches_length && (calcEntropy(matches, false) / matches_length) < (calcEntropy(lowest_entropy_matches, false) / lowest_matches_length)))
+            if (lowest_entropy_matches.isEmpty() ||
+                    (matches_length >= lowest_matches_length
+                    && (calcEntropy(matches, false) / matches_length) < (calcEntropy(lowest_entropy_matches, false) / lowest_matches_length)))
             {
-                backfillBruteForce(password, brute_force_matches, matches);
                 lowest_entropy_matches.clear();
                 lowest_entropy_matches.addAll(matches);
+                backfillBruteForce(password, brute_force_matches, lowest_entropy_matches);
             }
         }
+        // Leave the array in the same state we found it in at the start.
+        matches.remove(index);
     }
 
     /**
