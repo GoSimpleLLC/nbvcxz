@@ -1,4 +1,4 @@
-package me.gosimple.nbvcxz.scoring;
+package me.gosimple.nbvcxz.resources;
 
 /**
  * Util class for brute force calculations.

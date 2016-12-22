@@ -1,7 +1,7 @@
 package me.gosimple.nbvcxz.matching.match;
 
 import me.gosimple.nbvcxz.resources.Configuration;
-import me.gosimple.nbvcxz.scoring.BruteForceUtil;
+import me.gosimple.nbvcxz.resources.BruteForceUtil;
 
 /**
  * @author Adam Brusselback

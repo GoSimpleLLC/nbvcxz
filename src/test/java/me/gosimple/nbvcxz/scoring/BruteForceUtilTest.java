@@ -1,5 +1,6 @@
 package me.gosimple.nbvcxz.scoring;
 
+import me.gosimple.nbvcxz.resources.BruteForceUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
