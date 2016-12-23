@@ -3,10 +3,7 @@ package me.gosimple.nbvcxz;
 import me.gosimple.nbvcxz.matching.PasswordMatcher;
 import me.gosimple.nbvcxz.matching.match.BruteForceMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
-import me.gosimple.nbvcxz.resources.Configuration;
-import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
-import me.gosimple.nbvcxz.resources.Feedback;
-import me.gosimple.nbvcxz.resources.FeedbackUtil;
+import me.gosimple.nbvcxz.resources.*;
 import me.gosimple.nbvcxz.scoring.Result;
 import me.gosimple.nbvcxz.scoring.TimeEstimate;
 
@@ -467,21 +464,77 @@ public class Nbvcxz
         Nbvcxz nbvcxz = new Nbvcxz(configuration);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
         Scanner scanner = new Scanner(System.in);
-        System.out.println(resourceBundle.getString("main.howToQuit"));
 
-        String password;
+        String input;
 
         while (true)
         {
             System.out.println(resourceBundle.getString("main.startPrompt"));
-            password = scanner.nextLine();
-            if ("\\quit".equals(password))
+            System.out.println(resourceBundle.getString("main.enterCommand"));
+            input = scanner.nextLine();
+            if ("q".equals(input))
             {
                 break;
             }
-            printEstimationInfo(nbvcxz, password);
+            if ("g".equals(input))
+            {
+                System.out.println(resourceBundle.getString("main.generatorType"));
+                input = scanner.nextLine();
+                if("p".equals(input))
+                {
+                    System.out.println(resourceBundle.getString("main.delimiterPrompt"));
+                    String delimiter = scanner.nextLine();
+                    System.out.println(resourceBundle.getString("main.wordsPrompt"));
+                    while (!scanner.hasNextInt())
+                    {
+                        scanner.next();
+                    }
+                    int words = scanner.nextInt();
+                    scanner.nextLine();
+                    printGenerationInfo(nbvcxz, Generator.generatePassPhrase(delimiter, words));
+                }
+                if("r".equals(input))
+                {
+                    System.out.println(resourceBundle.getString("main.randomType"));
+                    Generator.CharacterTypes characterTypes = null;
+                    input = scanner.nextLine();
+                    if ("1".equals(input))
+                        characterTypes = Generator.CharacterTypes.ALPHA;
+                    if ("2".equals(input))
+                        characterTypes = Generator.CharacterTypes.ALPHANUMERIC;
+                    if ("3".equals(input))
+                        characterTypes = Generator.CharacterTypes.ALPHANUMERICSYMBOL;
+                    if ("4".equals(input))
+                        characterTypes = Generator.CharacterTypes.NUMERIC;
+                    if(characterTypes == null)
+                        continue;
+                    System.out.println(resourceBundle.getString("main.lengthPrompt"));
+                    while (!scanner.hasNextInt())
+                    {
+                        scanner.next();
+                    }
+                    int length = scanner.nextInt();
+                    scanner.nextLine();
+                    printGenerationInfo(nbvcxz, Generator.generateRandomPassword(characterTypes, length));
+                }
+            }
+            if ("e".equals(input))
+            {
+                System.out.println(resourceBundle.getString("main.estimatePrompt"));
+                String password = scanner.nextLine();
+                printEstimationInfo(nbvcxz, password);
+            }
         }
         System.out.println(resourceBundle.getString("main.quitPrompt") + " ");
+
+    }
+
+    private static void printGenerationInfo(final Nbvcxz nbvcxz, final String password)
+    {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
+        System.out.println("----------------------------------------------------------");
+        System.out.println(resourceBundle.getString("main.password") + " " + password);
+        System.out.println("----------------------------------------------------------");
 
     }
 
