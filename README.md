@@ -10,6 +10,28 @@ Each of these represent ways an attacker may try to crack a password.  To be vig
 new methods in password cracking and implement new methods to identify passwords susceptible to 
 each new method.
 
+# Table of Contents
+  * [A Rant On Arbitrary Password Policies](#a-rant-on-arbitrary-password-policies)
+  * [Differentiating Features](#differentiating-features)
+  * [Maven Central](#maven-central)
+  * [How to use](#how-to-use)
+    + [Standalone](#standalone)
+    + [Library](#library)
+        * [Configure and create object](#configure-and-create-object)
+          + [All defaults](#all-defaults)
+          + [Custom configuration](#custom-configuration)
+        * [Estimate password strength](#estimate-password-strength)
+          + [Simple](#simple)
+          + [Feedback](#feedback)
+        * [Generate passphrase/password](#generate-passphrase-password)
+          + [Passphrase](#passphrase)
+          + [Password](#password)
+  * [Bugs and Feedback](#bugs-and-feedback)
+  * [License](#license)
+  * [Requires Java](#requires-java)
+  * [Application using this library](#application-using-this-library)
+
+
 ## A Rant On Arbitrary Password Policies 
 Lets think up an example scenario which I expect some of you may have run into way too often. 
 We are a company `NewStartup!` and we are creating the next big web application. We 
