@@ -178,7 +178,7 @@ else
 ##### Generate passphrase/password
 We have a passphrase/password generator as part of `nbvcxz` which very easy to use.
 
-### Passphrase
+###### Passphrase
 ```java
 // Generate a passphrase from the standard (eff_large) dictionary with 5 words with a "-" between the words
 String pass1 = Generator.generatePassphrase("-", 5);
@@ -187,7 +187,7 @@ String pass1 = Generator.generatePassphrase("-", 5);
 String pass2 = Generator.generatePassphrase(new Dictionary(...), "-", 5);
 ```
 
-### Password
+###### Password
 ```java
 // Generate a random password with alphanumeric characters that is 15 characters long
 String pass = Generator.generateRandomPassword(Generator.CharacterTypes.ALPHANUMERIC, 15);
