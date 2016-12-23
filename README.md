@@ -50,13 +50,16 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 * Additional PasswordMatchers and Matches can be implemented and configured to run without re-compiling.
 * Easy to configure how this library works through the ConfigurationBuilder.
     * You can set minimum entropy scores, locale, year patterns, custom leet tables, custom adjacency graphs, custom dictionaries, and custom password matchers.
+* Support for generating passwords and passphrases.
+    * Available in the console application as well as the library.
+    * One use case is for generating a "forgot password" temporary pass
 
 ## Maven Central
 ```xml
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
@@ -65,8 +68,8 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.2.1.jar`
-![alt text](http://imgur.com/ZpSU4Hs.png)
+`java -jar nbvcxz-1.3.0.jar`
+![alt text](http://i.imgur.com/9c070FX.png)
 
 ### Library
 `nbvcxz` can also be used as a library for password validation in java back-ends.
@@ -170,6 +173,24 @@ else
     setErrorMessage(errorMessage.toString());
     return false;
 }
+```
+
+##### Generate passphrase/password
+We have a passphrase/password generator as part of `nbvcxz` which very easy to use.
+
+### Passphrase
+```java
+// Generate a passphrase from the standard (eff_large) dictionary with 5 words with a "-" between the words
+String pass1 = Generator.generatePassphrase("-", 5);
+
+// Generate a passphrase from a custom dictionary with 5 words with a "-" between the words
+String pass2 = Generator.generatePassphrase(new Dictionary(...), "-", 5);
+```
+
+### Password
+```java
+// Generate a random password with alphanumeric characters that is 15 characters long
+String pass = Generator.generateRandomPassword(Generator.CharacterTypes.ALPHANUMERIC, 15);
 ```
 
 ## Bugs and Feedback

@@ -491,7 +491,7 @@ public class Nbvcxz
                     }
                     int words = scanner.nextInt();
                     scanner.nextLine();
-                    printGenerationInfo(nbvcxz, Generator.generatePassPhrase(delimiter, words));
+                    printGenerationInfo(nbvcxz, Generator.generatePassphrase(delimiter, words));
                 }
                 if("r".equals(input))
                 {

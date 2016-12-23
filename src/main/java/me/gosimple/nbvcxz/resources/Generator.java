@@ -14,9 +14,9 @@ public class Generator
      * @param words the count of words you want in your passphrase
      * @return the passphrase
      */
-    public static String generatePassPhrase(final String delimiter, final int words)
+    public static String generatePassphrase(final String delimiter, final int words)
     {
-        return generatePassPhrase(delimiter, words, new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false));
+        return generatePassphrase(delimiter, words, new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false));
     }
 
     /**
@@ -26,7 +26,7 @@ public class Generator
      * @param dictionary the dictionary to use for generating this passphrase
      * @return the passphrase
      */
-    public static String generatePassPhrase(final String delimiter, final int words, final Dictionary dictionary)
+    public static String generatePassphrase(final String delimiter, final int words, final Dictionary dictionary)
     {
         String result = "";
         final Random rnd = new Random();
