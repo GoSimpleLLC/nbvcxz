@@ -1,17 +1,19 @@
 package me.gosimple.nbvcxz.resources;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * Password generation class
+ *
  * @author Adam Brusselback.
  */
 public class Generator
 {
     /**
      * Generates a passphrase from the eff_large standard dictionary with the requested word count.
+     *
      * @param delimiter delimiter to place between words
-     * @param words the count of words you want in your passphrase
+     * @param words     the count of words you want in your passphrase
      * @return the passphrase
      */
     public static String generatePassphrase(final String delimiter, final int words)
@@ -21,15 +23,16 @@ public class Generator
 
     /**
      * Generates a passphrase from the supplied dictionary with the requested word count.
-     * @param delimiter delimiter to place between words
-     * @param words the count of words you want in your passphrase
+     *
+     * @param delimiter  delimiter to place between words
+     * @param words      the count of words you want in your passphrase
      * @param dictionary the dictionary to use for generating this passphrase
      * @return the passphrase
      */
     public static String generatePassphrase(final String delimiter, final int words, final Dictionary dictionary)
     {
         String result = "";
-        final Random rnd = new Random();
+        final SecureRandom rnd = new SecureRandom();
         final int high = dictionary.getSortedDictionary().size();
         for (int i = 1; i <= words; i++)
         {
@@ -44,8 +47,9 @@ public class Generator
 
     /**
      * Generates a random password of the specified length with the specified characters.
+     *
      * @param characterTypes the types of characters to include in the password
-     * @param length the length of the password
+     * @param length         the length of the password
      * @return the password
      */
     public static String generateRandomPassword(final CharacterTypes characterTypes, final int length)
@@ -74,7 +78,7 @@ public class Generator
         }
 
         final int charactersLength = characters.length();
-        final Random rnd = new Random();
+        final SecureRandom rnd = new SecureRandom();
 
         for (int i = 0; i < length; i++)
         {

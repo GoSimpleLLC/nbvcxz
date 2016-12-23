@@ -81,7 +81,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.3.0.jar`
+`java -jar nbvcxz-1.3.1.jar`
 ![alt text](http://i.imgur.com/9c070FX.png)
 
 ### Library
