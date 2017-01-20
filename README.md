@@ -3,7 +3,7 @@
 
 Password strength estimation is a bit of an art and science.  Strength estimation is accomplished by running 
 a password through different algorithms looking for matches in any part of the password on: `word lists` (with fuzzy matching), 
-`common dates`, `common years`, `spacial patterns`, `repeating characters`. `repeating sets of characters`,
+`common dates`, `common years`, `spacial patterns`, `repeating characters`, `repeating sets of characters`,
 and `alphabetic sequences`.
  
 Each of these represent ways an attacker may try to crack a password.  To be vigilant, we must adapt to
