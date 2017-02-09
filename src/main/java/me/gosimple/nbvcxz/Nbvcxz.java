@@ -10,6 +10,7 @@ import me.gosimple.nbvcxz.scoring.TimeEstimate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
@@ -21,8 +22,8 @@ import java.util.stream.Collectors;
 public class Nbvcxz
 {
     private static StartIndexComparator comparator = new StartIndexComparator();
-    private Configuration configuration;
     private final List<Match> best_matches = new ArrayList<>();
+    private Configuration configuration;
     private int best_matches_length = 0;
 
     /**
@@ -41,6 +42,177 @@ public class Nbvcxz
     public Nbvcxz(Configuration configuration)
     {
         this.configuration = configuration;
+    }
+
+    /**
+     * Creates a brute force match for a portion of the password.
+     *
+     * @param password      the password to create brute match for
+     * @param configuration the configuration
+     * @param index         the index of the password part that needs a {@code BruteForceMatch}
+     * @return a {@code Match} object
+     */
+    private static Match createBruteForceMatch(final String password, final Configuration configuration, final int index)
+    {
+        return new BruteForceMatch(password.charAt(index), configuration, index);
+    }
+
+    /**
+     * Gets the entropy from the number of guesses passed in.
+     *
+     * @param guesses a {@code BigDecimal} representing the number of guesses.
+     * @return entropy {@code Double} that is calculated based on the guesses.
+     */
+    public static Double getEntropyFromGuesses(final BigDecimal guesses)
+    {
+        Double guesses_tmp = guesses.doubleValue();
+        guesses_tmp = guesses_tmp.isInfinite() ? Double.MAX_VALUE : guesses_tmp;
+        return Math.log(guesses_tmp) / Math.log(2);
+    }
+
+    /**
+     * Gets the number of guesses from the entropy passed in.
+     *
+     * @param entropy a {@code Double} representing the number of guesses.
+     * @return guesses {@code BigDecimal} that is calculated based on the entropy.
+     */
+    public static BigDecimal getGuessesFromEntropy(final Double entropy)
+    {
+        final Double guesses_tmp = Math.pow(2, entropy);
+        return new BigDecimal(guesses_tmp.isInfinite() ? Double.MAX_VALUE : guesses_tmp).setScale(0, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Console application which will run with default configurations.
+     *
+     * @param args arguments which are ignored!
+     */
+    public static void main(String... args)
+    {
+        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Nbvcxz nbvcxz = new Nbvcxz(configuration);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
+        Scanner scanner = new Scanner(System.in);
+
+        String input;
+
+        while (true)
+        {
+            System.out.println(resourceBundle.getString("main.startPrompt"));
+            System.out.println(resourceBundle.getString("main.enterCommand"));
+            input = scanner.nextLine();
+            if ("q".equals(input))
+            {
+                break;
+            }
+            if ("g".equals(input))
+            {
+                System.out.println(resourceBundle.getString("main.generatorType"));
+                input = scanner.nextLine();
+                if ("p".equals(input))
+                {
+                    System.out.println(resourceBundle.getString("main.delimiterPrompt"));
+                    String delimiter = scanner.nextLine();
+                    System.out.println(resourceBundle.getString("main.wordsPrompt"));
+                    while (!scanner.hasNextInt())
+                    {
+                        scanner.next();
+                    }
+                    int words = scanner.nextInt();
+                    scanner.nextLine();
+                    printGenerationInfo(nbvcxz, Generator.generatePassphrase(delimiter, words));
+                }
+                if ("r".equals(input))
+                {
+                    System.out.println(resourceBundle.getString("main.randomType"));
+                    Generator.CharacterTypes characterTypes = null;
+                    input = scanner.nextLine();
+                    if ("1".equals(input))
+                    {
+                        characterTypes = Generator.CharacterTypes.ALPHA;
+                    }
+                    if ("2".equals(input))
+                    {
+                        characterTypes = Generator.CharacterTypes.ALPHANUMERIC;
+                    }
+                    if ("3".equals(input))
+                    {
+                        characterTypes = Generator.CharacterTypes.ALPHANUMERICSYMBOL;
+                    }
+                    if ("4".equals(input))
+                    {
+                        characterTypes = Generator.CharacterTypes.NUMERIC;
+                    }
+                    if (characterTypes == null)
+                    {
+                        continue;
+                    }
+                    System.out.println(resourceBundle.getString("main.lengthPrompt"));
+                    while (!scanner.hasNextInt())
+                    {
+                        scanner.next();
+                    }
+                    int length = scanner.nextInt();
+                    scanner.nextLine();
+                    printGenerationInfo(nbvcxz, Generator.generateRandomPassword(characterTypes, length));
+                }
+            }
+            if ("e".equals(input))
+            {
+                System.out.println(resourceBundle.getString("main.estimatePrompt"));
+                String password = scanner.nextLine();
+                printEstimationInfo(nbvcxz, password);
+            }
+        }
+        System.out.println(resourceBundle.getString("main.quitPrompt") + " ");
+
+    }
+
+    private static void printGenerationInfo(final Nbvcxz nbvcxz, final String password)
+    {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
+        System.out.println("----------------------------------------------------------");
+        System.out.println(resourceBundle.getString("main.password") + " " + password);
+        System.out.println("----------------------------------------------------------");
+
+    }
+
+    private static void printEstimationInfo(final Nbvcxz nbvcxz, final String password)
+    {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
+
+        long start = System.currentTimeMillis();
+        Result result = nbvcxz.estimate(password);
+        long end = System.currentTimeMillis();
+
+        System.out.println("----------------------------------------------------------");
+        System.out.println(resourceBundle.getString("main.timeToCalculate") + " " + (end - start) + " ms");
+        System.out.println(resourceBundle.getString("main.password") + " " + password);
+        System.out.println(resourceBundle.getString("main.entropy") + " " + result.getEntropy());
+        Feedback feedback = FeedbackUtil.getFeedback(result);
+        if (feedback.getWarning() != null)
+        {
+            System.out.println(resourceBundle.getString("main.feedback.warning") + " " + feedback.getWarning());
+        }
+        for (String suggestion : feedback.getSuggestion())
+        {
+            System.out.println(resourceBundle.getString("main.feedback.suggestion") + " " + suggestion);
+        }
+        Map<String, Long> sortedMap =
+                result.getConfiguration().getGuessTypes().entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue())
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                (e1, e2) -> e1, LinkedHashMap::new));
+        for (Map.Entry<String, Long> guessType : sortedMap.entrySet())
+        {
+            System.out.println(resourceBundle.getString("main.timeToCrack") + " " + guessType.getKey() + ": " + TimeEstimate.getTimeToCrackFormatted(result, guessType.getKey()));
+        }
+        for (Match match : result.getMatches())
+        {
+            System.out.println("-----------------------------------");
+            System.out.println(match.getDetails());
+        }
+        System.out.println("----------------------------------------------------------");
     }
 
     /**
@@ -72,6 +244,7 @@ public class Nbvcxz
         this.best_matches.clear();
         this.best_matches_length = 0;
     }
+
     /**
      * Returns the best combination of matches based on multiple methods.  We run the password through the
      * {@code findGoodEnoughCombination} method test to see if is considered "random".  If it isn't, we
@@ -92,7 +265,10 @@ public class Nbvcxz
         {
             brute_force_matches.put(i, createBruteForceMatch(password, configuration, i));
         }
-        if (all_matches == null || all_matches.size() == 0 || isRandom(password, findGoodEnoughCombination(password, all_matches, brute_force_matches)))
+
+        final List<Match> good_enough_matches = findGoodEnoughCombination(password, all_matches, brute_force_matches);
+
+        if (all_matches == null || all_matches.size() == 0 || isRandom(password, good_enough_matches))
         {
             List<Match> matches = new ArrayList<>();
             backfillBruteForce(password, brute_force_matches, matches);
@@ -100,7 +276,15 @@ public class Nbvcxz
             return matches;
         }
         Collections.sort(all_matches, comparator);
-        return findBestCombination(password, all_matches, brute_force_matches);
+
+        try
+        {
+            return findBestCombination(password, all_matches, brute_force_matches);
+        }
+        catch (TimeoutException e)
+        {
+            return good_enough_matches;
+        }
     }
 
     /**
@@ -165,8 +349,16 @@ public class Nbvcxz
      * @param brute_force_matches map of index and brute force match to fit that index
      * @return the best possible combination of matches for this password
      */
-    private List<Match> findBestCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
+    private List<Match> findBestCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches) throws TimeoutException
     {
+        if (configuration.getCombinationAlgorithmTimeout() <= 0)
+        {
+            throw new TimeoutException("findBestCombination algorithm disabled.");
+        }
+
+        //  The start time of this algorithm, if we take too long, we must throw an exception
+        long start_time = System.currentTimeMillis();
+
         final Map<Match, List<Match>> non_intersecting_matches = new HashMap<>();
 
         // Build lists of non-intersecting matches for each match which start at a higher index than the current match.
@@ -225,7 +417,7 @@ public class Nbvcxz
         // Run the recursive function for each seed, and the lowest entropy matches will be set with the best combination.
         for (Match match : seed_matches)
         {
-            generateMatches(password, match, non_intersecting_matches, brute_force_matches, new ArrayList<>(), 0);
+            generateMatches(start_time, password, match, non_intersecting_matches, brute_force_matches, new ArrayList<>(), 0);
         }
 
         best_matches.sort(comparator);
@@ -236,6 +428,7 @@ public class Nbvcxz
     /**
      * Recursive function to generate match combinations to get an optimal match.
      *
+     * @param start_time               the time the function started to allow timeout
      * @param password                 the password
      * @param match                    a match to start with (or the next match in line)
      * @param non_intersecting_matches map of all non-intersecting matches
@@ -243,8 +436,13 @@ public class Nbvcxz
      * @param matches                  the list of matches being built
      * @param matches_length           the length of the password the matches  take up
      */
-    private void generateMatches(final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, int matches_length)
+    private void generateMatches(final long start_time, final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, int matches_length) throws TimeoutException
     {
+        if (System.currentTimeMillis() - start_time > configuration.getCombinationAlgorithmTimeout())
+        {
+            throw new TimeoutException("Took too long to get best matches");
+        }
+
         int index = matches.size();
         matches.add(match);
         matches_length += match.getLength();
@@ -260,7 +458,7 @@ public class Nbvcxz
                     continue;
                 }
             }
-            generateMatches(password, next_match, non_intersecting_matches, brute_force_matches, matches, matches_length);
+            generateMatches(start_time, password, next_match, non_intersecting_matches, brute_force_matches, matches, matches_length);
             found_next = true;
         }
 
@@ -269,7 +467,7 @@ public class Nbvcxz
             // We always look for the most complete match, even if it's not the lowest entropy.
             if (best_matches.isEmpty() ||
                     (matches_length >= best_matches_length
-                    && (calcEntropy(matches, false) / matches_length) < (calcEntropy(best_matches, false) / best_matches_length)))
+                            && (calcEntropy(matches, false) / matches_length) < (calcEntropy(best_matches, false) / best_matches_length)))
             {
                 best_matches.clear();
                 best_matches.addAll(matches);
@@ -413,167 +611,6 @@ public class Nbvcxz
             }
         }
         matches.removeAll(to_remove);
-    }
-
-    /**
-     * Creates a brute force match for a portion of the password.
-     *
-     * @param password      the password to create brute match for
-     * @param configuration the configuration
-     * @param index         the index of the password part that needs a {@code BruteForceMatch}
-     * @return a {@code Match} object
-     */
-    private static Match createBruteForceMatch(final String password, final Configuration configuration, final int index)
-    {
-        return new BruteForceMatch(password.charAt(index), configuration, index);
-    }
-
-    /**
-     * Gets the entropy from the number of guesses passed in.
-     *
-     * @param guesses a {@code BigDecimal} representing the number of guesses.
-     * @return entropy {@code Double} that is calculated based on the guesses.
-     */
-    public static Double getEntropyFromGuesses(final BigDecimal guesses)
-    {
-        Double guesses_tmp = guesses.doubleValue();
-        guesses_tmp = guesses_tmp.isInfinite() ? Double.MAX_VALUE : guesses_tmp;
-        return Math.log(guesses_tmp) / Math.log(2);
-    }
-
-    /**
-     * Gets the number of guesses from the entropy passed in.
-     *
-     * @param entropy a {@code Double} representing the number of guesses.
-     * @return guesses {@code BigDecimal} that is calculated based on the entropy.
-     */
-    public static BigDecimal getGuessesFromEntropy(final Double entropy)
-    {
-        final Double guesses_tmp = Math.pow(2, entropy);
-        return new BigDecimal(guesses_tmp.isInfinite() ? Double.MAX_VALUE : guesses_tmp).setScale(0, RoundingMode.HALF_UP);
-    }
-
-    /**
-     * Console application which will run with default configurations.
-     *
-     * @param args arguments which are ignored!
-     */
-    public static void main(String... args)
-    {
-        Configuration configuration = new ConfigurationBuilder().createConfiguration();
-        Nbvcxz nbvcxz = new Nbvcxz(configuration);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
-        Scanner scanner = new Scanner(System.in);
-
-        String input;
-
-        while (true)
-        {
-            System.out.println(resourceBundle.getString("main.startPrompt"));
-            System.out.println(resourceBundle.getString("main.enterCommand"));
-            input = scanner.nextLine();
-            if ("q".equals(input))
-            {
-                break;
-            }
-            if ("g".equals(input))
-            {
-                System.out.println(resourceBundle.getString("main.generatorType"));
-                input = scanner.nextLine();
-                if("p".equals(input))
-                {
-                    System.out.println(resourceBundle.getString("main.delimiterPrompt"));
-                    String delimiter = scanner.nextLine();
-                    System.out.println(resourceBundle.getString("main.wordsPrompt"));
-                    while (!scanner.hasNextInt())
-                    {
-                        scanner.next();
-                    }
-                    int words = scanner.nextInt();
-                    scanner.nextLine();
-                    printGenerationInfo(nbvcxz, Generator.generatePassphrase(delimiter, words));
-                }
-                if("r".equals(input))
-                {
-                    System.out.println(resourceBundle.getString("main.randomType"));
-                    Generator.CharacterTypes characterTypes = null;
-                    input = scanner.nextLine();
-                    if ("1".equals(input))
-                        characterTypes = Generator.CharacterTypes.ALPHA;
-                    if ("2".equals(input))
-                        characterTypes = Generator.CharacterTypes.ALPHANUMERIC;
-                    if ("3".equals(input))
-                        characterTypes = Generator.CharacterTypes.ALPHANUMERICSYMBOL;
-                    if ("4".equals(input))
-                        characterTypes = Generator.CharacterTypes.NUMERIC;
-                    if(characterTypes == null)
-                        continue;
-                    System.out.println(resourceBundle.getString("main.lengthPrompt"));
-                    while (!scanner.hasNextInt())
-                    {
-                        scanner.next();
-                    }
-                    int length = scanner.nextInt();
-                    scanner.nextLine();
-                    printGenerationInfo(nbvcxz, Generator.generateRandomPassword(characterTypes, length));
-                }
-            }
-            if ("e".equals(input))
-            {
-                System.out.println(resourceBundle.getString("main.estimatePrompt"));
-                String password = scanner.nextLine();
-                printEstimationInfo(nbvcxz, password);
-            }
-        }
-        System.out.println(resourceBundle.getString("main.quitPrompt") + " ");
-
-    }
-
-    private static void printGenerationInfo(final Nbvcxz nbvcxz, final String password)
-    {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
-        System.out.println("----------------------------------------------------------");
-        System.out.println(resourceBundle.getString("main.password") + " " + password);
-        System.out.println("----------------------------------------------------------");
-
-    }
-
-    private static void printEstimationInfo(final Nbvcxz nbvcxz, final String password)
-    {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("main", nbvcxz.getConfiguration().getLocale());
-
-        long start = System.currentTimeMillis();
-        Result result = nbvcxz.estimate(password);
-        long end = System.currentTimeMillis();
-
-        System.out.println("----------------------------------------------------------");
-        System.out.println(resourceBundle.getString("main.timeToCalculate") + " " + (end - start) + " ms");
-        System.out.println(resourceBundle.getString("main.password") + " " + password);
-        System.out.println(resourceBundle.getString("main.entropy") + " " + result.getEntropy());
-        Feedback feedback = FeedbackUtil.getFeedback(result);
-        if (feedback.getWarning() != null)
-        {
-            System.out.println(resourceBundle.getString("main.feedback.warning") + " " + feedback.getWarning());
-        }
-        for (String suggestion : feedback.getSuggestion())
-        {
-            System.out.println(resourceBundle.getString("main.feedback.suggestion") + " " + suggestion);
-        }
-        Map<String, Long> sortedMap =
-                result.getConfiguration().getGuessTypes().entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                (e1, e2) -> e1, LinkedHashMap::new));
-        for (Map.Entry<String, Long> guessType : sortedMap.entrySet())
-        {
-            System.out.println(resourceBundle.getString("main.timeToCrack") + " " + guessType.getKey() + ": " + TimeEstimate.getTimeToCrackFormatted(result, guessType.getKey()));
-        }
-        for (Match match : result.getMatches())
-        {
-            System.out.println("-----------------------------------");
-            System.out.println(match.getDetails());
-        }
-        System.out.println("----------------------------------------------------------");
     }
 
     /**

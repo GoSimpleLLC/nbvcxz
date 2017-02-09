@@ -29,6 +29,7 @@ public class Configuration
     private final boolean distanceCalc;
     private final ResourceBundle mainResource;
     private final ResourceBundle feedbackResource;
+    private final long combinationAlgorithmTimeout;
 
     /**
      * @param passwordMatchers The list of {@link PasswordMatcher}s which will be used for matching
@@ -39,8 +40,9 @@ public class Configuration
      * @param yearPattern      Regex {@link Pattern} for use with {@link YearMatcher}
      * @param minimumEntropy   Minimum entropy value passwords should meet
      * @param locale           Locale for localized text and feedback
+     * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm.
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
@@ -53,6 +55,7 @@ public class Configuration
         this.distanceCalc = distanceCalc;
         this.mainResource = ResourceBundle.getBundle("main", locale);
         this.feedbackResource = ResourceBundle.getBundle("feedback", locale);
+        this.combinationAlgorithmTimeout = combinationAlgorithmTimeout;
     }
 
     /**
@@ -126,6 +129,12 @@ public class Configuration
     {
         return distanceCalc;
     }
+
+    /**
+     *
+     * @return Return the timeout for the findBestMatches algorithm
+     */
+    public long getCombinationAlgorithmTimeout() {return combinationAlgorithmTimeout; }
 
     /**
      * @return Return the resource bundle which contains the text for everything but feedback

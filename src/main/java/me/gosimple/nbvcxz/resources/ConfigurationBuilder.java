@@ -22,6 +22,7 @@ public class ConfigurationBuilder
     private Double minimumEntropy;
     private Locale locale;
     private Boolean distanceCalc;
+    private Long combinationAlgorithmTimeout;
 
     /**
      * @return Includes all standard password matchers included with Nbvcxz.
@@ -140,6 +141,14 @@ public class ConfigurationBuilder
     }
 
     /**
+     * @return The default value for minimum entropy is 35.
+     */
+    public static long getDefaultCombinationAlgorithmTimeout()
+    {
+        return 500l;
+    }
+
+    /**
      * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
      * <br>
      * Users of this library can implement their own {@link PasswordMatcher} and {@link Match} classes, here is where you would register them.
@@ -255,6 +264,21 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Timeout for the findBestCombination algorithm. If there are too many possible matches at each position of
+     * the password, the algorithm can take too long to get an answer and we must fall back to a simpler algorithm.
+     * <p>
+     * To disable the findBestMatches calculation and always fall back to the faster, less accurate one, set to 0.
+     *
+     * @param combinationAlgorithmTimeout The time in ms to timeout
+     * @return Builder
+     */
+    public ConfigurationBuilder setCombinationAlgorithmTimeout(final Long combinationAlgorithmTimeout)
+    {
+        this.combinationAlgorithmTimeout = combinationAlgorithmTimeout;
+        return this;
+    }
+
+    /**
      * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
      *
      * @return Configuration object from builder
@@ -297,7 +321,11 @@ public class ConfigurationBuilder
         {
             distanceCalc = getDefaultDistanceCalc();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc);
+        if (combinationAlgorithmTimeout == null)
+        {
+            combinationAlgorithmTimeout = getDefaultCombinationAlgorithmTimeout();
+        }
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc, combinationAlgorithmTimeout);
     }
 
 
