@@ -227,22 +227,6 @@ public final class DictionaryMatcher implements PasswordMatcher
                 // Iterate through all our dictionaries
                 for (Dictionary dictionary : configuration.getDictionaries())
                 {
-                    // Only match exclude dictionaries on full passwords
-                    if (dictionary.isExclusion() && (start != 0 || end != password.length()))
-                    {
-                        continue;
-                    }
-
-                    // Match exact
-                    {
-                        Integer exact_rank = dictionary.getDictonary().get(split_password);
-                        if (exact_rank != null)
-                        {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, split_password, exact_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
-                            continue;
-                        }
-                    }
-
                     // Match on lower
                     String lower_part = split_password.toLowerCase();
                     {

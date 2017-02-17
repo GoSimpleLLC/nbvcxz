@@ -90,7 +90,7 @@ public abstract class BaseMatch implements Match
     @Override
     final public double calculateEntropy()
     {
-        return  Math.max(0, entropy);
+        return Math.max(0, entropy);
     }
 
     @Override

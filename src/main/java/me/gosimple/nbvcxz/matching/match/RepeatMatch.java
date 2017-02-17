@@ -1,7 +1,7 @@
 package me.gosimple.nbvcxz.matching.match;
 
-import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.BruteForceUtil;
+import me.gosimple.nbvcxz.resources.Configuration;
 
 import java.util.ResourceBundle;
 
@@ -36,7 +36,7 @@ public final class RepeatMatch extends BaseMatch
     private double getEntropy()
     {
         int cardinality = BruteForceUtil.getBrutForceCardinality(getRepeatingCharacters());
-        if(getRepeat() != getRepeatingCharacters().length())
+        if (getRepeat() != getRepeatingCharacters().length())
         {
             return Math.max(0, log2(cardinality * getRepeat() * getRepeatingCharacters().length()));
         }

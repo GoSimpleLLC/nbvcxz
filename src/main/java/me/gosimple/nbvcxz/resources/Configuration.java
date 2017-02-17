@@ -32,14 +32,14 @@ public class Configuration
     private final long combinationAlgorithmTimeout;
 
     /**
-     * @param passwordMatchers The list of {@link PasswordMatcher}s which will be used for matching
-     * @param guessTypes       Map of types of guesses, and associated guesses/sec
-     * @param dictionaries     List of {@link Dictionary} to use for the {@link DictionaryMatcher}
-     * @param adjacencyGraphs  List of adjacency graphs to be used by the {@link SpacialMatcher}
-     * @param leetTable        Leet table for use with {@link DictionaryMatcher}
-     * @param yearPattern      Regex {@link Pattern} for use with {@link YearMatcher}
-     * @param minimumEntropy   Minimum entropy value passwords should meet
-     * @param locale           Locale for localized text and feedback
+     * @param passwordMatchers            The list of {@link PasswordMatcher}s which will be used for matching
+     * @param guessTypes                  Map of types of guesses, and associated guesses/sec
+     * @param dictionaries                List of {@link Dictionary} to use for the {@link DictionaryMatcher}
+     * @param adjacencyGraphs             List of adjacency graphs to be used by the {@link SpacialMatcher}
+     * @param leetTable                   Leet table for use with {@link DictionaryMatcher}
+     * @param yearPattern                 Regex {@link Pattern} for use with {@link YearMatcher}
+     * @param minimumEntropy              Minimum entropy value passwords should meet
+     * @param locale                      Locale for localized text and feedback
      * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm.
      */
     public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
@@ -131,10 +131,12 @@ public class Configuration
     }
 
     /**
-     *
      * @return Return the timeout for the findBestMatches algorithm
      */
-    public long getCombinationAlgorithmTimeout() {return combinationAlgorithmTimeout; }
+    public long getCombinationAlgorithmTimeout()
+    {
+        return combinationAlgorithmTimeout;
+    }
 
     /**
      * @return Return the resource bundle which contains the text for everything but feedback

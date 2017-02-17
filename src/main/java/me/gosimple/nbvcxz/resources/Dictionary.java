@@ -5,6 +5,8 @@ import java.util.*;
 /**
  * Object used for dictionary matching.  This allows users to implement custom dictionaries for different languages
  * or specialized vocabulary.
+ * <p>
+ * Dictionaries need to use all lower case keys for the words they contain for the algorithm to work correctly.
  *
  * @author Adam Brusselback.
  */
@@ -21,7 +23,7 @@ public class Dictionary
      * Object used for dictionary matching.
      *
      * @param dictionary_name unique name of dictionary.
-     * @param dictonary       {@code Map} with the word and it's rank.
+     * @param dictonary       {@code Map} with the word and it's rank.  The key must be lowercase for the matching to work properly.
      * @param exclusion       {@code true} when desiring to disallow any password contained in this dictionary; {@code false} otherwise.
      */
     public Dictionary(final String dictionary_name, final Map<String, Integer> dictonary, final boolean exclusion)
@@ -31,7 +33,7 @@ public class Dictionary
         this.exclusion = exclusion;
 
         // This is to optimize the distance calculation stuff
-        this.sorted_dictionary = new ArrayList<>(dictonary.keySet());
+        this.sorted_dictionary = new ArrayList<>(this.dictonary.keySet());
         this.sorted_dictionary.sort(Comparator.comparing(String::length).thenComparing(String::compareTo));
         this.sorted_dictionary_length_lookup = new HashMap<>();
         for (int i = 0; i < sorted_dictionary.size(); i++)

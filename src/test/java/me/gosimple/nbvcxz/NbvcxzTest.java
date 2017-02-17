@@ -1,14 +1,90 @@
 package me.gosimple.nbvcxz;
 
+import me.gosimple.nbvcxz.resources.Configuration;
+import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
+import me.gosimple.nbvcxz.resources.Dictionary;
+import me.gosimple.nbvcxz.resources.DictionaryBuilder;
 import me.gosimple.nbvcxz.scoring.Result;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Adam Brusselback
  */
 public class NbvcxzTest
 {
+
+    @Test
+    public void testExcludeDictionary()
+    {
+
+        String password;
+        Result result;
+        final double tolerance = 0.00000001;
+
+        List<Dictionary> dictionaryList = ConfigurationBuilder.getDefaultDictionaries();
+        dictionaryList.add(new DictionaryBuilder()
+                .setDictionaryName("exclude")
+                .setExclusion(true)
+                .addWord("Halshauser", 0)
+                .createDictionary());
+
+        Configuration configuration = new ConfigurationBuilder()
+                .setDictionaries(dictionaryList)
+                .createConfiguration();
+
+        final Nbvcxz nbvcxz = new Nbvcxz(configuration);
+        try
+        {
+            password = "halshauser";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
+
+            password = "alshauser";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
+
+
+            password = "Halsauser";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
+
+
+            password = "1Halshauser";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
+
+
+            password = "1halshauser";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
+
+
+            password = "halsha6user";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
+
+
+            password = "halshauser5696311";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(18.702389159976338D, result.getEntropy(), 18.702389159976338D * tolerance);
+
+
+            password = "halsHauser5696311";
+            result = nbvcxz.estimate(password);
+            Assert.assertEquals(18.702389159976338D, result.getEntropy(), 18.702389159976338D * tolerance);
+
+
+        }
+        catch (Exception e)
+        {
+            assert false;
+        }
+    }
 
     /**
      * Test of estimate method, of class Nbvcxz.
@@ -93,7 +169,7 @@ public class NbvcxzTest
 
             password = "A Fool and His Money Are Soon Parted";
             result = nbvcxz.estimate(password);
-            Assert.assertEquals(85.78482345112074D, result.getEntropy(), 85.78482345112074D * tolerance);
+            Assert.assertEquals(84.88322715518174D, result.getEntropy(), 84.88322715518174D * tolerance);
 
             password = "6c891879ed0a0bbf701d5ca8af39a766";
             result = nbvcxz.estimate(password);

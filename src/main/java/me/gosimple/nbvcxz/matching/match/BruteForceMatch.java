@@ -1,7 +1,7 @@
 package me.gosimple.nbvcxz.matching.match;
 
-import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.BruteForceUtil;
+import me.gosimple.nbvcxz.resources.Configuration;
 
 /**
  * @author Adam Brusselback
@@ -13,7 +13,7 @@ public final class BruteForceMatch extends BaseMatch
      *
      * @param match         the {@code String} we are creating the {@code BruteForceMatch} from.
      * @param configuration the {@link Configuration} object.
-     * @param index   the index in the password for this match.
+     * @param index         the index in the password for this match.
      */
     public BruteForceMatch(char match, Configuration configuration, int index)
     {

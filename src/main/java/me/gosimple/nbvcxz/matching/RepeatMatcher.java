@@ -4,7 +4,10 @@ import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.matching.match.RepeatMatch;
 import me.gosimple.nbvcxz.resources.Configuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,11 +54,11 @@ public final class RepeatMatcher implements PasswordMatcher
             int endIndex = match.end(0) - 1;
 
             Set<Character> character_set = new HashSet<>();
-            for(char character : repeatCharacters.toCharArray())
+            for (char character : repeatCharacters.toCharArray())
             {
                 character_set.add(character);
             }
-            if(character_set.size() <= 4)
+            if (character_set.size() <= 4)
             {
                 matches.add(new RepeatMatch(baseToken, configuration, repeatCharacters, startIndex, endIndex));
             }

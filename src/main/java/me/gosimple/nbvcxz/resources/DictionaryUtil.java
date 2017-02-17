@@ -47,6 +47,8 @@ public class DictionaryUtil
     /**
      * Read a resource file with a list of entries (sorted by frequency) and use
      * it to create a ranked dictionary.
+     * <p>
+     * The dictionary must contain only lower case values for the matching to work properly.
      *
      * @param fileName the name of the file
      * @return the ranked dictionary (a {@code HashMap} which associated a
@@ -87,6 +89,8 @@ public class DictionaryUtil
     /**
      * Read a resource file with a list of entries (sorted by frequency) and use
      * it to create a ranked dictionary.
+     * <p>
+     * The dictionary must contain only lower case values for the matching to work properly.
      *
      * @param fileName the name of the file
      * @return the ranked dictionary (a {@code HashMap} which associated a
