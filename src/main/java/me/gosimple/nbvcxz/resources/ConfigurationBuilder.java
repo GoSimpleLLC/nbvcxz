@@ -42,18 +42,18 @@ public class ConfigurationBuilder
 
     /**
      * @return The default list of guess types and associated values of guesses per second.
-     * This list was compiled in June 2016 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
+     * This list was compiled in February 2017 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
      */
     public static Map<String, Long> getDefaultGuessTypes()
     {
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", 115840000000L);
-        guessTypes.put("OFFLINE_SHA1", 37336000000L);
-        guessTypes.put("OFFLINE_SHA512", 5000000000L);
-        guessTypes.put("OFFLINE_BCRYPT_5", 64000L);
-        guessTypes.put("OFFLINE_BCRYPT_10", 2000L);
-        guessTypes.put("OFFLINE_BCRYPT_12", 500L);
-        guessTypes.put("OFFLINE_BCRYPT_14", 125L);
+        guessTypes.put("OFFLINE_MD5", 200300000000L);
+        guessTypes.put("OFFLINE_SHA1", 68771000000L);
+        guessTypes.put("OFFLINE_SHA512", 8624700000L);
+        guessTypes.put("OFFLINE_BCRYPT_5", 104700L);
+        guessTypes.put("OFFLINE_BCRYPT_10", 3303L);
+        guessTypes.put("OFFLINE_BCRYPT_12", 826L);
+        guessTypes.put("OFFLINE_BCRYPT_14", 207L);
         guessTypes.put("ONLINE_UNTHROTTLED", 100L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
         return guessTypes;
