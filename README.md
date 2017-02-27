@@ -81,7 +81,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>1.3.3</version>
+    <version>1.3.4</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.3.3.jar`
+`java -jar nbvcxz-1.3.4.jar`
 ![alt text](http://i.imgur.com/9c070FX.png)
 
 ### Library
@@ -99,14 +99,14 @@ Below is a full example of the pieces you'd need to implement within your own ap
 ##### Configure and create object
 
 ###### All defaults
-```
+```java
 // With all defaults...
 Nbvcxz nbvcxz = new Nbvcxz();
 ```
 
 ###### Custom configuration
 Here we're creating a custom configuration with a custom exclusion dictionary and minimum entropy
-```
+```java
 // Create a map of excluded words on a per-user basis using a hypothetical "User" object that contains this info
 List<Dictionary> dictionaryList = ConfigurationBuilder.getDefaultDictionaries();
 dictionaryList.add(new DictionaryBuilder()
@@ -131,7 +131,7 @@ Nbvcxz nbvcxz = new Nbvcxz(configuration);
 ##### Estimate password strength
 
 ###### Simple
-```
+```java
 // Estimate password 
 Result result = nbvcxz.estimate(password);
 
@@ -141,7 +141,7 @@ return result.isMinimumEntropyMet();
 ###### Feedback
 This part will need to be integrated into your specific front end, and really depends on your needs. 
 Here are some of the possibilities:
-```
+```java
 
 // Get formatted values for time to crack based on the values we 
 // input in our configuration (we used default values in this example)
@@ -197,7 +197,7 @@ else
 We have a passphrase/password generator as part of `nbvcxz` which very easy to use.
 
 ###### Passphrase
-```
+```java
 // Generate a passphrase from the standard (eff_large) dictionary with 5 words with a "-" between the words
 String pass1 = Generator.generatePassphrase("-", 5);
 
@@ -206,7 +206,7 @@ String pass2 = Generator.generatePassphrase(new Dictionary(...), "-", 5);
 ```
 
 ###### Password
-```
+```java
 // Generate a random password with alphanumeric characters that is 15 characters long
 String pass = Generator.generateRandomPassword(Generator.CharacterTypes.ALPHANUMERIC, 15);
 ```
