@@ -3,6 +3,9 @@ package me.gosimple.nbvcxz.resources;
 import me.gosimple.nbvcxz.matching.*;
 import me.gosimple.nbvcxz.matching.match.Match;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -43,17 +46,27 @@ public class ConfigurationBuilder
     /**
      * @return The default list of guess types and associated values of guesses per second.
      * This list was compiled in February 2017 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
+     *
+     * In the case this library is no longer maintained (or you choose to stay on an old version of it), we will scale the existing values by Moore's law.
      */
     public static Map<String, Long> getDefaultGuessTypes()
     {
+        // The date which the value's below were chosen
+        LocalDate value_date = LocalDate.of(2017, 2, 1);
+        LocalDate current_date = LocalDate.now();
+        double years = Double.valueOf(ChronoUnit.YEARS.between(value_date, current_date));
+
+        // the multiplier for Moore's law is 2 to the power of (years / 2)
+        BigDecimal moores_multiplier = BigDecimal.valueOf(Math.pow(2, years / 2));
+
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", 200300000000L);
-        guessTypes.put("OFFLINE_SHA1", 68771000000L);
-        guessTypes.put("OFFLINE_SHA512", 8624700000L);
-        guessTypes.put("OFFLINE_BCRYPT_5", 104700L);
-        guessTypes.put("OFFLINE_BCRYPT_10", 3303L);
-        guessTypes.put("OFFLINE_BCRYPT_12", 826L);
-        guessTypes.put("OFFLINE_BCRYPT_14", 207L);
+        guessTypes.put("OFFLINE_MD5", moores_multiplier.multiply(BigDecimal.valueOf(200300000000L)).longValue());
+        guessTypes.put("OFFLINE_SHA1", moores_multiplier.multiply(BigDecimal.valueOf(68771000000L)).longValue());
+        guessTypes.put("OFFLINE_SHA512", moores_multiplier.multiply(BigDecimal.valueOf(8624700000L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_5", moores_multiplier.multiply(BigDecimal.valueOf(104700L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_10", moores_multiplier.multiply(BigDecimal.valueOf(3303L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_12", moores_multiplier.multiply(BigDecimal.valueOf(826L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_14", moores_multiplier.multiply(BigDecimal.valueOf(207L)).longValue());
         guessTypes.put("ONLINE_UNTHROTTLED", 100L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
         return guessTypes;
