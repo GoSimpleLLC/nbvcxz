@@ -23,7 +23,7 @@ each new method.
         * [Estimate password strength](#estimate-password-strength)
           + [Simple](#simple)
           + [Feedback](#feedback)
-        * [Generate passphrase/password](#generate-passphrase-password)
+        * [Generate passphrase/password](#generate-passphrasepassword)
           + [Passphrase](#passphrase)
           + [Password](#password)
   * [Bugs and Feedback](#bugs-and-feedback)
