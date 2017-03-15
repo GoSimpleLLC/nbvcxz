@@ -190,6 +190,7 @@ public class Nbvcxz
         System.out.println(resourceBundle.getString("main.password") + " " + password);
         System.out.println(resourceBundle.getString("main.entropy") + " " + result.getEntropy());
         Feedback feedback = FeedbackUtil.getFeedback(result);
+        System.out.println(resourceBundle.getString(feedback.getResult()));
         if (feedback.getWarning() != null)
         {
             System.out.println(resourceBundle.getString("main.feedback.warning") + " " + feedback.getWarning());

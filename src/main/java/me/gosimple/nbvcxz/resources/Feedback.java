@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Feedback
 {
+    private final String result;
     private final String warning;
     private final List<String> suggestions;
     private final Configuration configuration;
@@ -16,11 +17,12 @@ public class Feedback
     /**
      * @param configuration the {@link Configuration} object.
      */
-    public Feedback(final Configuration configuration)
+    public Feedback(final Configuration configuration, final String result)
     {
         this.configuration = configuration;
-        warning = null;
-        suggestions = new ArrayList<>();
+        this.result = result;
+        this.warning = null;
+        this.suggestions = new ArrayList<>();
     }
 
     /**
@@ -28,12 +30,21 @@ public class Feedback
      * @param warning       warning string
      * @param suggestions   suggestions
      */
-    public Feedback(final Configuration configuration, final String warning, final String... suggestions)
+    public Feedback(final Configuration configuration, final String result, final String warning, final String... suggestions)
     {
         this.configuration = configuration;
+        this.result = result;
         this.warning = warning;
         this.suggestions = new ArrayList<>();
         Collections.addAll(this.suggestions, suggestions);
+    }
+
+    /**
+     * @return if the password was secure enough or not (not null)
+     */
+    public String getResult()
+    {
+        return result;
     }
 
     /**
