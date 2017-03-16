@@ -61,7 +61,7 @@ It's quite likely password #1 would fall to an attacker even in a rate limited o
 Password #2, while not allowed by our policy, is only susceptible to a brute force attack (if a secure hashing algorithm is used).
 
 ## Differentiating Features
-* Internationalization support for all feedback, and console output.
+* Internationalization support for all text output by the library (for feedback, console output, etc).  Currently we support English and French.  More translations are welcome.
 * Better match generation algorithm which will find the absolute lowest entropy combination of the matches.
 * Support for ranked and un-ranked dictionaries.
 * Dictionary matching has the ability to use Levenshtein Distance (LD) calculations to match passwords which are non-exact matches to a dictionary entry.
@@ -228,3 +228,5 @@ MIT License
 ## Application using this library
 
 - [GoSimple](http://gosimple.me/)
+
+Anyone else using the library in their application, i'd love to hear and put a link up here.
