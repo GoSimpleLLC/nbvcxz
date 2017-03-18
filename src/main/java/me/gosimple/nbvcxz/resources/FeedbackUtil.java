@@ -106,7 +106,7 @@ public class FeedbackUtil
                 warning = "feedback.dictionary.warning.passwords.veryCommon";
             }
 
-            return new Feedback(configuration, warning, "main.feedback.insecure", "feedback.dictionary.suggestions.allUppercase", "feedback.dictionary.suggestions.capitalization", "feedback.dictionary.suggestions.leet", "feedback.dictionary.suggestions.reversed", "feedback.extra.suggestions.addAnotherWord");
+            return new Feedback(configuration, "main.feedback.insecure", warning, "feedback.dictionary.suggestions.allUppercase", "feedback.dictionary.suggestions.capitalization", "feedback.dictionary.suggestions.leet", "feedback.dictionary.suggestions.reversed", "feedback.extra.suggestions.addAnotherWord");
 
         }
         return getDefaultFeedback(configuration);
