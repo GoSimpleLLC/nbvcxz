@@ -19,6 +19,7 @@ each new method.
     + [Library](#library)
         * [Configure and create object](#configure-and-create-object)
           + [All defaults](#all-defaults)
+          + [Localization](#localization)
           + [Custom configuration](#custom-configuration)
         * [Estimate password strength](#estimate-password-strength)
           + [Simple](#simple)
@@ -90,7 +91,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>1.3.4</version>
+    <version>LATEST</version>
 </dependency>
 ```
 
@@ -99,7 +100,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.3.4.jar`
+`java -jar nbvcxz-1.4.0.jar`
 ![alt text](http://i.imgur.com/9c070FX.png)
 
 ### Library
