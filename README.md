@@ -69,6 +69,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
         - Spanish (es)
         - Portuguese (pt)
         - Russian (ru)
+        - Italian (it)
         - Ukrainian (uk)
         - Afrikaans (af)
         - Hungarian (hu)
