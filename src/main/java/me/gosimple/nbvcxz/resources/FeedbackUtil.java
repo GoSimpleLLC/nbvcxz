@@ -3,6 +3,9 @@ package me.gosimple.nbvcxz.resources;
 import me.gosimple.nbvcxz.matching.match.*;
 import me.gosimple.nbvcxz.scoring.Result;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author Adam Brusselback.
@@ -106,7 +109,34 @@ public class FeedbackUtil
                 warning = "feedback.dictionary.warning.passwords.veryCommon";
             }
 
-            return new Feedback(configuration, "main.feedback.insecure", warning, "feedback.dictionary.suggestions.allUppercase", "feedback.dictionary.suggestions.capitalization", "feedback.dictionary.suggestions.leet", "feedback.dictionary.suggestions.reversed", "feedback.extra.suggestions.addAnotherWord");
+            List<String> suggestions = new ArrayList<>();
+
+            // A generic suggestion in lieu of other more specific suggestions.
+            suggestions.add("feedback.extra.suggestions.addAnotherWord");
+
+            if (dictionaryMatch.isReversed())
+            {
+                suggestions.add("feedback.dictionary.suggestions.reversed");
+            }
+
+            if (dictionaryMatch.isLeet())
+            {
+                suggestions.add("feedback.dictionary.suggestions.leet");
+            }
+
+            double capitalizationFraction = CharacterCaseUtil.fractionOfStringUppercase(result.getPassword());
+            if (capitalizationFraction > 0.8d)
+            {
+                // Nearly all characters were capitalized.
+                suggestions.add("feedback.dictionary.suggestions.allUppercase");
+            }
+            else if (capitalizationFraction > 0.0d)
+            {
+                // Some characters were capitalized.
+                suggestions.add("feedback.dictionary.suggestions.capitalization");
+            }
+
+            return new Feedback(configuration, "main.feedback.insecure", warning, suggestions);
 
         }
         return getDefaultFeedback(configuration);
