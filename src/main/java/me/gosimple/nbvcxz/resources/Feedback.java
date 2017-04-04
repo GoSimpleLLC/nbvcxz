@@ -48,6 +48,16 @@ public class Feedback
     }
 
     /**
+     * Get the raw untranslated warning key.
+     *
+     * @return the warning key (nullable)
+     */
+    public String getWarningKey()
+    {
+        return warning;
+    }
+
+    /**
      * @return the warning (nullable)
      */
     public String getWarning()
@@ -60,6 +70,16 @@ public class Feedback
         {
             return null;
         }
+    }
+
+    /**
+     * Get the raw untranslated suggestion keys.
+     *
+     * @return list of suggestion keys (list is not null)
+     */
+    public List<String> getSuggestionKeys()
+    {
+        return suggestions;
     }
 
     /**
