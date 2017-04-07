@@ -1,6 +1,7 @@
 package me.gosimple.nbvcxz.resources;
 
-public class CharacterCaseUtil {
+public class CharacterCaseUtil
+{
     /**
      * Of the characters in the string that have an uppercase form, how many are uppercased?
      *
@@ -10,7 +11,10 @@ public class CharacterCaseUtil {
      */
     public static double fractionOfStringUppercase(String input)
     {
-        if (input == null) return 0;
+        if (input == null)
+        {
+            return 0;
+        }
 
         double upperCasableCharacters = 0;
         double upperCount = 0;
@@ -21,7 +25,10 @@ public class CharacterCaseUtil {
             char lc = Character.toLowerCase(c);
             // If both the upper and lowercase version of a character are the same, then the character has
             // no distinct uppercase form (e.g., a digit or punctuation). Ignore these.
-            if (c == uc && c == lc) continue;
+            if (c == uc && c == lc)
+            {
+                continue;
+            }
 
             upperCasableCharacters++;
             if (c == uc)

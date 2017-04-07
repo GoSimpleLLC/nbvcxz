@@ -136,13 +136,13 @@ public class FeedbackUtil
                 // Nearly all characters were capitalized.
                 suggestions.add("feedback.dictionary.suggestions.allUppercase");
             }
-            else if (capitalizationFraction > 0.0d)
+            else if (capitalizationFraction > 0.0d && capitalizationFraction <= 0.2d)
             {
-                // Some characters were capitalized.
+                // Only a few characters were capitalized.
                 suggestions.add("feedback.dictionary.suggestions.capitalization");
             }
 
-            return new Feedback(configuration, "main.feedback.insecure", warning, suggestions);
+            return new Feedback(configuration, "main.feedback.insecure", warning, suggestions.toArray(new String[suggestions.size()]));
 
         }
         return getDefaultFeedback(configuration);
