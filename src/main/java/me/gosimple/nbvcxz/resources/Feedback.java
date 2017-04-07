@@ -40,6 +40,19 @@ public class Feedback
     }
 
     /**
+     * @param configuration the {@link Configuration} object.
+     * @param warning       warning string
+     * @param suggestions   suggestions
+     */
+    public Feedback(final Configuration configuration, final String result, final String warning, final List<String> suggestions)
+    {
+        this.configuration = configuration;
+        this.result = result;
+        this.warning = warning;
+        this.suggestions = new ArrayList<>(suggestions);
+    }
+
+    /**
      * @return if the password was secure enough or not (not null)
      */
     public String getResult()
