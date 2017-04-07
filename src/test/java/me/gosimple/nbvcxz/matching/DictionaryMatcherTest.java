@@ -86,6 +86,7 @@ public class DictionaryMatcherTest
 
         PasswordMatcher matcher = new DictionaryMatcher();
 
+        // l33t
         List<Match> computed = matcher.match(configuration, "l33t");
 
         List<Match> expected = new ArrayList<>();
@@ -109,6 +110,49 @@ public class DictionaryMatcherTest
         int computedHash = calcHash(computed);
 
         int expectedHash = calcHash(expected);
+
+        Assert.assertEquals(expectedHash, computedHash);
+
+
+        // ch1(k3n
+        computed = matcher.match(configuration, "ch1(k3n");
+
+        expected = new ArrayList<>();
+
+        subs = new ArrayList<>();
+
+        subs.add(new Character[]{'1', 'i'});
+        subs.add(new Character[]{'(', 'c'});
+        subs.add(new Character[]{'3', 'e'});
+        expected.add(new DictionaryMatch("ch1", configuration, 0, 2, "chi", 816, subs.subList(0, 1), false, false, "male_names", 0));
+
+        expected.add(new DictionaryMatch("ch1", configuration, 0, 2, "chi", 5485, subs.subList(0, 1), false, false, "english", 0));
+
+        expected.add(new DictionaryMatch("ch1(", configuration, 0, 3, "chic", 28085, subs.subList(0, 2), false, false, "passwords", 0));
+
+        expected.add(new DictionaryMatch("ch1(", configuration, 0, 3, "chic", 17150, subs.subList(0, 2), false, false, "english", 0));
+
+        expected.add(new DictionaryMatch("ch1(k", configuration, 0, 4, "chick", 6711, subs.subList(0, 2), false, false, "passwords", 0));
+
+        expected.add(new DictionaryMatch("ch1(k", configuration, 0, 4, "chick", 7136, subs.subList(0, 2), false, false, "english", 0));
+
+        expected.add(new DictionaryMatch("ch1(k3", configuration, 0, 5, "chicke", 23712, subs.subList(0, 3), false, false, "passwords", 0));
+
+        expected.add(new DictionaryMatch("ch1(k3n", configuration, 0, 6, "chicken", 135, subs.subList(0, 3), false, false, "passwords", 0));
+
+        expected.add(new DictionaryMatch("ch1(k3n", configuration, 0, 6, "chicken", 3436, subs.subList(0, 3), false, false, "english", 0));
+
+        expected.add(new DictionaryMatch("h1(", configuration, 1, 3, "hic", 13053, subs.subList(0, 2), false, false, "english", 0));
+
+        expected.add(new DictionaryMatch("h1(k3n", configuration, 1, 6, "hicken", 30392, subs.subList(0, 3), false, false, "surnames", 0));
+
+        expected.add(new DictionaryMatch("k3n", configuration, 4, 6, "ken", 243, subs.subList(2, 3), false, false, "male_names", 0));
+
+        expected.add(new DictionaryMatch("k3n", configuration, 4, 6, "ken", 4065, subs.subList(2, 3), false, false, "english", 0));
+
+        computedHash = calcHash(computed);
+
+        expectedHash = calcHash(expected);
 
         Assert.assertEquals(expectedHash, computedHash);
 

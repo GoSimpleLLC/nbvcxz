@@ -8,6 +8,7 @@ import me.gosimple.nbvcxz.resources.Dictionary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Look for every part of the password that match an entry in our dictionaries
@@ -17,39 +18,89 @@ import java.util.List;
 public final class DictionaryMatcher implements PasswordMatcher
 {
     /**
-     * Removes all leet substitutions from the password and returns a plain text version.
+     * Removes all leet substitutions from the password and returns a list of plain text versions.
      *
      * @param configuration the configuration file used to estimate entropy.
      * @param password      the password to translate from leet.
-     * @return the password with all leet removed.
+     * @return a list of all combinations of possible leet translations for the password with all leet removed.
      */
-    private static String translateLeet(final Configuration configuration, final String password)
+    private static List<String> translateLeet(final Configuration configuration, final String password)
     {
-        char[] array = new char[password.length()];
+        final List<String> translations = new ArrayList();
+        final TreeMap<Integer, Character[]> replacements = new TreeMap<>();
+
         for (int i = 0; i < password.length(); i++)
         {
-            Character replacement = configuration.getLeetTable().get(password.charAt(i));
-            array[i] = replacement != null ? replacement : password.charAt(i);
+            final Character[] replacement = configuration.getLeetTable().get(password.charAt(i));
+            if (replacement != null)
+            {
+                replacements.put(i, replacement);
+            }
         }
-        return new String(array);
+
+        if (replacements.size() > 0)
+        {
+            final Character[] password_char = new Character[password.length()];
+            for (int i = 0; i < password.length(); i++)
+            {
+                password_char[i] = password.charAt(i);
+            }
+            replaceAtIndex(replacements, null, password_char, translations);
+        }
+
+        return translations;
     }
+
+    /**
+     * Internal function to recursively build the list of un-leet possibilities.
+     *
+     * @param replacements    TreeMap of replacement index, and the possible characters at that index to be replaced
+     * @param current_index   internal use for the function
+     * @param password        a Character array of the original password
+     * @param final_passwords List of the final passwords to be filled
+     */
+    private static void replaceAtIndex(final TreeMap<Integer, Character[]> replacements, Integer current_index, final Character[] password, final List<String> final_passwords)
+    {
+        if (current_index == null)
+        {
+            current_index = replacements.firstKey();
+        }
+
+        for (Character replacement : replacements.get(current_index))
+        {
+            password[current_index] = replacement;
+            if (current_index.equals(replacements.lastKey()))
+            {
+                String final_password = new String();
+                for (Character pass_char : password)
+                {
+                    final_password += pass_char;
+                }
+                final_passwords.add(final_password);
+            }
+            else
+            {
+                replaceAtIndex(replacements, replacements.higherKey(current_index), password, final_passwords);
+            }
+        }
+    }
+
 
     /**
      * Gets the substitutions for the password.
      *
-     * @param configuration the configuration file used to estimate entropy.
-     * @param password      the password to get leet substitutions for.
+     * @param password        the password to get leet substitutions for.
+     * @param unleet_password the password to get leet substitutions for.
      * @return a {@code List} of {@code Character[]} that are the leet substitutions for the password.
      */
-    private static List<Character[]> getLeetSub(final Configuration configuration, final String password)
+    private static List<Character[]> getLeetSub(final String password, final String unleet_password)
     {
         List<Character[]> leet_subs = new ArrayList<>();
-        for (int i = 0; i < password.length(); i++)
+        for (int i = 0; i < unleet_password.length(); i++)
         {
-            Character replacement = configuration.getLeetTable().get(password.charAt(i));
-            if (replacement != null)
+            if (password.charAt(i) != unleet_password.charAt(i))
             {
-                leet_subs.add(new Character[]{password.charAt(i), replacement});
+                leet_subs.add(new Character[]{password.charAt(i), unleet_password.charAt(i)});
             }
         }
         return leet_subs;
@@ -249,28 +300,28 @@ public final class DictionaryMatcher implements PasswordMatcher
                         }
                     }
 
-                    // Create substitutions for unleet
-                    List<Character[]> subs = getLeetSub(configuration, split_password);
-
                     // Only do unleet if it's different than the regular lower.
-                    String unleet_part = translateLeet(configuration, lower_part);
+                    List<String> unleet_list = translateLeet(configuration, lower_part);
+                    for (String unleet_part : unleet_list)
                     {
                         Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
                         if (unleet_rank != null)
                         {
+                            final List<Character[]> subs = getLeetSub(lower_part, unleet_part);
                             matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, unleet_part, unleet_rank, subs, dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
                             continue;
                         }
-                    }
 
-                    // Only do reversed if it's different than unleet.
-                    String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
-                    {
-                        Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
-                        if (reversed_unleet_rank != null)
+                        // Only do reversed if it's different than unleet.
+                        String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
                         {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_unleet_part, reversed_unleet_rank, subs, dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
-                            continue;
+                            Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
+                            if (reversed_unleet_rank != null)
+                            {
+                                final List<Character[]> subs = getLeetSub(reversed_part, reversed_unleet_part);
+                                matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_unleet_part, reversed_unleet_rank, subs, dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
+                                continue;
+                            }
                         }
                     }
 

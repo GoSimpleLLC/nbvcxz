@@ -1,12 +1,23 @@
 package me.gosimple.nbvcxz.resources;
 
-import me.gosimple.nbvcxz.matching.*;
+import me.gosimple.nbvcxz.matching.DateMatcher;
+import me.gosimple.nbvcxz.matching.DictionaryMatcher;
+import me.gosimple.nbvcxz.matching.PasswordMatcher;
+import me.gosimple.nbvcxz.matching.RepeatMatcher;
+import me.gosimple.nbvcxz.matching.SeparatorMatcher;
+import me.gosimple.nbvcxz.matching.SequenceMatcher;
+import me.gosimple.nbvcxz.matching.SpacialMatcher;
+import me.gosimple.nbvcxz.matching.YearMatcher;
 import me.gosimple.nbvcxz.matching.match.Match;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -20,7 +31,7 @@ public class ConfigurationBuilder
     private Map<String, Long> guessTypes;
     private List<Dictionary> dictionaries;
     private List<AdjacencyGraph> adjacencyGraphs;
-    private Map<Character, Character> leetTable;
+    private Map<Character, Character[]> leetTable;
     private Pattern yearPattern;
     private Double minimumEntropy;
     private Locale locale;
@@ -46,7 +57,7 @@ public class ConfigurationBuilder
     /**
      * @return The default list of guess types and associated values of guesses per second.
      * This list was compiled in February 2017 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
-     *
+     * <p>
      * In the case this library is no longer maintained (or you choose to stay on an old version of it), we will scale the existing values by Moore's law.
      */
     public static Map<String, Long> getDefaultGuessTypes()
@@ -103,29 +114,31 @@ public class ConfigurationBuilder
     /**
      * @return The default table of common english leet substitutions
      */
-    public static Map<Character, Character> getDefaultLeetTable()
+    public static Map<Character, Character[]> getDefaultLeetTable()
     {
-        Map<Character, Character> tmpLeetTable = new HashMap<>();
-        tmpLeetTable.put('4', 'a');
-        tmpLeetTable.put('@', 'a');
-        tmpLeetTable.put('8', 'b');
-        tmpLeetTable.put('(', 'c');
-        tmpLeetTable.put('{', 'c');
-        tmpLeetTable.put('[', 'c');
-        tmpLeetTable.put('<', 'c');
-        tmpLeetTable.put('3', 'e');
-        tmpLeetTable.put('9', 'g');
-        tmpLeetTable.put('6', 'g');
-        tmpLeetTable.put('!', 'i');
-        tmpLeetTable.put('1', 'l');
-        tmpLeetTable.put('|', 'l');
-        tmpLeetTable.put('0', 'o');
-        tmpLeetTable.put('$', 's');
-        tmpLeetTable.put('5', 's');
-        tmpLeetTable.put('+', 't');
-        tmpLeetTable.put('7', 't');
-        tmpLeetTable.put('%', 'x');
-        tmpLeetTable.put('2', 'z');
+        Map<Character, Character[]> tmpLeetTable = new HashMap<>();
+        tmpLeetTable.put('4', new Character[]{'a'});
+        tmpLeetTable.put('@', new Character[]{'a'});
+        tmpLeetTable.put('8', new Character[]{'b'});
+        tmpLeetTable.put('(', new Character[]{'c'});
+        tmpLeetTable.put('{', new Character[]{'c'});
+        tmpLeetTable.put('[', new Character[]{'c'});
+        tmpLeetTable.put('<', new Character[]{'c'});
+        tmpLeetTable.put('3', new Character[]{'e'});
+        tmpLeetTable.put('9', new Character[]{'g'});
+        tmpLeetTable.put('6', new Character[]{'g'});
+        tmpLeetTable.put('&', new Character[]{'g'});
+        tmpLeetTable.put('#', new Character[]{'h'});
+        tmpLeetTable.put('!', new Character[]{'i', 'l'});
+        tmpLeetTable.put('1', new Character[]{'i', 'l'});
+        tmpLeetTable.put('|', new Character[]{'i', 'l'});
+        tmpLeetTable.put('0', new Character[]{'o'});
+        tmpLeetTable.put('$', new Character[]{'s'});
+        tmpLeetTable.put('5', new Character[]{'s'});
+        tmpLeetTable.put('+', new Character[]{'t'});
+        tmpLeetTable.put('7', new Character[]{'t', 'l'});
+        tmpLeetTable.put('%', new Character[]{'x'});
+        tmpLeetTable.put('2', new Character[]{'z'});
         return tmpLeetTable;
     }
 
@@ -217,7 +230,7 @@ public class ConfigurationBuilder
      * @param leetTable Map for leetTable
      * @return Builder
      */
-    public ConfigurationBuilder setLeetTable(Map<Character, Character> leetTable)
+    public ConfigurationBuilder setLeetTable(Map<Character, Character[]> leetTable)
     {
         this.leetTable = leetTable;
         return this;
