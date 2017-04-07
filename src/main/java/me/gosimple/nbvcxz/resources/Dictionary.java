@@ -1,6 +1,10 @@
 package me.gosimple.nbvcxz.resources;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Object used for dictionary matching.  This allows users to implement custom dictionaries for different languages

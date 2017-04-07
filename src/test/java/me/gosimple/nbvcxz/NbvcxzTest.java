@@ -8,9 +8,7 @@ import me.gosimple.nbvcxz.scoring.Result;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Adam Brusselback

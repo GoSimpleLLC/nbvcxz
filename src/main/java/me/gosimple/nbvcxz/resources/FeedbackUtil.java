@@ -1,6 +1,12 @@
 package me.gosimple.nbvcxz.resources;
 
-import me.gosimple.nbvcxz.matching.match.*;
+import me.gosimple.nbvcxz.matching.match.DateMatch;
+import me.gosimple.nbvcxz.matching.match.DictionaryMatch;
+import me.gosimple.nbvcxz.matching.match.Match;
+import me.gosimple.nbvcxz.matching.match.RepeatMatch;
+import me.gosimple.nbvcxz.matching.match.SequenceMatch;
+import me.gosimple.nbvcxz.matching.match.SpacialMatch;
+import me.gosimple.nbvcxz.matching.match.YearMatch;
 import me.gosimple.nbvcxz.scoring.Result;
 
 

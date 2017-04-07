@@ -6,7 +6,11 @@ import me.gosimple.nbvcxz.resources.AdjacencyGraph;
 import me.gosimple.nbvcxz.resources.AdjacencyGraphUtil;
 import me.gosimple.nbvcxz.resources.Configuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Look for every part of the password that is spacial pattern
