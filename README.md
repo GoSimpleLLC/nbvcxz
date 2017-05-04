@@ -73,6 +73,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
         - Portuguese (pt)
         - Russian (ru)
         - Spanish (es)
+        - Telugu (te)
         - Ukrainian (uk)
 * Better match generation algorithm which will find the absolute lowest entropy combination of the matches.
 * Support for ranked and un-ranked dictionaries.
