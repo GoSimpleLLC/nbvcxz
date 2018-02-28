@@ -57,9 +57,9 @@ public class ConfigurationBuilder
     /**
      * Returns the Moore's law multiplier we're using for getDefaultGuessTypes().
      *
-     * We only have a multiplier > 1 if it has been more than year since we've updated the constants.
+     * We will only return a multiplier greater than 1 if it has been more than year since we've updated the constants.
      * The date for this function is: March 2018
-     * @return
+     * @return the Moore's Law multiplier
      */
     public static BigDecimal getMooresMultiplier()
     {

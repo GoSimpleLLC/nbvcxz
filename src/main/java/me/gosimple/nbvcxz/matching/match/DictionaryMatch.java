@@ -27,11 +27,13 @@ public final class DictionaryMatch extends BaseMatch
      * @param configuration    the {@link Configuration} object.
      * @param start_index      the start index in the password for this match.
      * @param end_index        the end index in the password for this match.
+     * @param dictionary_value the dictionary value
      * @param rank             The rank of the match in the dictionary
      * @param leetSubstitution If leet substitution was used or not
      * @param excluded         if the dictionary was an exclusion dictionary
      * @param reversed         if the password was reversed to match
      * @param dictionary_name  the name of the dictionary matched
+     * @param distance         the distance for this dictionary match
      */
     public DictionaryMatch(final String match, Configuration configuration, final int start_index, final int end_index, final String dictionary_value, final int rank, final List<Character[]> leetSubstitution, final boolean excluded, final boolean reversed, final String dictionary_name, final int distance)
     {

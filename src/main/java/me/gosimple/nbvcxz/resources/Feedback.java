@@ -1,5 +1,7 @@
 package me.gosimple.nbvcxz.resources;
 
+import me.gosimple.nbvcxz.scoring.Result;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +18,7 @@ public class Feedback
 
     /**
      * @param configuration the {@link Configuration} object.
+     * @param result        the primary message to display.
      */
     public Feedback(final Configuration configuration, final String result)
     {
@@ -27,6 +30,7 @@ public class Feedback
 
     /**
      * @param configuration the {@link Configuration} object.
+     * @param result        the primary message to display.
      * @param warning       warning string
      * @param suggestions   suggestions
      */
