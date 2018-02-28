@@ -55,29 +55,45 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Returns the Moore's law multiplier we're using for getDefaultGuessTypes().
+     *
+     * We only have a multiplier > 1 if it has been more than year since we've updated the constants.
+     * The date for this function is: March 2018
+     * @return
+     */
+    public static BigDecimal getMooresMultiplier()
+    {
+        // The date which the value's below were chosen
+        LocalDate value_date = LocalDate.of(2015, 3, 1);
+        LocalDate current_date = LocalDate.now();
+        double years = Double.valueOf(ChronoUnit.MONTHS.between(value_date, current_date)) / 12;
+        // Only use the multiplier if we haven't updated the value date in over a year.
+        if(years <= 1d)
+        {
+            years = 0;
+        }
+
+        // the multiplier for Moore's law is 2 to the power of (years / 2)
+        return BigDecimal.valueOf(Math.pow(2d, years / 2d));
+    }
+
+    /**
      * @return The default list of guess types and associated values of guesses per second.
-     * This list was compiled in February 2017 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
+     * This list was compiled in March 2018 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
      * <p>
      * In the case this library is no longer maintained (or you choose to stay on an old version of it), we will scale the existing values by Moore's law.
      */
     public static Map<String, Long> getDefaultGuessTypes()
     {
-        // The date which the value's below were chosen
-        LocalDate value_date = LocalDate.of(2017, 2, 1);
-        LocalDate current_date = LocalDate.now();
-        double years = Double.valueOf(ChronoUnit.YEARS.between(value_date, current_date));
-
-        // the multiplier for Moore's law is 2 to the power of (years / 2)
-        BigDecimal moores_multiplier = BigDecimal.valueOf(Math.pow(2, years / 2));
-
+        BigDecimal moores_multiplier = getMooresMultiplier();
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", moores_multiplier.multiply(BigDecimal.valueOf(200300000000L)).longValue());
-        guessTypes.put("OFFLINE_SHA1", moores_multiplier.multiply(BigDecimal.valueOf(68771000000L)).longValue());
-        guessTypes.put("OFFLINE_SHA512", moores_multiplier.multiply(BigDecimal.valueOf(8624700000L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_5", moores_multiplier.multiply(BigDecimal.valueOf(104700L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_10", moores_multiplier.multiply(BigDecimal.valueOf(3303L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_12", moores_multiplier.multiply(BigDecimal.valueOf(826L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_14", moores_multiplier.multiply(BigDecimal.valueOf(207L)).longValue());
+        guessTypes.put("OFFLINE_MD5", moores_multiplier.multiply(BigDecimal.valueOf(250375000000L)).longValue());
+        guessTypes.put("OFFLINE_SHA1", moores_multiplier.multiply(BigDecimal.valueOf(85963750000L)).longValue());
+        guessTypes.put("OFFLINE_SHA512", moores_multiplier.multiply(BigDecimal.valueOf(10780875000L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_5", moores_multiplier.multiply(BigDecimal.valueOf(130875L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_10", moores_multiplier.multiply(BigDecimal.valueOf(4129L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_12", moores_multiplier.multiply(BigDecimal.valueOf(1033L)).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_14", moores_multiplier.multiply(BigDecimal.valueOf(259L)).longValue());
         guessTypes.put("ONLINE_UNTHROTTLED", 100L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
         return guessTypes;
