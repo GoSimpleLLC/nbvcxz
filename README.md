@@ -194,7 +194,7 @@ else
     // Get the feedback for the result
     // This contains hints for the user on how to improve their password
     // It is localized based on locale set in configuration
-    Feedback = result.getFeedback();
+    Feedback feedback = result.getFeedback();
     
     // Start building error message
     StringBuilder errorMessage = new StringBuilder();
