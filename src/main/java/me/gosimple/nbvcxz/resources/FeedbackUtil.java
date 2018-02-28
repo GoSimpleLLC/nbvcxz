@@ -56,6 +56,10 @@ public class FeedbackUtil
     {
         Configuration configuration = result.getConfiguration();
 
+        String warning;
+        final List<String> suggestions = new ArrayList<>();
+
+
         if (match instanceof DateMatch)
         {
             return new Feedback(configuration, "main.feedback.insecure", "feedback.date.warning.dates", "feedback.date.suggestions.avoidDates", "feedback.extra.suggestions.addAnotherWord");
@@ -101,7 +105,6 @@ public class FeedbackUtil
                     }
                 }
             }
-            String warning;
             if (dictionaryMatch.getRank() <= 10)
             {
                 warning = "feedback.dictionary.warning.passwords.top10";
@@ -114,8 +117,6 @@ public class FeedbackUtil
             {
                 warning = "feedback.dictionary.warning.passwords.veryCommon";
             }
-
-            List<String> suggestions = new ArrayList<>();
 
             // A generic suggestion in lieu of other more specific suggestions.
             suggestions.add("feedback.extra.suggestions.addAnotherWord");
