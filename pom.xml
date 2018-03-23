@@ -7,7 +7,7 @@
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <name>nbvcxz</name>
     <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is
