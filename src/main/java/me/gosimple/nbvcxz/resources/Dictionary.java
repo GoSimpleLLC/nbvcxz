@@ -1,10 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Object used for dictionary matching.  This allows users to implement custom dictionaries for different languages
@@ -38,7 +34,16 @@ public class Dictionary
 
         // This is to optimize the distance calculation stuff
         this.sorted_dictionary = new ArrayList<>(this.dictonary.keySet());
-        this.sorted_dictionary.sort(Comparator.comparing(String::length).thenComparing(String::compareTo));
+        Collections.sort(this.sorted_dictionary, new Comparator<String>() {
+            @Override
+            public int compare(String s, String t1) {
+                int c = Integer.compare(s.length(), t1.length());
+                if (c != 0)
+                    return c;
+
+                return s.compareTo(t1);
+            }
+        });
         this.sorted_dictionary_length_lookup = new HashMap<>();
         for (int i = 0; i < sorted_dictionary.size(); i++)
         {
