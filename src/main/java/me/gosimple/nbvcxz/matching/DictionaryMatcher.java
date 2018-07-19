@@ -284,7 +284,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                         Integer lower_rank = dictionary.getDictonary().get(lower_part);
                         if (lower_rank != null)
                         {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, lower_part, lower_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
+                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, lower_part, lower_rank, new ArrayList<Character[]>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
                             continue;
                         }
                     }
@@ -295,7 +295,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                         Integer reversed_rank = dictionary.getDictonary().get(reversed_part);
                         if (reversed_rank != null)
                         {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_part, reversed_rank, new ArrayList<>(), dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
+                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_part, reversed_rank, new ArrayList<Character[]>(), dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
                             continue;
                         }
                     }
@@ -395,7 +395,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                         // Add the match if one was found
                         if (dist_rank != null)
                         {
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, dist_val, dist_rank, new ArrayList<>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), dist_min));
+                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, dist_val, dist_rank, new ArrayList<Character[]>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), dist_min));
                             continue;
                         }
                     }

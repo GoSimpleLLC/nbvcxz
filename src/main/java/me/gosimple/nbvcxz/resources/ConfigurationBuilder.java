@@ -11,8 +11,6 @@ import me.gosimple.nbvcxz.matching.YearMatcher;
 import me.gosimple.nbvcxz.matching.match.Match;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +25,9 @@ import java.util.regex.Pattern;
  */
 public class ConfigurationBuilder
 {
+    private static final double YEAR = 365.2422 * 24 * 60 * 60 * 1000; // Average year length
+    private static final long START = 1425168000000L; // Date values were chosen: 2015-03-01
+
     private List<PasswordMatcher> passwordMatchers;
     private Map<String, Long> guessTypes;
     private List<Dictionary> dictionaries;
@@ -63,10 +64,8 @@ public class ConfigurationBuilder
      */
     public static BigDecimal getMooresMultiplier()
     {
-        // The date which the value's below were chosen
-        LocalDate value_date = LocalDate.of(2015, 3, 1);
-        LocalDate current_date = LocalDate.now();
-        double years = Double.valueOf(ChronoUnit.MONTHS.between(value_date, current_date)) / 12;
+        double years = (System.currentTimeMillis() - START) / YEAR;
+
         // Only use the multiplier if we haven't updated the value date in over a year.
         if(years <= 1d)
         {
