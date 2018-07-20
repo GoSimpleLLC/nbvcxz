@@ -102,9 +102,6 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 
 ## Compile
 
-```sh
-git clone https://github.com/GoSimpleLLC/nbvcxz.git
-```
 ### Debian based
 ```sh
 apt-get install git
