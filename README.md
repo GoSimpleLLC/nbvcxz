@@ -249,7 +249,7 @@ MIT License
 
 ## Requires Java
 
-* Java 1.8+
+* Java 1.7+
 
 ## Application using this library
 
