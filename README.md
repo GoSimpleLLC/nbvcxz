@@ -96,7 +96,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>LATEST</version>
+    <version>1.4.2</version>
 </dependency>
 ```
 
