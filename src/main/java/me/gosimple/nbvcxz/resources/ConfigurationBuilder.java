@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class ConfigurationBuilder
 {
     private static final double YEAR = 365.2422 * 24 * 60 * 60 * 1000; // Average year length
-    private static final long START = 1425168000000L; // Date values were chosen: 2015-03-01
+    private static final long START = 1533096000000L; // Date values were chosen: 2018-08-01
 
     private List<PasswordMatcher> passwordMatchers;
     private Map<String, Long> guessTypes;
@@ -59,7 +59,7 @@ public class ConfigurationBuilder
      * Returns the Moore's law multiplier we're using for getDefaultGuessTypes().
      *
      * We will only return a multiplier greater than 1 if it has been more than year since we've updated the constants.
-     * The date for this function is: March 2018
+     * The date for this function is: 2018-08-01
      * @return the Moore's Law multiplier
      */
     public static BigDecimal getMooresMultiplier()
