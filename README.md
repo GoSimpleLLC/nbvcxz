@@ -14,6 +14,7 @@ each new method.
   * [A Rant On Arbitrary Password Policies](#a-rant-on-arbitrary-password-policies)
   * [Differentiating Features](#differentiating-features)
   * [Maven Central](#maven-central)
+  * [Compile](#compile)
   * [How to use](#how-to-use)
     + [Standalone](#standalone)
     + [Library](#library)
@@ -98,6 +99,23 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
     <version>LATEST</version>
 </dependency>
 ```
+
+## Compile
+
+```sh
+git clone https://github.com/GoSimpleLLC/nbvcxz.git
+```
+### Debian based
+```sh
+apt-get install git
+apt-get install openjdk-8-jdk
+apt-get install maven
+git clone https://github.com/GoSimpleLLC/nbvcxz.git
+cd nbvcxz
+mvn package
+```
+
+The project will be built, and the jar file will be placed in the target sub-directory.
 
 ## How to use
 `nbvcxz` can be used as a stand-alone console program, or import it as a library.
