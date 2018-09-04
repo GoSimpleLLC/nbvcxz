@@ -106,6 +106,18 @@ public class ConfigurationBuilder
     }
 
     /**
+     * This list was compiled in August 2018 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
+     * <p>
+     * In the case this library is no longer maintained (or you choose to stay on an old version of it), we will scale the existing values by Moore's law.
+     *
+     * @return The default list of guess types and associated values of guesses per second.
+     */
+    public static Map<String, Long> getDefaultGuessTypes()
+    {
+        return getDefaultGuessTypes(getDefaultCrackingHardwareCost());
+    }
+
+    /**
      * @return Returns all the dictionaries included with Nbvcxz.
      * Namely there is a dictionary for common passwords, english male names, english female names, english surnames, and common english words.
      */
