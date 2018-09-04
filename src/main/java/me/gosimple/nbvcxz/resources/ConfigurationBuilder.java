@@ -1,5 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
+import me.gosimple.nbvcxz.Nbvcxz;
 import me.gosimple.nbvcxz.matching.DateMatcher;
 import me.gosimple.nbvcxz.matching.DictionaryMatcher;
 import me.gosimple.nbvcxz.matching.PasswordMatcher;
@@ -11,6 +12,7 @@ import me.gosimple.nbvcxz.matching.YearMatcher;
 import me.gosimple.nbvcxz.matching.match.Match;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ public class ConfigurationBuilder
     private Locale locale;
     private Boolean distanceCalc;
     private Long combinationAlgorithmTimeout;
+    private Long crackingHardwareCost;
 
     /**
      * @return Includes all standard password matchers included with Nbvcxz.
@@ -60,6 +63,7 @@ public class ConfigurationBuilder
      *
      * We will only return a multiplier greater than 1 if it has been more than year since we've updated the constants.
      * The date for this function is: 2018-08-01
+     *
      * @return the Moore's Law multiplier
      */
     public static BigDecimal getMooresMultiplier()
@@ -77,22 +81,25 @@ public class ConfigurationBuilder
     }
 
     /**
-     * @return The default list of guess types and associated values of guesses per second.
      * This list was compiled in March 2018 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
      * <p>
      * In the case this library is no longer maintained (or you choose to stay on an old version of it), we will scale the existing values by Moore's law.
+     *
+     * @param crackingHardwareCost the hardware cost (USD) to scale the guesses per second
+     * @return The default list of guess types and associated values of guesses per second.
      */
-    public static Map<String, Long> getDefaultGuessTypes()
+    public static Map<String, Long> getDefaultGuessTypes(Long crackingHardwareCost)
     {
         BigDecimal moores_multiplier = getMooresMultiplier();
+        BigDecimal cost_multiplier = BigDecimal.valueOf(crackingHardwareCost).divide(BigDecimal.valueOf(20000), 5, RoundingMode.HALF_UP);
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", moores_multiplier.multiply(BigDecimal.valueOf(250375000000L)).longValue());
-        guessTypes.put("OFFLINE_SHA1", moores_multiplier.multiply(BigDecimal.valueOf(85963750000L)).longValue());
-        guessTypes.put("OFFLINE_SHA512", moores_multiplier.multiply(BigDecimal.valueOf(10780875000L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_5", moores_multiplier.multiply(BigDecimal.valueOf(130875L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_10", moores_multiplier.multiply(BigDecimal.valueOf(4129L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_12", moores_multiplier.multiply(BigDecimal.valueOf(1033L)).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_14", moores_multiplier.multiply(BigDecimal.valueOf(259L)).longValue());
+        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(250375000000L))).longValue());
+        guessTypes.put("OFFLINE_SHA1", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(85963750000L))).longValue());
+        guessTypes.put("OFFLINE_SHA512", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(10780875000L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(130875L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_10", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(4129L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_12", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(1033L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_14", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(259L))).longValue());
         guessTypes.put("ONLINE_UNTHROTTLED", 100L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
         return guessTypes;
@@ -182,12 +189,22 @@ public class ConfigurationBuilder
     }
 
     /**
-     * @return The default value for minimum entropy is 35.
+     * @return The default value for combination algorithm timeout is 500 (ms).
      */
     public static long getDefaultCombinationAlgorithmTimeout()
     {
         return 500l;
     }
+
+    /**
+     * @return The default value for hardware cost is 20000 usd.
+     */
+    public static long getDefaultCrackingHardwareCost()
+    {
+        return 20000;
+    }
+
+
 
     /**
      * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
@@ -320,19 +337,36 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Sets the cost of cracking hardware to scale the guesses / second for the default guess types.
+     * <br>
+     * Does not have any affect if you manually specify the guess types.
+     * @param crackingHardwareCost The hardware cost in USD
+     * @return Builder
+     */
+    public ConfigurationBuilder setCrackingHardwareCost(final Long crackingHardwareCost)
+    {
+        this.crackingHardwareCost = crackingHardwareCost;
+        return this;
+    }
+
+    /**
      * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
      *
      * @return Configuration object from builder
      */
     public Configuration createConfiguration()
     {
+        if (crackingHardwareCost == null)
+        {
+            crackingHardwareCost = getDefaultCrackingHardwareCost();
+        }
         if (passwordMatchers == null)
         {
             passwordMatchers = getDefaultPasswordMatchers();
         }
         if (guessTypes == null)
         {
-            guessTypes = getDefaultGuessTypes();
+            guessTypes = getDefaultGuessTypes(crackingHardwareCost);
         }
         if (dictionaries == null)
         {
