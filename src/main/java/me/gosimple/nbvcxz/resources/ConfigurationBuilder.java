@@ -282,15 +282,36 @@ public class ConfigurationBuilder
 
     /**
      * Used to check if the password is secure enough, and give feedback if not.
-     * <br>
-     * Should be a positive value.
      *
-     * @param minimumEntropy Value for minimumEntropy
+     * @param minimumEntropy Value for minimumEntropy (should be a positive value)
      * @return Builder
      */
     public ConfigurationBuilder setMinimumEntropy(Double minimumEntropy)
     {
         this.minimumEntropy = minimumEntropy;
+        return this;
+    }
+
+    /**
+     * Sets the minimum entropy based on time to crack, and a specific guess type.
+     * <br>
+     * If you are specifying a cracking hardware cost, you should set that prior to calling this.
+     *
+     * @param seconds_to_crack Value in seconds that you want to consider the minimum for a password to be considered good
+     * @param guess_type The guess type to use to figure out what the guesses per second are for this calculation
+     * @return Builder
+     */
+    public ConfigurationBuilder setMinimumEntropy(BigDecimal seconds_to_crack, String guess_type)
+    {
+        BigDecimal guesses_per_second;
+        if(guessTypes != null)
+            guesses_per_second = BigDecimal.valueOf(guessTypes.get(guess_type));
+        else
+            guesses_per_second = BigDecimal.valueOf(getDefaultGuessTypes(null != crackingHardwareCost ? crackingHardwareCost : getDefaultCrackingHardwareCost()).get(guess_type));
+
+        BigDecimal guesses = guesses_per_second.multiply(seconds_to_crack);
+
+        minimumEntropy = Nbvcxz.getEntropyFromGuesses(guesses);
         return this;
     }
 
