@@ -38,14 +38,18 @@ public final class DictionaryMatcher implements PasswordMatcher
             }
         }
 
+        // Do not bother continuing if we're going to replace every single character
+        if(replacements.keySet().size() == password.length())
+            return translations;
+
         if (replacements.size() > 0)
         {
-            final Character[] password_char = new Character[password.length()];
+            final char[] password_char = new char[password.length()];
             for (int i = 0; i < password.length(); i++)
             {
                 password_char[i] = password.charAt(i);
             }
-            replaceAtIndex(replacements, null, password_char, translations);
+            replaceAtIndex(replacements, replacements.firstKey(), password_char, translations);
         }
 
         return translations;
@@ -59,24 +63,19 @@ public final class DictionaryMatcher implements PasswordMatcher
      * @param password        a Character array of the original password
      * @param final_passwords List of the final passwords to be filled
      */
-    private static void replaceAtIndex(final TreeMap<Integer, Character[]> replacements, Integer current_index, final Character[] password, final List<String> final_passwords)
+    private static void replaceAtIndex(final TreeMap<Integer, Character[]> replacements, Integer current_index, final char[] password, final List<String> final_passwords)
     {
-        if (current_index == null)
-        {
-            current_index = replacements.firstKey();
-        }
-
-        for (Character replacement : replacements.get(current_index))
+        for (final char replacement : replacements.get(current_index))
         {
             password[current_index] = replacement;
             if (current_index.equals(replacements.lastKey()))
             {
-                String final_password = new String();
-                for (Character pass_char : password)
-                {
-                    final_password += pass_char;
-                }
-                final_passwords.add(final_password);
+                final_passwords.add(new String(password));
+            }
+            else if (final_passwords.size() > 1000)
+            {
+                // Give up if we've already made 1000 replacements
+                return;
             }
             else
             {
@@ -265,7 +264,7 @@ public final class DictionaryMatcher implements PasswordMatcher
     public List<Match> match(final Configuration configuration, final String password)
     {
 
-        List<Match> matches = new ArrayList<>();
+        final List<Match> matches = new ArrayList<>();
 
 
         // Create all possible sub-sequences of the password
@@ -273,15 +272,15 @@ public final class DictionaryMatcher implements PasswordMatcher
         {
             for (int end = start + 1; end <= password.length(); end++)
             {
-                String split_password = password.substring(start, end);
+                final String split_password = password.substring(start, end);
 
                 // Iterate through all our dictionaries
-                for (Dictionary dictionary : configuration.getDictionaries())
+                for (final Dictionary dictionary : configuration.getDictionaries())
                 {
                     // Match on lower
-                    String lower_part = split_password.toLowerCase();
+                    final String lower_part = split_password.toLowerCase();
                     {
-                        Integer lower_rank = dictionary.getDictonary().get(lower_part);
+                        final Integer lower_rank = dictionary.getDictonary().get(lower_part);
                         if (lower_rank != null)
                         {
                             matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, lower_part, lower_rank, new ArrayList<Character[]>(), dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
@@ -290,9 +289,9 @@ public final class DictionaryMatcher implements PasswordMatcher
                     }
 
                     // Only do reversed if it's different than the regular lower.
-                    String reversed_part = new StringBuilder(lower_part).reverse().toString();
+                    final String reversed_part = new StringBuilder(lower_part).reverse().toString();
                     {
-                        Integer reversed_rank = dictionary.getDictonary().get(reversed_part);
+                        final Integer reversed_rank = dictionary.getDictonary().get(reversed_part);
                         if (reversed_rank != null)
                         {
                             matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_part, reversed_rank, new ArrayList<Character[]>(), dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
@@ -301,10 +300,10 @@ public final class DictionaryMatcher implements PasswordMatcher
                     }
 
                     // Only do unleet if it's different than the regular lower.
-                    List<String> unleet_list = translateLeet(configuration, lower_part);
-                    for (String unleet_part : unleet_list)
+                    final List<String> unleet_list = translateLeet(configuration, lower_part);
+                    for (final String unleet_part : unleet_list)
                     {
-                        Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
+                        final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
                         if (unleet_rank != null)
                         {
                             final List<Character[]> subs = getLeetSub(lower_part, unleet_part);
@@ -313,9 +312,9 @@ public final class DictionaryMatcher implements PasswordMatcher
                         }
 
                         // Only do reversed if it's different than unleet.
-                        String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
+                        final String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
                         {
-                            Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
+                            final Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
                             if (reversed_unleet_rank != null)
                             {
                                 final List<Character[]> subs = getLeetSub(reversed_part, reversed_unleet_part);
@@ -347,10 +346,10 @@ public final class DictionaryMatcher implements PasswordMatcher
 
 
                         // How far off the distance is allowed to be
-                        int threshold = password.length() / 4;
+                        final int threshold = password.length() / 4;
 
                         // Indexes to iterate over only a portion of the dictionary
-                        int start_index;
+                        final int start_index;
                         if (dictionary.getSortedDictionaryLengthLookup().containsKey(password.length() - threshold))
                         {
                             start_index = dictionary.getSortedDictionaryLengthLookup().get(password.length() - threshold);
@@ -359,7 +358,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                         {
                             start_index = dictionary.getSortedDictionary().size();
                         }
-                        int end_index;
+                        final int end_index;
                         if (dictionary.getSortedDictionaryLengthLookup().containsKey(password.length() + threshold + 1))
                         {
                             end_index = dictionary.getSortedDictionaryLengthLookup().get(password.length() + threshold + 1);
@@ -376,12 +375,12 @@ public final class DictionaryMatcher implements PasswordMatcher
 
                         // Iterate over the subset of the dictionary (based on length) which could
                         // possibly contain matches for the password
-                        for (String key : dictionary.getSortedDictionary().subList(start_index, end_index))
+                        for (final String key : dictionary.getSortedDictionary().subList(start_index, end_index))
                         {
                             int dist_curr = distance(password, key, threshold);
                             if (dist_curr != -1)
                             {
-                                Integer dist_curr_rank = dictionary.getDictonary().get(key);
+                                final Integer dist_curr_rank = dictionary.getDictonary().get(key);
                                 // If true, set the vars which contain the lowest values found so far
                                 if (dist_curr <= dist_min && (dist_rank == null || dist_curr_rank <= dist_rank))
                                 {
