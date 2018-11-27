@@ -163,13 +163,14 @@ public class Result
      */
     public int getBasicScore()
     {
-        if (getGuesses().compareTo(BigDecimal.valueOf( 1e3)) == -1)
+        final BigDecimal guesses = getGuesses();
+        if (guesses.compareTo(BigDecimal.valueOf( 1e3)) == -1)
             return 0;
-        else if (getGuesses().compareTo(BigDecimal.valueOf( 1e6)) == -1)
+        else if (guesses.compareTo(BigDecimal.valueOf( 1e6)) == -1)
             return 1;
-        else if (getGuesses().compareTo(BigDecimal.valueOf(1e8)) == -1)
+        else if (guesses.compareTo(BigDecimal.valueOf(1e8)) == -1)
             return 2;
-        else if (getGuesses().compareTo(BigDecimal.valueOf(1e10)) == -1)
+        else if (guesses.compareTo(BigDecimal.valueOf(1e10)) == -1)
             return 3;
         else
             return 4;
