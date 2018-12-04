@@ -149,4 +149,30 @@ public class Result
     {
         return FeedbackUtil.getFeedback(this);
     }
+
+    /**
+     * This scoring function returns an int from 0-4 to indicate the score of this password
+     * using the same semantics as zxcvbn.
+     *
+     * @return Score
+     * <br>0: risky password: "too guessable"
+     * <br>1: modest protection from throttled online attacks: "very guessable"
+     * <br>2: modest protection from unthrottled online attacks: "somewhat guessable"
+     * <br>3: modest protection from offline attacks: "safely unguessable" (assuming a salted, slow hash function)
+     * <br>4: strong protection from offline attacks: "very unguessable" (assuming a salted, slow hash function)
+     */
+    public int getBasicScore()
+    {
+        final BigDecimal guesses = getGuesses();
+        if (guesses.compareTo(BigDecimal.valueOf( 1e3)) == -1)
+            return 0;
+        else if (guesses.compareTo(BigDecimal.valueOf( 1e6)) == -1)
+            return 1;
+        else if (guesses.compareTo(BigDecimal.valueOf(1e8)) == -1)
+            return 2;
+        else if (guesses.compareTo(BigDecimal.valueOf(1e10)) == -1)
+            return 3;
+        else
+            return 4;
+    }
 }
