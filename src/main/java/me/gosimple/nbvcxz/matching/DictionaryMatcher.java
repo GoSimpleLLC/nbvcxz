@@ -72,9 +72,9 @@ public final class DictionaryMatcher implements PasswordMatcher
             {
                 final_passwords.add(new String(password));
             }
-            else if (final_passwords.size() > 1000)
+            else if (final_passwords.size() > 100)
             {
-                // Give up if we've already made 1000 replacements
+                // Give up if we've already made 100 replacements
                 return;
             }
             else
@@ -263,9 +263,7 @@ public final class DictionaryMatcher implements PasswordMatcher
 
     public List<Match> match(final Configuration configuration, final String password)
     {
-
         final List<Match> matches = new ArrayList<>();
-
 
         // Create all possible sub-sequences of the password
         for (int start = 0; start < password.length(); start++)
