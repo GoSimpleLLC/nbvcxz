@@ -119,7 +119,7 @@ The project will be built, and the jar file will be placed in the target sub-dir
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.4.2.jar`
+`java -jar nbvcxz-1.4.3.jar`
 ![alt text](http://i.imgur.com/9c070FX.png)
 
 ### Library
