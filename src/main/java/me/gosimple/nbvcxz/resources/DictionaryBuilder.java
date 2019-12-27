@@ -1,5 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,24 @@ public class DictionaryBuilder
     public DictionaryBuilder addWord(final String word, final int rank)
     {
         this.dictonary.put(word.toLowerCase(), rank);
+        return this;
+    }
+
+    /**
+     * Add a Collection of words to dictionary. All words will be added to dictionary using the same rank.
+     * @param words the collection of keys to be added to dictionary
+     * @param rank the rank of the word in the dictionary.
+     *             Should increment from most common to least common if ranked.
+     *             If unranked, an example would be if there were 500 values in the dictionary, every word should have a rank of 250.
+     *             If exclusion dictionary, rank is unimportant (set to 0).
+     * @return the builder
+     */
+    public DictionaryBuilder addWords(final Collection<String> words, final int rank)
+    {
+        for(final String word: words)
+        {
+            addWord(word, rank);
+        }
         return this;
     }
 
