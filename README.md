@@ -68,6 +68,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
         - **English (default)**
         - Afrikaans (af)
         - Dutch (nl)
+        - Finnish (fi)
         - French (fr)
         - German (de)
         - Hungarian (hu)
