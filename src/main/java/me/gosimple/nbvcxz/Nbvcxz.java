@@ -21,9 +21,7 @@ import java.util.concurrent.TimeoutException;
 public class Nbvcxz
 {
     private static StartIndexComparator comparator = new StartIndexComparator();
-    private final List<Match> best_matches = new ArrayList<>();
     private Configuration configuration;
-    private int best_matches_length = 0;
 
     /**
      * Creates new instance with a default configuration.
@@ -234,19 +232,7 @@ public class Nbvcxz
      */
     private Result guessEntropy(final Configuration configuration, final String password)
     {
-        resetVariables();
-        Result final_result = new Result(configuration, password, getBestCombination(configuration, password));
-
-        return final_result;
-    }
-
-    /**
-     * Ensure the instance variables are reset between runs.
-     */
-    private void resetVariables()
-    {
-        this.best_matches.clear();
-        this.best_matches_length = 0;
+        return new Result(configuration, password, getBestCombination(configuration, password));
     }
 
     /**
@@ -261,8 +247,6 @@ public class Nbvcxz
      */
     private List<Match> getBestCombination(final Configuration configuration, final String password)
     {
-        this.best_matches.clear();
-        this.best_matches_length = 0;
         final List<Match> all_matches = getAllMatches(configuration, password);
         final Map<Integer, Match> brute_force_matches = new HashMap<>();
         for (int i = 0; i < password.length(); i++)
@@ -419,13 +403,14 @@ public class Nbvcxz
         Collections.sort(seed_matches, comparator);
 
         // Run the recursive function for each seed, and the lowest entropy matches will be set with the best combination.
+        BestMatches best_matches = new BestMatches();
         for (Match match : seed_matches)
         {
-            generateMatches(start_time, password, match, non_intersecting_matches, brute_force_matches, new ArrayList<Match>(), 0);
+            generateMatches(start_time, password, match, non_intersecting_matches, brute_force_matches, new ArrayList<Match>(), 0, best_matches);
         }
-        Collections.sort(best_matches, comparator);
+        best_matches.sortMatches(comparator);
 
-        return best_matches;
+        return best_matches.getBestMatches();
     }
 
     /**
@@ -438,8 +423,9 @@ public class Nbvcxz
      * @param brute_force_matches      map of index and brute force match to fit that index
      * @param matches                  the list of matches being built
      * @param matches_length           the length of the password the matches  take up
+     * @param best_matches             wrapper for the best matches list and length
      */
-    private void generateMatches(final long start_time, final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, int matches_length) throws TimeoutException
+    private void generateMatches(final long start_time, final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, int matches_length, BestMatches best_matches) throws TimeoutException
     {
         if (System.currentTimeMillis() - start_time > configuration.getCombinationAlgorithmTimeout())
         {
@@ -461,21 +447,23 @@ public class Nbvcxz
                     continue;
                 }
             }
-            generateMatches(start_time, password, next_match, non_intersecting_matches, brute_force_matches, matches, matches_length);
+            generateMatches(start_time, password, next_match, non_intersecting_matches, brute_force_matches, matches, matches_length, best_matches);
             found_next = true;
         }
 
         if (!found_next)
         {
+            List<Match> best_matches_list = best_matches.getBestMatches();
             // We always look for the most complete match, even if it's not the lowest entropy.
-            if (best_matches.isEmpty() ||
-                    (matches_length >= best_matches_length
-                            && (calcEntropy(matches, false) / matches_length) < (calcEntropy(best_matches, false) / best_matches_length)))
+            if (best_matches_list.isEmpty() ||
+                    (matches_length >= best_matches.getMatchLength()
+                            && (calcEntropy(matches, false) / matches_length) < (calcEntropy(best_matches_list, false) / best_matches.getMatchLength())))
             {
-                best_matches.clear();
-                best_matches.addAll(matches);
-                best_matches_length = matches_length;
-                backfillBruteForce(password, brute_force_matches, best_matches);
+                best_matches_list.clear();
+                best_matches_list.addAll(matches);
+                best_matches.setMatchLength(matches_length);
+                backfillBruteForce(password, brute_force_matches, best_matches_list);
+                best_matches.setBestMatches(best_matches_list);
             }
         }
         // Leave the array in the same state we found it in at the start.

@@ -8,7 +8,9 @@ import me.gosimple.nbvcxz.scoring.Result;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Adam Brusselback
@@ -19,11 +21,6 @@ public class NbvcxzTest
     @Test
     public void testExcludeDictionary()
     {
-
-        String password;
-        Result result;
-        final double tolerance = 0.00000001;
-
         List<Dictionary> dictionaryList = ConfigurationBuilder.getDefaultDictionaries();
         dictionaryList.add(new DictionaryBuilder()
                 .setDictionaryName("exclude")
@@ -36,47 +33,23 @@ public class NbvcxzTest
                 .createConfiguration();
 
         final Nbvcxz nbvcxz = new Nbvcxz(configuration);
+
+
+        final List<EntropyTest> tests = new ArrayList<>();
+        tests.add(new EntropyTest(nbvcxz,"halshauser",0D));
+        tests.add(new EntropyTest(nbvcxz,"Halsauser",0D));
+        tests.add(new EntropyTest(nbvcxz,"1Halshauser",0D));
+        tests.add(new EntropyTest(nbvcxz,"1halshauser",0D));
+        tests.add(new EntropyTest(nbvcxz,"halsha6user",0D));
+        tests.add(new EntropyTest(nbvcxz,"halshauser5696311",18.702389159976338D));
+        tests.add(new EntropyTest(nbvcxz,"halsHauser5696311",18.702389159976338D));
         try
         {
-            password = "halshauser";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
-
-            password = "alshauser";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
-
-
-            password = "Halsauser";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
-
-
-            password = "1Halshauser";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
-
-
-            password = "1halshauser";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
-
-
-            password = "halsha6user";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(0D, result.getEntropy(), 0D * tolerance);
-
-
-            password = "halshauser5696311";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(18.702389159976338D, result.getEntropy(), 18.702389159976338D * tolerance);
-
-
-            password = "halsHauser5696311";
-            result = nbvcxz.estimate(password);
-            Assert.assertEquals(18.702389159976338D, result.getEntropy(), 18.702389159976338D * tolerance);
-
-
+            for (final EntropyTest test : tests)
+            {
+                test.run();
+                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+            }
         }
         catch (Exception e)
         {
@@ -90,98 +63,137 @@ public class NbvcxzTest
     @Test
     public void testEstimate()
     {
-        String password;
-        Result result;
-        final double tolerance = 0.00000001;
         final Nbvcxz nbvcxz = new Nbvcxz();
 
-        password = "correcthorsebatterystaple";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(16.60965490131509D, result.getEntropy(), 16.60965490131509D * tolerance);
+        final List<EntropyTest> tests = new ArrayList<>();
+        tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
+        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.05294537608871D));
+        tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",40.376705346635696D));
+        tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",31.086623767089435D));
+        tests.add(new EntropyTest(nbvcxz,"zxcvbnm",5.321928094887363D));
+        tests.add(new EntropyTest(nbvcxz,"1qaz2wsx3edc",10.523561956057012D));
+        tests.add(new EntropyTest(nbvcxz,"temppass22",16.892495383759368D));
+        tests.add(new EntropyTest(nbvcxz,"briansmith",4.321928094887363D));
+        tests.add(new EntropyTest(nbvcxz,"thx1138",8.049848549450562D));
+        tests.add(new EntropyTest(nbvcxz,"baseball2014",10.59618975614441D));
+        tests.add(new EntropyTest(nbvcxz,"baseball1994",10.59618975614441D));
+        tests.add(new EntropyTest(nbvcxz,"baseball2028",10.59618975614441D));
+        tests.add(new EntropyTest(nbvcxz,"scorpions",13.67529549909406D));
+        tests.add(new EntropyTest(nbvcxz,"ScoRpions",19.198857455151074D));
+        tests.add(new EntropyTest(nbvcxz,"ScoRpi0ns",20.46971136544417D));
+        tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",44.52675492064834D));
+        tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",42.69087661112469D));
+        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
+        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
+        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
 
-        password = "a.b.c.defy";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(35.05294537608871D, result.getEntropy(), 35.05294537608871D * tolerance);
-
-        password = "helpimaliveinhere";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(40.376705346635696D, result.getEntropy(), 40.376705346635696D * tolerance);
-
-        password = "damnwindowsandpaper";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(31.086623767089435D, result.getEntropy(), 31.086623767089435D * tolerance);
-
-        password = "zxcvbnm";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(5.321928094887363D, result.getEntropy(), 5.321928094887363D * tolerance);
-
-        password = "1qaz2wsx3edc";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(10.523561956057012D, result.getEntropy(), 10.523561956057012D * tolerance);
-
-        password = "temppass22";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(16.892495383759368D, result.getEntropy(), 16.892495383759368D * tolerance);
-
-        password = "briansmith";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(4.321928094887363D, result.getEntropy(), 4.321928094887363D * tolerance);
-
-        password = "thx1138";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(8.049848549450562D, result.getEntropy(), 8.049848549450562D * tolerance);
-
-        password = "baseball2014";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(10.59618975614441D, result.getEntropy(), 10.59618975614441D * tolerance);
-
-        password = "baseball1994";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(10.59618975614441D, result.getEntropy(), 10.59618975614441D * tolerance);
-
-        password = "baseball2028";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(10.59618975614441D, result.getEntropy(), 10.59618975614441D * tolerance);
-
-        password = "scorpions";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(13.67529549909406D, result.getEntropy(), 13.67529549909406D * tolerance);
-
-        password = "ScoRpions";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(19.198857455151074D, result.getEntropy(), 19.198857455151074D * tolerance);
-
-        password = "ScoRpi0ns";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(20.46971136544417D, result.getEntropy(), 20.46971136544417D * tolerance);
-
-        password = "thereisneveragoodmonday";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(44.52675492064834D, result.getEntropy(), 44.52675492064834D * tolerance);
-
-        password = "forgetthatchristmaspartytheotheryear";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(42.69087661112469D, result.getEntropy(), 42.69087661112469D * tolerance);
-
-        password = "A Fool and His Money Are Soon Parted";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(84.88322715518174D, result.getEntropy(), 84.88322715518174D * tolerance);
-
-        password = "6c891879ed0a0bbf701d5ca8af39a766";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(124.22235013869417D, result.getEntropy(), 124.22235013869417D * tolerance);
-
-        password = "ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(247.06618865413472D, result.getEntropy(), 247.06618865413472D * tolerance);
-
-        password = "Arvest#1";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(28.98030587016991D, result.getEntropy(), 28.98030587016991D * tolerance);
-
-        password = "Arvest#2";
-        result = nbvcxz.estimate(password);
-        Assert.assertEquals(28.98030587016991D, result.getEntropy(), 28.98030587016991D * tolerance);
+        try
+        {
+            for (final EntropyTest test : tests)
+            {
+                test.run();
+                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+            }
+        }
+        catch (Exception e)
+        {
+            assert false;
+        }
     }
 
+    @Test
+    public void testEstimateConcurrently()
+    {
+        final Nbvcxz nbvcxz = new Nbvcxz();
+
+        final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+
+        final List<EntropyTest> tests = new ArrayList<>();
+        tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
+        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.05294537608871D));
+        tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",40.376705346635696D));
+        tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",31.086623767089435D));
+        tests.add(new EntropyTest(nbvcxz,"zxcvbnm",5.321928094887363D));
+        tests.add(new EntropyTest(nbvcxz,"1qaz2wsx3edc",10.523561956057012D));
+        tests.add(new EntropyTest(nbvcxz,"temppass22",16.892495383759368D));
+        tests.add(new EntropyTest(nbvcxz,"briansmith",4.321928094887363D));
+        tests.add(new EntropyTest(nbvcxz,"thx1138",8.049848549450562D));
+        tests.add(new EntropyTest(nbvcxz,"baseball2014",10.59618975614441D));
+        tests.add(new EntropyTest(nbvcxz,"baseball1994",10.59618975614441D));
+        tests.add(new EntropyTest(nbvcxz,"baseball2028",10.59618975614441D));
+        tests.add(new EntropyTest(nbvcxz,"scorpions",13.67529549909406D));
+        tests.add(new EntropyTest(nbvcxz,"ScoRpions",19.198857455151074D));
+        tests.add(new EntropyTest(nbvcxz,"ScoRpi0ns",20.46971136544417D));
+        tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",44.52675492064834D));
+        tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",42.69087661112469D));
+        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
+        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
+        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
+
+        List<Future> futures = new ArrayList<>();
+        try
+        {
+            // Execute them all
+            for (final EntropyTest test : tests)
+            {
+                futures.add(executor.submit(test));
+            }
+
+            // Wait until they are all done
+            for (final Future future : futures)
+            {
+                future.get();
+            }
+
+            // Check results
+            for (final EntropyTest test : tests)
+            {
+                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+            }
+        }
+        catch (Exception e)
+        {
+            assert false;
+        }
+    }
+
+    private class EntropyTest implements Runnable
+    {
+        private final double tolerance = 0.00000001;
+        private final Nbvcxz nbvcxz;
+        private final String password;
+        private final Double expectedEntropy;
+        private Result result;
+
+        public EntropyTest(Nbvcxz nbvcxz, String password, Double expectedEntropy) {
+            this.nbvcxz = nbvcxz;
+            this.password = password;
+            this.expectedEntropy = expectedEntropy;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public Double getExpectedEntropy() {
+            return expectedEntropy;
+        }
+
+        public Double getDelta() {
+            return expectedEntropy * tolerance;
+        }
+
+        public Double getEntropy() {
+            return result.getEntropy();
+        }
+
+        public Result getResult() {
+            return result;
+        }
+
+        @Override
+        public void run() {
+            result = nbvcxz.estimate(password);
+        }
+    }
 }

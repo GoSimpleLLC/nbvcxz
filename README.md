@@ -68,6 +68,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
         - **English (default)**
         - Afrikaans (af)
         - Dutch (nl)
+        - Finnish (fi)
         - French (fr)
         - German (de)
         - Hungarian (hu)
@@ -75,8 +76,10 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
         - Portuguese (pt)
         - Russian (ru)
         - Spanish (es)
+        - Swedish (sv)
         - Telugu (te)
         - Ukrainian (uk)
+        - Chinese (zh)
 * Better match generation algorithm which will find the absolute lowest entropy combination of the matches.
 * Support for ranked and un-ranked dictionaries.
 * Dictionary matching has the ability to use Levenshtein Distance (LD) calculations to match passwords which are non-exact matches to a dictionary entry.
