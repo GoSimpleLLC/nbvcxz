@@ -40,8 +40,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.main-jdk>8</maven.compiler.main-jdk>
-        <maven.compiler.test-jdk>11</maven.compiler.test-jdk>
     </properties>
 
     <distributionManagement>
