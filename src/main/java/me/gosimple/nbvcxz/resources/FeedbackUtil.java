@@ -8,6 +8,7 @@ import me.gosimple.nbvcxz.matching.match.SequenceMatch;
 import me.gosimple.nbvcxz.matching.match.SpacialMatch;
 import me.gosimple.nbvcxz.matching.match.YearMatch;
 import me.gosimple.nbvcxz.scoring.Result;
+import me.gosimple.nbvcxz.util.CharacterCaseUtil;
 
 import java.util.ArrayList;
 import java.util.List;

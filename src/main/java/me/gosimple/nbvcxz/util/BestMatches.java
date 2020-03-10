@@ -1,4 +1,4 @@
-package me.gosimple.nbvcxz.resources;
+package me.gosimple.nbvcxz.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

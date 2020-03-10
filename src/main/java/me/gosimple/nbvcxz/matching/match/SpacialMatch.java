@@ -54,7 +54,7 @@ public final class SpacialMatch extends BaseMatch
         int length = getToken().length();
         for (int i = 2; i <= length; i++)
         {
-            int possibleTurns = Math.min(turns, i - 1);
+            int possibleTurns = Math.min(turns + 1, i - 1);
             for (int j = 1; j <= possibleTurns; j++)
             {
                 possibilities += nCk(i - 1, j - 1) * size * Math.pow(avgDegree, j);
