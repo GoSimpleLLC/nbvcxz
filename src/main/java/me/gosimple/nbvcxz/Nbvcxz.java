@@ -605,7 +605,7 @@ public class Nbvcxz
             {
                 if (match.getStartIndex() == to_compare.getStartIndex() && match.getEndIndex() == to_compare.getEndIndex())
                 {
-                    if (match.calculateEntropy() / match.getLength() > to_compare.calculateEntropy() / to_compare.getLength())
+                    if (match.getAverageEntropy() > to_compare.getAverageEntropy())
                     {
                         to_remove.add(match);
                         break;

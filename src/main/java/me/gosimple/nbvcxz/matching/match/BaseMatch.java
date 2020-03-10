@@ -94,6 +94,12 @@ public abstract class BaseMatch implements Match
     }
 
     @Override
+    public double getAverageEntropy()
+    {
+        return calculateEntropy() / getLength();
+    }
+
+    @Override
     public String getToken()
     {
         return this.token;

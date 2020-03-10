@@ -28,6 +28,13 @@ public interface Match
     double calculateEntropy();
 
     /**
+     * Get the average entropy per character of the current match
+     *
+     * @return a {@code double} representing the average entropy per character of the current {@code Match}.
+     */
+    double getAverageEntropy();
+
+    /**
      * Returns the start index of this part of the password
      *
      * @return the {@code int} start index of this {@code Match}.
