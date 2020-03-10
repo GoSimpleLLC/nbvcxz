@@ -3,7 +3,6 @@ package me.gosimple.nbvcxz.matching;
 import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.matching.match.SpacialMatch;
 import me.gosimple.nbvcxz.resources.AdjacencyGraph;
-import me.gosimple.nbvcxz.resources.AdjacencyGraphUtil;
 import me.gosimple.nbvcxz.resources.Configuration;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public final class SpacialMatcher implements PasswordMatcher
             // Get all the neighbors for each character
             for (int i = 0; i < password.length(); i++)
             {
-                neighbors.put(i, AdjacencyGraphUtil.getNeighbors(adjacencyGraph, password.charAt(i)));
+                neighbors.put(i, adjacencyGraph.getNeighbors(password.charAt(i)));
             }
 
             // Build out matches
@@ -57,7 +56,7 @@ public final class SpacialMatcher implements PasswordMatcher
                         builder.append(character);
                         if (builder.length() > 2)
                         {
-                            matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph, AdjacencyGraphUtil.getTurns(adjacencyGraph, builder.toString()), AdjacencyGraphUtil.getShifts(adjacencyGraph, builder.toString())));
+                            matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph, adjacencyGraph.getTurns(builder.toString()), adjacencyGraph.getShifts(builder.toString())));
                         }
                         builder.setLength(0);
                     }
@@ -68,7 +67,7 @@ public final class SpacialMatcher implements PasswordMatcher
                     builder.append(character);
                     if (builder.length() > 2)
                     {
-                        matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph, AdjacencyGraphUtil.getTurns(adjacencyGraph, builder.toString()), AdjacencyGraphUtil.getShifts(adjacencyGraph, builder.toString())));
+                        matches.add(new SpacialMatch(builder.toString(), configuration, i - builder.length() + 1, i, adjacencyGraph, adjacencyGraph.getTurns(builder.toString()), adjacencyGraph.getShifts(builder.toString())));
                     }
                     builder.setLength(0);
                 }

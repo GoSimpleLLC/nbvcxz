@@ -1,6 +1,6 @@
 package me.gosimple.nbvcxz.matching.match;
 
-import me.gosimple.nbvcxz.resources.BruteForceUtil;
+import me.gosimple.nbvcxz.util.BruteForceUtil;
 import me.gosimple.nbvcxz.resources.Configuration;
 
 import java.util.ResourceBundle;

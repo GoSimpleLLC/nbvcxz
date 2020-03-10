@@ -1,5 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
+import me.gosimple.nbvcxz.util.DictionaryUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class DictionaryUtilTest
         {
             String value = entry.getKey();
             Integer expected = entry.getValue();
-            Integer computed = DictionaryUtil.loadRankedDictionary(DictionaryUtil.passwords).get(value);
+            Integer computed = DictionaryUtil.loadRankedDictionary("passwords.txt").get(value);
             Assert.assertEquals(expected, computed);
         }
     }

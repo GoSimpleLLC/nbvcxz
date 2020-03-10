@@ -2,7 +2,7 @@ package me.gosimple.nbvcxz.resources;
 
 import org.junit.Test;
 
-import static me.gosimple.nbvcxz.resources.CharacterCaseUtil.fractionOfStringUppercase;
+import static me.gosimple.nbvcxz.util.CharacterCaseUtil.fractionOfStringUppercase;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 

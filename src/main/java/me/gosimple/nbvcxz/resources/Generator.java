@@ -1,5 +1,7 @@
 package me.gosimple.nbvcxz.resources;
 
+import me.gosimple.nbvcxz.util.DictionaryUtil;
+
 import java.security.SecureRandom;
 
 /**
@@ -9,6 +11,11 @@ import java.security.SecureRandom;
  */
 public class Generator
 {
+    private static Dictionary eff_large;
+
+    static {
+        eff_large = new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false);
+    }
     /**
      * Generates a passphrase from the eff_large standard dictionary with the requested word count.
      *
@@ -18,7 +25,7 @@ public class Generator
      */
     public static String generatePassphrase(final String delimiter, final int words)
     {
-        return generatePassphrase(delimiter, words, new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false));
+        return generatePassphrase(delimiter, words, eff_large);
     }
 
     /**

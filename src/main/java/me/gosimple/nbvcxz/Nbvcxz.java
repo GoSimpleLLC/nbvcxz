@@ -6,6 +6,7 @@ import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.*;
 import me.gosimple.nbvcxz.scoring.Result;
 import me.gosimple.nbvcxz.scoring.TimeEstimate;
+import me.gosimple.nbvcxz.util.BestMatches;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

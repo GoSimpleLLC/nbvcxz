@@ -10,6 +10,7 @@ import me.gosimple.nbvcxz.matching.SequenceMatcher;
 import me.gosimple.nbvcxz.matching.SpacialMatcher;
 import me.gosimple.nbvcxz.matching.YearMatcher;
 import me.gosimple.nbvcxz.matching.match.Match;
+import me.gosimple.nbvcxz.util.DictionaryUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
