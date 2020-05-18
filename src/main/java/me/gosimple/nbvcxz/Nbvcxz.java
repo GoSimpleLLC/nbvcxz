@@ -656,7 +656,7 @@ public class Nbvcxz
                 {
                     return -1;
                 }
-                else
+                else if (match_1.getToken().length() > match_2.getToken().length())
                 {
                     return 1;
                 }
