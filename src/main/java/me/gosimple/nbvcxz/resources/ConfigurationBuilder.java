@@ -28,7 +28,57 @@ import java.util.regex.Pattern;
 public class ConfigurationBuilder
 {
     private static final double YEAR = 365.2422 * 24 * 60 * 60 * 1000; // Average year length
-    private static final long START = 1533096000000L; // Date values were chosen: 2018-08-01
+    private static final long START = 1533096000000L; // Date values were chosen: 2018-08-01    
+    
+    private static final List<Dictionary> defaultDictionaries = new ArrayList<>();
+    private static final List<PasswordMatcher> defaultPasswordMatchers = new ArrayList<>();
+    private static final List<AdjacencyGraph> defaultAdjacencyGraphs = new ArrayList<>();
+    private static final Map<Character, Character[]> defaultLeetTable = new HashMap<>();
+    
+    static 
+    {
+        defaultPasswordMatchers.add(new DateMatcher());
+        defaultPasswordMatchers.add(new YearMatcher());
+        defaultPasswordMatchers.add(new RepeatMatcher());
+        defaultPasswordMatchers.add(new SequenceMatcher());
+        defaultPasswordMatchers.add(new SpacialMatcher());
+        defaultPasswordMatchers.add(new DictionaryMatcher());
+        defaultPasswordMatchers.add(new SeparatorMatcher());
+
+        defaultDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadRankedDictionary(DictionaryUtil.passwords), false));
+        defaultDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.male_names), false));
+        defaultDictionaries.add(new Dictionary("female_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.female_names), false));
+        defaultDictionaries.add(new Dictionary("surnames", DictionaryUtil.loadRankedDictionary(DictionaryUtil.surnames), false));
+        defaultDictionaries.add(new Dictionary("english", DictionaryUtil.loadRankedDictionary(DictionaryUtil.english), false));
+        defaultDictionaries.add(new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false));
+
+        defaultAdjacencyGraphs.add(new AdjacencyGraph("Qwerty", AdjacencyGraphUtil.qwerty));
+        defaultAdjacencyGraphs.add(new AdjacencyGraph("Standard Keypad", AdjacencyGraphUtil.standardKeypad));
+        defaultAdjacencyGraphs.add(new AdjacencyGraph("Mac Keypad", AdjacencyGraphUtil.macKeypad));
+
+        defaultLeetTable.put('4', new Character[]{'a'});
+        defaultLeetTable.put('@', new Character[]{'a'});
+        defaultLeetTable.put('8', new Character[]{'b'});
+        defaultLeetTable.put('(', new Character[]{'c'});
+        defaultLeetTable.put('{', new Character[]{'c'});
+        defaultLeetTable.put('[', new Character[]{'c'});
+        defaultLeetTable.put('<', new Character[]{'c'});
+        defaultLeetTable.put('3', new Character[]{'e'});
+        defaultLeetTable.put('9', new Character[]{'g'});
+        defaultLeetTable.put('6', new Character[]{'g'});
+        defaultLeetTable.put('&', new Character[]{'g'});
+        defaultLeetTable.put('#', new Character[]{'h'});
+        defaultLeetTable.put('!', new Character[]{'i', 'l'});
+        defaultLeetTable.put('1', new Character[]{'i', 'l'});
+        defaultLeetTable.put('|', new Character[]{'i', 'l'});
+        defaultLeetTable.put('0', new Character[]{'o'});
+        defaultLeetTable.put('$', new Character[]{'s'});
+        defaultLeetTable.put('5', new Character[]{'s'});
+        defaultLeetTable.put('+', new Character[]{'t'});
+        defaultLeetTable.put('7', new Character[]{'t', 'l'});
+        defaultLeetTable.put('%', new Character[]{'x'});
+        defaultLeetTable.put('2', new Character[]{'z'});
+    }
 
     private List<PasswordMatcher> passwordMatchers;
     private Map<String, Long> guessTypes;
@@ -47,15 +97,7 @@ public class ConfigurationBuilder
      */
     public static List<PasswordMatcher> getDefaultPasswordMatchers()
     {
-        List<PasswordMatcher> passwordMatchers = new ArrayList<>();
-        passwordMatchers.add(new DateMatcher());
-        passwordMatchers.add(new YearMatcher());
-        passwordMatchers.add(new RepeatMatcher());
-        passwordMatchers.add(new SequenceMatcher());
-        passwordMatchers.add(new SpacialMatcher());
-        passwordMatchers.add(new DictionaryMatcher());
-        passwordMatchers.add(new SeparatorMatcher());
-        return passwordMatchers;
+        return defaultPasswordMatchers;
     }
 
     /**
@@ -123,14 +165,7 @@ public class ConfigurationBuilder
      */
     public static List<Dictionary> getDefaultDictionaries()
     {
-        List<Dictionary> tmpDictionaries = new ArrayList<>();
-        tmpDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadRankedDictionary(DictionaryUtil.passwords), false));
-        tmpDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.male_names), false));
-        tmpDictionaries.add(new Dictionary("female_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.female_names), false));
-        tmpDictionaries.add(new Dictionary("surnames", DictionaryUtil.loadRankedDictionary(DictionaryUtil.surnames), false));
-        tmpDictionaries.add(new Dictionary("english", DictionaryUtil.loadRankedDictionary(DictionaryUtil.english), false));
-        tmpDictionaries.add(new Dictionary("eff_large", DictionaryUtil.loadUnrankedDictionary(DictionaryUtil.eff_large), false));
-        return tmpDictionaries;
+        return defaultDictionaries;
     }
 
     /**
@@ -138,11 +173,7 @@ public class ConfigurationBuilder
      */
     public static List<AdjacencyGraph> getDefaultAdjacencyGraphs()
     {
-        List<AdjacencyGraph> tmpAdjacencyGraphs = new ArrayList<>();
-        tmpAdjacencyGraphs.add(new AdjacencyGraph("Qwerty", AdjacencyGraphUtil.qwerty));
-        tmpAdjacencyGraphs.add(new AdjacencyGraph("Standard Keypad", AdjacencyGraphUtil.standardKeypad));
-        tmpAdjacencyGraphs.add(new AdjacencyGraph("Mac Keypad", AdjacencyGraphUtil.macKeypad));
-        return tmpAdjacencyGraphs;
+        return defaultAdjacencyGraphs;
     }
 
     /**
@@ -150,30 +181,7 @@ public class ConfigurationBuilder
      */
     public static Map<Character, Character[]> getDefaultLeetTable()
     {
-        Map<Character, Character[]> tmpLeetTable = new HashMap<>();
-        tmpLeetTable.put('4', new Character[]{'a'});
-        tmpLeetTable.put('@', new Character[]{'a'});
-        tmpLeetTable.put('8', new Character[]{'b'});
-        tmpLeetTable.put('(', new Character[]{'c'});
-        tmpLeetTable.put('{', new Character[]{'c'});
-        tmpLeetTable.put('[', new Character[]{'c'});
-        tmpLeetTable.put('<', new Character[]{'c'});
-        tmpLeetTable.put('3', new Character[]{'e'});
-        tmpLeetTable.put('9', new Character[]{'g'});
-        tmpLeetTable.put('6', new Character[]{'g'});
-        tmpLeetTable.put('&', new Character[]{'g'});
-        tmpLeetTable.put('#', new Character[]{'h'});
-        tmpLeetTable.put('!', new Character[]{'i', 'l'});
-        tmpLeetTable.put('1', new Character[]{'i', 'l'});
-        tmpLeetTable.put('|', new Character[]{'i', 'l'});
-        tmpLeetTable.put('0', new Character[]{'o'});
-        tmpLeetTable.put('$', new Character[]{'s'});
-        tmpLeetTable.put('5', new Character[]{'s'});
-        tmpLeetTable.put('+', new Character[]{'t'});
-        tmpLeetTable.put('7', new Character[]{'t', 'l'});
-        tmpLeetTable.put('%', new Character[]{'x'});
-        tmpLeetTable.put('2', new Character[]{'z'});
-        return tmpLeetTable;
+        return defaultLeetTable;
     }
 
     /**
