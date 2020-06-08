@@ -9,7 +9,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Adam Brusselback
@@ -188,6 +191,42 @@ public class DictionaryMatcherTest
 
         Assert.assertEquals(expectedHash, computedHash);
 
+    }
+
+    /**
+     * Test of passwords that contain munged substitutions of arbitrary lengths
+     * (E.g. 'w' could be written as 'uu')
+     */
+    @Test
+    public void testArbitraryLengthSubstitutions()
+    {
+        System.out.println("Test of arbitrary length munge substitutions, of class DictionaryMatcher");
+
+        PasswordMatcher matcher = new DictionaryMatcher();
+
+        // create a table of expected dictionary matches
+        Map<String, String> mappings = new HashMap<>();
+        mappings.put("P@55uu0rd", "password"); // uu = w (from issue #45)
+        mappings.put("/\\/\\3G4", "mega"); // /\/\ = m
+        mappings.put("|)R!2b|3", "dribble"); // |) = D, 2b = bb
+        mappings.put("/\\/\\02!2l4", "mozilla"); // /\/\02!2l4 (2l = l)
+        mappings.put("so2n3", "some"); // 2n could mean nn or m, make sure 'm' is used
+        mappings.put("pe2n", "penn"); // same as above, but expecting 2n = nn
+
+        for (String munged : mappings.keySet()) {
+            // make a list of all the dictionary matches that were made,
+            // using streams to convert a list of matches to a list of each match's dictionary value
+            List<String> dictValues = matcher.match(configuration, munged)
+                                              .stream()
+                                              .map(DictionaryMatch.class::cast) // this is kind of dirty
+                                              .map(DictionaryMatch::getDictionaryValue)
+                                              .collect(Collectors.toList());
+
+            // make sure the "unmunged" version is in the list of dictionary value matches somewhere
+            String unmunged = mappings.get(munged);
+            String message = String.format("'%s' did not get matched to '%s'", munged, unmunged);
+            Assert.assertTrue(message, dictValues.contains(unmunged));
+        }
     }
 
     private int calcHash(List<Match> matches)

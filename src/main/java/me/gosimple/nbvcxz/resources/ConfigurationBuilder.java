@@ -1,14 +1,7 @@
 package me.gosimple.nbvcxz.resources;
 
 import me.gosimple.nbvcxz.Nbvcxz;
-import me.gosimple.nbvcxz.matching.DateMatcher;
-import me.gosimple.nbvcxz.matching.DictionaryMatcher;
-import me.gosimple.nbvcxz.matching.PasswordMatcher;
-import me.gosimple.nbvcxz.matching.RepeatMatcher;
-import me.gosimple.nbvcxz.matching.SeparatorMatcher;
-import me.gosimple.nbvcxz.matching.SequenceMatcher;
-import me.gosimple.nbvcxz.matching.SpacialMatcher;
-import me.gosimple.nbvcxz.matching.YearMatcher;
+import me.gosimple.nbvcxz.matching.*;
 import me.gosimple.nbvcxz.matching.match.Match;
 
 import java.math.BigDecimal;
@@ -33,7 +26,7 @@ public class ConfigurationBuilder
     private static final List<Dictionary> defaultDictionaries = new ArrayList<>();
     private static final List<PasswordMatcher> defaultPasswordMatchers = new ArrayList<>();
     private static final List<AdjacencyGraph> defaultAdjacencyGraphs = new ArrayList<>();
-    private static final Map<Character, Character[]> defaultLeetTable = new HashMap<>();
+    private static final MungeTable defaultMungeTable = new MungeTable();
     
     static 
     {
@@ -56,35 +49,56 @@ public class ConfigurationBuilder
         defaultAdjacencyGraphs.add(new AdjacencyGraph("Standard Keypad", AdjacencyGraphUtil.standardKeypad));
         defaultAdjacencyGraphs.add(new AdjacencyGraph("Mac Keypad", AdjacencyGraphUtil.macKeypad));
 
-        defaultLeetTable.put('4', new Character[]{'a'});
-        defaultLeetTable.put('@', new Character[]{'a'});
-        defaultLeetTable.put('8', new Character[]{'b'});
-        defaultLeetTable.put('(', new Character[]{'c'});
-        defaultLeetTable.put('{', new Character[]{'c'});
-        defaultLeetTable.put('[', new Character[]{'c'});
-        defaultLeetTable.put('<', new Character[]{'c'});
-        defaultLeetTable.put('3', new Character[]{'e'});
-        defaultLeetTable.put('9', new Character[]{'g'});
-        defaultLeetTable.put('6', new Character[]{'g'});
-        defaultLeetTable.put('&', new Character[]{'g'});
-        defaultLeetTable.put('#', new Character[]{'h'});
-        defaultLeetTable.put('!', new Character[]{'i', 'l'});
-        defaultLeetTable.put('1', new Character[]{'i', 'l'});
-        defaultLeetTable.put('|', new Character[]{'i', 'l'});
-        defaultLeetTable.put('0', new Character[]{'o'});
-        defaultLeetTable.put('$', new Character[]{'s'});
-        defaultLeetTable.put('5', new Character[]{'s'});
-        defaultLeetTable.put('+', new Character[]{'t'});
-        defaultLeetTable.put('7', new Character[]{'t', 'l'});
-        defaultLeetTable.put('%', new Character[]{'x'});
-        defaultLeetTable.put('2', new Character[]{'z'});
+        defaultMungeTable
+            // simple single character substitutions (mostly leet speak)
+            .addSub("4", "a")
+            .addSub("@", "a")
+            .addSub("8", "b")
+            .addSub("(", "c")
+            .addSub("{", "c")
+            .addSub("[", "c")
+            .addSub("<", "c", "k", "v")
+            .addSub(">", "v")
+            .addSub("3", "e")
+            .addSub("9", "g", "q")
+            .addSub("6", "d", "g")
+            .addSub("&", "g")
+            .addSub("#", "f", "h")
+            .addSub("!", "i", "l")
+            .addSub("1", "i", "l")
+            .addSub("|", "i", "l")
+            .addSub("0", "o")
+            .addSub("$", "s")
+            .addSub("5", "s")
+            .addSub("+", "t")
+            .addSub("7", "t", "l")
+            .addSub("%", "x")
+            .addSub("2", "z")
+            // extra "munged" variations from here: https://en.wikipedia.org/wiki/Munged_password
+            .addSub("?", "y") // (y = why?)
+            .addSub("uu", "w")
+            .addSub("vv", "w")
+            .addSub("nn", "m")
+            .addSub("2u", "uu", "w")
+            .addSub("2v", "vv", "w")
+            .addSub("2n", "nn", "m")
+            .addSub("2b", "bb")
+            .addSub("2d", "dd")
+            .addSub("2g", "gg")
+            .addSub("2l", "ll")
+            .addSub("2p", "pp")
+            .addSub("2t", "tt")
+            .addSub("\\/\\/", "w")
+            .addSub("/\\/\\", "m")
+            .addSub("|)", "d")
+            .sort();
     }
 
     private List<PasswordMatcher> passwordMatchers;
     private Map<String, Long> guessTypes;
     private List<Dictionary> dictionaries;
     private List<AdjacencyGraph> adjacencyGraphs;
-    private Map<Character, Character[]> leetTable;
+    private MungeTable leetTable;
     private Pattern yearPattern;
     private Double minimumEntropy;
     private Locale locale;
@@ -179,9 +193,9 @@ public class ConfigurationBuilder
     /**
      * @return The default table of common english leet substitutions
      */
-    public static Map<Character, Character[]> getDefaultLeetTable()
+    public static MungeTable getDefaultMungeTable()
     {
-        return defaultLeetTable;
+        return defaultMungeTable;
     }
 
     /**
@@ -282,7 +296,7 @@ public class ConfigurationBuilder
      * @param leetTable Map for leetTable
      * @return Builder
      */
-    public ConfigurationBuilder setLeetTable(Map<Character, Character[]> leetTable)
+    public ConfigurationBuilder setLeetTable(MungeTable leetTable)
     {
         this.leetTable = leetTable;
         return this;
@@ -419,7 +433,7 @@ public class ConfigurationBuilder
         }
         if (leetTable == null)
         {
-            leetTable = getDefaultLeetTable();
+            leetTable = getDefaultMungeTable();
         }
         if (yearPattern == null)
         {

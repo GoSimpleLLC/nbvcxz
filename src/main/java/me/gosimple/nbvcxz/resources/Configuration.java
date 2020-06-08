@@ -1,9 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
-import me.gosimple.nbvcxz.matching.DictionaryMatcher;
-import me.gosimple.nbvcxz.matching.PasswordMatcher;
-import me.gosimple.nbvcxz.matching.SpacialMatcher;
-import me.gosimple.nbvcxz.matching.YearMatcher;
+import me.gosimple.nbvcxz.matching.*;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +19,7 @@ public class Configuration
     private final Map<String, Long> guessTypes;
     private final List<Dictionary> dictionaries;
     private final List<AdjacencyGraph> adjacencyGraphs;
-    private final Map<Character, Character[]> leetTable;
+    private final MungeTable mungeTable;
     private final Pattern yearPattern;
     private final Double minimumEntropy;
     private final Locale locale;
@@ -36,20 +33,20 @@ public class Configuration
      * @param guessTypes                  Map of types of guesses, and associated guesses/sec
      * @param dictionaries                List of {@link Dictionary} to use for the {@link DictionaryMatcher}
      * @param adjacencyGraphs             List of adjacency graphs to be used by the {@link SpacialMatcher}
-     * @param leetTable                   Leet table for use with {@link DictionaryMatcher}
+     * @param mungeTable                   Munge table for use with {@link DictionaryMatcher}
      * @param yearPattern                 Regex {@link Pattern} for use with {@link YearMatcher}
      * @param minimumEntropy              Minimum entropy value passwords should meet
      * @param locale                      Locale for localized text and feedback
      * @param distanceCalc                Enable or disable levenshtein distance calculation for dictionary matches
      * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, MungeTable mungeTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
         this.dictionaries = dictionaries;
         this.adjacencyGraphs = adjacencyGraphs;
-        this.leetTable = leetTable;
+        this.mungeTable = mungeTable;
         this.yearPattern = yearPattern;
         this.minimumEntropy = minimumEntropy;
         this.locale = locale;
@@ -94,9 +91,9 @@ public class Configuration
     /**
      * @return Leet table for use with {@link DictionaryMatcher}
      */
-    public Map<Character, Character[]> getLeetTable()
+    public MungeTable getMungeTable()
     {
-        return leetTable;
+        return mungeTable;
     }
 
     /**

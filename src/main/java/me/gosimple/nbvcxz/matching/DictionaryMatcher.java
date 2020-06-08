@@ -5,10 +5,7 @@ import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.Dictionary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Look for every part of the password that match an entry in our dictionaries
@@ -18,68 +15,77 @@ import java.util.TreeMap;
 public final class DictionaryMatcher implements PasswordMatcher
 {
     /**
-     * Removes all leet substitutions from the password and returns a list of plain text versions.
+     * Removes all munge substitutions from the password and returns a list of plain text versions.
      *
      * @param configuration the configuration file used to estimate entropy.
-     * @param password      the password to translate from leet.
-     * @return a list of all combinations of possible leet translations for the password with all leet removed.
+     * @param password      the password to unmunge.
+     * @return a list of all combinations of possible unmunged translations for the password with all munges removed.
      */
-    private static List<String> translateLeet(final Configuration configuration, final String password)
+    private static List<String> getUnmungedVariations(final Configuration configuration, final String password)
     {
-        final List<String> translations = new ArrayList();
-        final TreeMap<Integer, Character[]> replacements = new TreeMap<>();
+        MungeTable mungeTable = configuration.getMungeTable();
+        PasswordChain chain = new PasswordChain(password);
 
-        for (int i = 0; i < password.length(); i++)
-        {
-            final Character[] replacement = configuration.getLeetTable().get(password.charAt(i));
-            if (replacement != null)
-            {
-                replacements.put(i, replacement);
+        for (String mungeKey : mungeTable.getKeys()) { // keys sorted largest to smallest
+            for (int i = 0; i < chain.size(); i++) {
+                // remove this password part if it can be split up further
+                String unsplit = chain.removeIfUnsplit(i);
+                if (unsplit != null) {
+                    // split password segment by the munge key
+                    String[] splitParts = mungeTable.getKeyPattern(mungeKey).split(unsplit);
+                    for (int j = 0; j < splitParts.length; j++) {
+                        String sp = splitParts[j];
+                        // add the subs back into the chain, or just add the segment back if the munge key wasn't present
+                        chain.add(i + j, mungeTable.getSubsOrOriginal(sp), sp.equals(mungeKey));
+                    }
+                }
             }
         }
 
-        // Do not bother continuing if we're going to replace every single character
-        if(replacements.keySet().size() == password.length())
-            return translations;
+        final List<String> translations = new ArrayList<>();
 
-        if (replacements.size() > 0)
+        if (chain.size() > 1)
         {
-            final char[] password_char = new char[password.length()];
-            for (int i = 0; i < password.length(); i++)
-            {
-                password_char[i] = password.charAt(i);
-            }
-            replaceAtIndex(replacements, replacements.firstKey(), password_char, translations);
+            // recursively generate all password permutations using the discovered munges
+            replaceAtIndex(chain.getParts(), 0, new int[chain.size()], translations);
         }
 
         return translations;
     }
 
     /**
-     * Internal function to recursively build the list of un-leet possibilities.
+     * Internal function to recursively build the list of possible unmunged password permutations.
      *
-     * @param replacements    TreeMap of replacement index, and the possible characters at that index to be replaced
-     * @param current_index   internal use for the function
-     * @param password        a Character array of the original password
-     * @param final_passwords List of the final passwords to be filled
+     * @param replacements    List of possible password replacement substrings
+     * @param index           Next index to generate all permutations at
+     * @param usingIndexes     Bijection of replacements, where usingIndexes[i] specifies the
+     *                         substring to use from replacements at the next iteration
+     * @param finalPasswords Full list of generated password permutations
      */
-    private static void replaceAtIndex(final TreeMap<Integer, Character[]> replacements, Integer current_index, final char[] password, final List<String> final_passwords)
+    private static void replaceAtIndex(final List<String[]> replacements, int index, int[] usingIndexes, final List<String> finalPasswords)
     {
-        for (final char replacement : replacements.get(current_index))
-        {
-            password[current_index] = replacement;
-            if (current_index.equals(replacements.lastKey()))
-            {
-                final_passwords.add(new String(password));
+        if (index == replacements.size()) {
+            // reached the end; build the password using the current index permutation
+            StringBuilder passwordBuilder = new StringBuilder();
+            for (int i = 0; i < replacements.size(); i++) {
+                passwordBuilder.append(replacements.get(i)[usingIndexes[i]]);
             }
-            else if (final_passwords.size() > 100)
+
+            finalPasswords.add(passwordBuilder.toString());
+            return;
+        }
+
+        // exhaust all of the substring permutations at the current index
+        for (int i = 0; i < replacements.get(index).length; i++)
+        {
+            if (finalPasswords.size() < 100)
             {
+                usingIndexes[index] = i;
+                replaceAtIndex(replacements, index + 1, usingIndexes, finalPasswords);
+            }
+            else {
                 // Give up if we've already made 100 replacements
                 return;
-            }
-            else
-            {
-                replaceAtIndex(replacements, replacements.higherKey(current_index), password, final_passwords);
             }
         }
     }
@@ -298,7 +304,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                     }
 
                     // Only do unleet if it's different than the regular lower.
-                    final List<String> unleet_list = translateLeet(configuration, lower_part);
+                    final List<String> unleet_list = getUnmungedVariations(configuration, lower_part);
                     for (final String unleet_part : unleet_list)
                     {
                         final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
@@ -402,5 +408,68 @@ public final class DictionaryMatcher implements PasswordMatcher
         }
         // Return all the matches
         return matches;
+    }
+}
+
+/**
+ * Represents password permutations, using a list of candidate substrings. For instance, the first permutation
+ * of the full password would be the 0th string from each part of the chain. This class is used to exhaust
+ * password munging combinations.
+ */
+class PasswordChain {
+    // substring candidates
+    private List<String[]> parts;
+    // a bijection with the list above, where each index specifies if the candidate parts at an index have
+    // already been completely unmunged
+    private List<Boolean> converted;
+
+    /**
+     * Creates a password chain using an initial String value.
+     */
+    public PasswordChain(String originalPassword) {
+        this.parts = new LinkedList<>();
+        this.converted = new LinkedList<>();
+
+        add(0, new String[] {originalPassword}, false);
+    }
+
+    /**
+     * Adds a list of candidate substrings to a specific index in the chain.
+     * @param index Index to insert the candidates at
+     * @param subs Candidate substrings for that index
+     * @param converted Should be true if subs is the result of unmunging a part of the original password, false otherwise
+     */
+    public void add(int index, String[] subs, boolean converted) {
+        parts.add(index, subs);
+        this.converted.add(index, converted);
+    }
+
+    /**
+     * Removes a list of candidate substrings from the chain, only if it has yet to be split up.
+     * @param index Index of the candidate substrings
+     * @return The candidate substring (since the removed array was of length 1). Null if that index has been split already.
+     */
+    public String removeIfUnsplit(int index) {
+        if (parts.get(index).length == 1 && !converted.get(index)) { // unsplit AND not yet unmunged
+            // return and remove the candidate part
+            converted.remove(index);
+            return parts.remove(index)[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return List of candidate substring parts
+     */
+    public List<String[]> getParts() {
+        return parts;
+    }
+
+    /**
+     * @return Size of the chain
+     */
+    public int size() {
+        return parts.size();
     }
 }
