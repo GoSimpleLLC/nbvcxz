@@ -1,4 +1,4 @@
-package me.gosimple.nbvcxz.matching;
+package me.gosimple.nbvcxz.resources;
 
 import java.util.ArrayList;
 import java.util.HashMap;
