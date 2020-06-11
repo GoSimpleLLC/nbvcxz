@@ -28,15 +28,25 @@ public final class DictionaryMatcher implements PasswordMatcher
 
         for (String mungeKey : mungeTable.getKeys()) { // keys sorted largest to smallest
             for (int i = 0; i < chain.size(); i++) {
-                // remove this password part if it can be split up further
-                String unsplit = chain.removeIfUnsplit(i);
-                if (unsplit != null) {
+                // get the next password part (will be null if it doesn't contain the munge key)
+                String part = chain.getPartIfContainsKey(i, mungeKey);
+                if (part != null) {
                     // split password segment by the munge key
-                    String[] splitParts = mungeTable.getKeyPattern(mungeKey).split(unsplit);
+                    String[] splitParts = mungeTable.getKeyPattern(mungeKey).split(part);
+
                     for (int j = 0; j < splitParts.length; j++) {
+                        // index of where the replacements go in the chain
+                        int index = i + j;
                         String sp = splitParts[j];
-                        // add the subs back into the chain, or just add the segment back if the munge key wasn't present
-                        chain.add(i + j, mungeTable.getSubsOrOriginal(sp), sp.equals(mungeKey));
+                        boolean converted = sp.equals(mungeKey);
+                        String[] subs = mungeTable.getSubsOrOriginal(sp);
+                        // add the replacements back into the chain
+                        if (j == 0) {
+                            chain.replace(index, subs, converted);
+                        }
+                        else {
+                            chain.add(index, subs, converted);
+                        }
                     }
                 }
             }
@@ -47,7 +57,7 @@ public final class DictionaryMatcher implements PasswordMatcher
         if (chain.size() > 1)
         {
             // recursively generate all password permutations using the discovered munges
-            replaceAtIndex(chain.getParts(), 0, new int[chain.size()], translations);
+            replaceAtIndex(chain.getParts(), 0, new StringBuilder(), translations);
         }
 
         return translations;
@@ -56,35 +66,34 @@ public final class DictionaryMatcher implements PasswordMatcher
     /**
      * Internal function to recursively build the list of possible unmunged password permutations.
      *
-     * @param replacements    List of possible password replacement substrings
+     * @param replacements    2D array of possible password replacement substrings
      * @param index           Next index to generate all permutations at
-     * @param usingIndexes     Bijection of replacements, where usingIndexes[i] specifies the
-     *                         substring to use from replacements at the next iteration
+     * @param buffer         Buffer used to incrementally build each password permutation
      * @param finalPasswords Full list of generated password permutations
      */
-    private static void replaceAtIndex(final List<String[]> replacements, int index, int[] usingIndexes, final List<String> finalPasswords)
+    private static void replaceAtIndex(final String[][] replacements, int index, StringBuilder buffer, final List<String> finalPasswords)
     {
-        if (index == replacements.size()) {
-            // reached the end; build the password using the current index permutation
-            StringBuilder passwordBuilder = new StringBuilder();
-            for (int i = 0; i < replacements.size(); i++) {
-                passwordBuilder.append(replacements.get(i)[usingIndexes[i]]);
-            }
-
-            finalPasswords.add(passwordBuilder.toString());
+        if (index == replacements.length) {
+            // reached the end; add the contents of the buffer to the list of password permutations
+            finalPasswords.add(buffer.toString());
             return;
         }
 
         // exhaust all of the substring permutations at the current index
-        for (int i = 0; i < replacements.get(index).length; i++)
+        for (int i = 0; i < replacements[index].length; i++)
         {
             if (finalPasswords.size() < 100)
             {
-                usingIndexes[index] = i;
-                replaceAtIndex(replacements, index + 1, usingIndexes, finalPasswords);
+                // add the next substring permutation to the buffer
+                String postfix = replacements[index][i];
+                buffer.append(postfix);
+                // recursively build the rest of the string
+                replaceAtIndex(replacements, index + 1, buffer, finalPasswords);
+                // backtrack by ignoring the added postfix
+                buffer.setLength(buffer.length() - postfix.length());
             }
             else {
-                // Give up if we've already made 100 replacements
+                // give up if we've already generated 100 password permutations
                 return;
             }
         }
@@ -427,16 +436,45 @@ class PasswordChain {
      * Creates a password chain using an initial String value.
      */
     public PasswordChain(String originalPassword) {
-        this.parts = new LinkedList<>();
-        this.converted = new LinkedList<>();
+        this.parts = new ArrayList<>();
+        this.converted = new ArrayList<>();
 
         add(0, new String[] {originalPassword}, false);
     }
 
     /**
-     * Adds a list of candidate substrings to a specific index in the chain.
+     * Gets the password part at an index, if it contains the munge key
+     * and has not been substituted yet.
+     * @param index Index of the part to return
+     * @param key The munge key
+     * @return Single password part, containing the munge key, or null if the requirements were not met
+     */
+    public String getPartIfContainsKey(int index, String key) {
+        String[] subParts = parts.get(index);
+        String firstPart = subParts[0];
+        if (!converted.get(index) && firstPart.contains(key)) {
+            return firstPart;
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Replaces a part of the chain with possible substitutes.
+     * @param index Index of the part of the chain to replace
+     * @param subs Possible password munging substitutes
+     * @param converted Should be true if subs is the result of unmunging a part of the original password, false otherwise
+     */
+    public void replace(int index, String[] subs, boolean converted) {
+        parts.set(index, subs);
+        this.converted.set(index, converted);
+    }
+
+    /**
+     * Adds a list of possible password unmunge substitutes to a specific index in the chain.
      * @param index Index to insert the candidates at
-     * @param subs Candidate substrings for that index
+     * @param subs Possible password munging substitutes
      * @param converted Should be true if subs is the result of unmunging a part of the original password, false otherwise
      */
     public void add(int index, String[] subs, boolean converted) {
@@ -445,25 +483,16 @@ class PasswordChain {
     }
 
     /**
-     * Removes a list of candidate substrings from the chain, only if it has yet to be split up.
-     * @param index Index of the candidate substrings
-     * @return The candidate substring (since the removed array was of length 1). Null if that index has been split already.
+     * @return 2D string array representation of this password chain
      */
-    public String removeIfUnsplit(int index) {
-        if (parts.get(index).length == 1 && !converted.get(index)) { // unsplit AND not yet unmunged
-            // return and remove the candidate part
-            converted.remove(index);
-            return parts.remove(index)[0];
+    public String[][] getParts() {
+        // convert List of String[] to String[][]
+        String[][] replacements = new String[parts.size()][];
+        for (int i = 0; i < parts.size(); i++) {
+            replacements[i] = parts.get(i);
         }
 
-        return null;
-    }
-
-    /**
-     * @return List of candidate substring parts
-     */
-    public List<String[]> getParts() {
-        return parts;
+        return replacements;
     }
 
     /**
