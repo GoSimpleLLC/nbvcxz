@@ -25,6 +25,7 @@ public final class DictionaryMatcher implements PasswordMatcher
      */
     private static List<String> getUnmungedVariations(final Configuration configuration, final String password)
     {
+        final List<String> translations = new ArrayList<>();
         MungeTable mungeTable = configuration.getMungeTable();
         PasswordChain chain = new PasswordChain(password);
 
@@ -39,26 +40,29 @@ public final class DictionaryMatcher implements PasswordMatcher
                     for (int j = 0; j < splitParts.length; j++) {
                         // index of where the replacements go in the chain
                         int index = i + j;
-                        String sp = splitParts[j];
-                        boolean converted = sp.equals(mungeKey);
-                        String[] subs = mungeTable.getSubsOrOriginal(sp);
+                        String splitPart = splitParts[j];
+                        // check if this substring can be replaced with substitutes, and get the subs if it can
+                        boolean replaceable = mungeTable.isReplaceable(splitPart);
+                        String[] subs = (replaceable ? mungeTable.getSubs(splitPart) : new String[] {splitPart});
                         // add the replacements back into the chain
                         if (j == 0) {
-                            chain.replace(index, subs, converted);
+                            chain.replace(index, subs, replaceable);
                         }
                         else {
-                            chain.add(index, subs, converted);
+                            chain.add(index, subs, replaceable);
                         }
+
+                        if (replaceable) {
+                            chain.recordCharsConverted(splitPart.length());
+                        }
+                    }
+
+                    // do not bother continuing if we're going to replace every single character
+                    if (chain.allReplaced()) {
+                        return translations;
                     }
                 }
             }
-        }
-
-        final List<String> translations = new ArrayList<>();
-
-        // do not bother continuing if we're going to replace every single character
-        if (chain.allReplaced()) {
-            return translations;
         }
 
         if (chain.size() > 1)

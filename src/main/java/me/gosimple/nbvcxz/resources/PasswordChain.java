@@ -14,6 +14,8 @@ public class PasswordChain {
     // a bijection with the list above, where each index specifies if the candidate parts at an index have
     // already been completely unmunged
     private List<Boolean> converted;
+    // number of password characters that have not yet been replaced with substitutes
+    private int unconvertedRemaining;
 
     /**
      * Creates a password chain using an initial String value.
@@ -23,6 +25,7 @@ public class PasswordChain {
         this.converted = new ArrayList<>();
 
         add(0, new String[] {originalPassword}, false);
+        unconvertedRemaining = originalPassword.length();
     }
 
     /**
@@ -66,6 +69,15 @@ public class PasswordChain {
     }
 
     /**
+     * Record that a certain number of characters have been replaced when part of the chain
+     * has been replaced with substitutes.
+     * @param num Number of characters that were replaced with substitutes
+     */
+    public void recordCharsConverted(int num) {
+        unconvertedRemaining -= num;
+    }
+
+    /**
      * @return 2D string array representation of this password chain
      */
     public String[][] getParts() {
@@ -82,7 +94,7 @@ public class PasswordChain {
      * @return True if all of the parts of the chain have been replaced, false otherwise.
      */
     public boolean allReplaced() {
-        return converted.stream().allMatch(b -> b);
+        return unconvertedRemaining == 0;
     }
 
     /**

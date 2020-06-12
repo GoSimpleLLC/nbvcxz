@@ -207,11 +207,11 @@ public class DictionaryMatcherTest
         // create a table of expected dictionary matches
         Map<String, String> mappings = new HashMap<>();
         mappings.put("P@55uu0rd", "password"); // uu = w (from issue #45)
-        mappings.put("/\\/\\3G4", "mega"); // /\/\ = m
+        mappings.put("/\\/\\3GA", "mega"); // /\/\ = m
         mappings.put("|)R!2b|3", "dribble"); // |) = D, 2b = bb
-        mappings.put("/\\/\\02!2l4", "mozilla"); // /\/\02!2l4 (2l = l)
-        mappings.put("802t13", "bottle"); // 2t = tt
-        mappings.put("nn!|)|)|3", "middle"); // nn = m
+        mappings.put("/\\/\\02!2la", "mozilla"); // /\/\02!2l4 (2l = l)
+        mappings.put("B02t13", "bottle"); // 2t = tt
+        mappings.put("nn!|)|)l3", "middle"); // nn = m
         mappings.put("so2n3", "some"); // 2n could mean nn or m, make sure 'm' is used
         mappings.put("pe2n", "penn"); // same as above, but expecting 2n = nn
 

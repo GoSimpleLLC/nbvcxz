@@ -63,11 +63,18 @@ public class MungeTable {
     }
 
     /**
-     * If the given key is in the table of password munges, returns the list
-     * of possible unmunges. Otherwise, just returns the given key.
+     * @return List of possible substitutes for a given munged substring
      */
-    public String[] getSubsOrOriginal(String key) {
-        return table.getOrDefault(key, new String[] {key});
+    public String[] getSubs(String key) {
+        return table.get(key);
+    }
+
+    /**
+     * @param key Munged substring key
+     * @return True if the munged key can be replaced with substitutes (is in the table), false otherwise
+     */
+    public boolean isReplaceable(String key) {
+        return table.containsKey(key);
     }
 
     /**
