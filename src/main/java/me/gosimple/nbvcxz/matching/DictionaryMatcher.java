@@ -56,6 +56,11 @@ public final class DictionaryMatcher implements PasswordMatcher
 
         final List<String> translations = new ArrayList<>();
 
+        // do not bother continuing if we're going to replace every single character
+        if (chain.allReplaced()) {
+            return translations;
+        }
+
         if (chain.size() > 1)
         {
             // recursively generate all password permutations using the discovered munges

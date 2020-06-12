@@ -79,6 +79,13 @@ public class PasswordChain {
     }
 
     /**
+     * @return True if all of the parts of the chain have been replaced, false otherwise.
+     */
+    public boolean allReplaced() {
+        return converted.stream().allMatch(b -> b);
+    }
+
+    /**
      * @return Size of the chain
      */
     public int size() {
