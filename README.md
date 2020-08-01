@@ -99,7 +99,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 <dependency>
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
-    <version>1.4.3</version>
+    <version>1.5.0</version>
 </dependency>
 ```
 
@@ -122,7 +122,7 @@ The project will be built, and the jar file will be placed in the target sub-dir
 
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
-`java -jar nbvcxz-1.4.3.jar`
+`java -jar nbvcxz-1.5.0.jar`
 ![alt text](http://i.imgur.com/9c070FX.png)
 
 ### Library
