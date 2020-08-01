@@ -42,6 +42,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <prerequisites>
+      <maven>3.0.5</maven>
+    </prerequisites>
+
     <distributionManagement>
         <repository>
             <id>ossrh</id>
@@ -184,7 +188,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>LATEST</version>
+            <version>4.13</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
