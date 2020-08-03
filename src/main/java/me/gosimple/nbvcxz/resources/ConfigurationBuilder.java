@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class ConfigurationBuilder
 {
     private static final double YEAR = 365.2422 * 24 * 60 * 60 * 1000; // Average year length
-    private static final long START = 1533096000000L; // Date values were chosen: 2018-08-01    
+    private static final long START = 1596254400000L; // Date values were chosen: 2020-08-01
     
     private static final List<Dictionary> defaultDictionaries = new ArrayList<>();
     private static final List<PasswordMatcher> defaultPasswordMatchers = new ArrayList<>();
@@ -133,15 +133,16 @@ public class ConfigurationBuilder
     public static Map<String, Long> getDefaultGuessTypes(Long crackingHardwareCost)
     {
         BigDecimal moores_multiplier = getMooresMultiplier();
-        BigDecimal cost_multiplier = BigDecimal.valueOf(crackingHardwareCost).divide(BigDecimal.valueOf(20000), 5, RoundingMode.HALF_UP);
+        BigDecimal cost_multiplier = BigDecimal.valueOf(crackingHardwareCost).divide(BigDecimal.valueOf(getDefaultCrackingHardwareCost()), 5, RoundingMode.HALF_UP);
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(250375000000L))).longValue());
-        guessTypes.put("OFFLINE_SHA1", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(85963750000L))).longValue());
-        guessTypes.put("OFFLINE_SHA512", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(10780875000L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(130875L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_10", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(4129L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_12", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(1033L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_14", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(259L))).longValue());
+        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(500750000000L))).longValue());
+        guessTypes.put("OFFLINE_SHA1", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(171927500000L))).longValue());
+        guessTypes.put("OFFLINE_SHA512", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(21561750000L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(1047000L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_8", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(132128L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_10", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(33032L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_12", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(8264L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_14", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(2072L))).longValue());
         guessTypes.put("ONLINE_UNTHROTTLED", 100L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
         return guessTypes;
