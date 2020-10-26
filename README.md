@@ -11,10 +11,11 @@ new methods in password cracking and implement new methods to identify passwords
 each new method.
 
 # Table of Contents
-  * [A Rant On Arbitrary Password Policies](#a-rant-on-arbitrary-password-policies)
-  * [Differentiating Features](#differentiating-features)
   * [Maven Central](#maven-central)
   * [Compile](#compile)
+  * [Differentiating Features](#differentiating-features)
+  * [Compatibility](#compatibility)
+  * [A Rant On Arbitrary Password Policies](#a-rant-on-arbitrary-password-policies)
   * [How to use](#how-to-use)
     + [Standalone](#standalone)
     + [Library](#library)
@@ -33,34 +34,28 @@ each new method.
   * [Requires Java](#requires-java)
   * [Application using this library](#application-using-this-library)
 
+## Maven Central
+```xml
+<dependency>
+    <groupId>me.gosimple</groupId>
+    <artifactId>nbvcxz</artifactId>
+    <version>1.5.0</version>
+</dependency>
+```
 
-## A Rant On Arbitrary Password Policies 
-Lets think up an example scenario which I expect some of you may have run into way too often. 
-We are a company `NewStartup!` and we are creating the next big web application. We 
-want to ensure our users don't choose an easily guessable password, so we implement an arbitrary
-policy which says a password must have:
-  an __eight character minimum__ and contain __upper case__, __lower case__, __numbers__, and __special characters__
-  
-Now lets see how that policy applies to two passwords which are at opposite ends of the spectrum.
+## Compile
 
-  Password #1: `Passw0rd!` - This password was chosen to get around an arbitrary policy 
-  
-  Password #2: `5fa83b7e1r39xfa8hmiz0` - This was randomly generated using lowercase alphanumeric 
+### Debian based
+```sh
+apt-get install git
+apt-get install openjdk-8-jdk
+apt-get install maven
+git clone https://github.com/GoSimpleLLC/nbvcxz.git
+cd nbvcxz
+mvn package
+```
 
-  Password #1 meets all of the rules in the policy and passes with flying colors.
-  Password #2 does not contain __upper case__, or __special characters__, and thus the policy fails this password.
-  
-Was password #1 actually more secure than password #2 by any metric?  That would be a hard argument to make.
-
-In fact, password #1 is likely to be cracked quite quickly. `password` is one of the top passwords in all password 
-lists an attacker is likely to try using a rule based dictionary attack.  If the attacker knows that our policy requires: 
-__eight character minimum__, __upper case__, __lower case__, __numbers__, and __special characters__ 
-they will then use rules like `toggle case`, `l33t substitution`, and `suffix/prefix special characters` 
-to augment their dictionary list for the attack.
-
-It's quite likely password #1 would fall to an attacker even in a rate limited online attack.
-
-Password #2, while not allowed by our policy, is only susceptible to a brute force attack (if a secure hashing algorithm is used).
+The project will be built, and the jar file will be placed in the target sub-directory.
 
 ## Differentiating Features
 * Internationalization support for all text output by the library (for feedback, console output, etc).
@@ -94,28 +89,61 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
     * Available in the console application as well as the library.
     * One use case is for generating a "forgot password" temporary pass
 
-## Maven Central
-```xml
-<dependency>
-    <groupId>me.gosimple</groupId>
-    <artifactId>nbvcxz</artifactId>
-    <version>1.5.0</version>
-</dependency>
-```
+## Compatibility
+Strict compatibility between nbvcxz and zxcvbn has not been a goal of this project. The additional features in nbvcxz 
+which have improved accuracy are the main causes for differences with zxcvbn. There are some ways to configure nbvcxz for
+better compatibility though, so we will go over those configuration parameters here.
 
-## Compile
+1. Disable the Levenshtein Distance (LD) calculation. This feature was very helpful in my analysis on helping identify 
+passwords which were only slightly different than dictionary words but were not caught with the original implementation. 
+This feature will be sure to cause nbvcxz to produce different results than zxcvbn for a large number of passwords.
+Use ConfigurationBuilder setDistanceCalc(Boolean distanceCalc)
 
-### Debian based
-```sh
-apt-get install git
-apt-get install openjdk-8-jdk
-apt-get install maven
-git clone https://github.com/GoSimpleLLC/nbvcxz.git
-cd nbvcxz
-mvn package
-```
+2. Make sure both implementations are using the same dictionaries. There are additional leaked passwords in the 
+nbvcxz dictionary compared to zxcvbn. There are also additional dictionaries included in nbvcxz that are not in zxcvbn and 
+vice versa. Simply different choices on what lists were important to include by default. With nbvcxz you can easily 
+change which dictionaries are used though, so it's easy to make the different implementations use the same dictionaries.
+Use ConfigurationBuilder setDictionaries(List<Dictionary> dictionaries)
 
-The project will be built, and the jar file will be placed in the target sub-directory.
+3. Disable separator match types. This is a new match type which zxcvbn has no equivalent. It helps with passphrase 
+detection and accurately scoring them, but if we are going for compatibility we need to disable it.
+Use ConfigurationBuilder setPasswordMatchers(List<PasswordMatcher> passwordMatchers)
+
+4. The algorithm to find the best matches is different between nbvcxz and zxcvbn, that is likely to produce slightly 
+different results in cases where zxcvbn is unable to find the best combination of matches due to the algorithm used. 
+There were quite a few instances I noted that brought about the change to the algorithm used by nbvcxz where there were 
+obviously "wrong" results for entropy based on the combination of matches because it got stuck in a local minimum. This 
+is no longer an issue with nbvcxz, but will inherently produce different results for some passwords compared to the 
+original algorithm used by zxcvbn. In the majority of cases both algorithms are able to figure out what the lowest 
+entropy combination of matches on the password are, so I don't see this being too big of an issue.
+
+## A Rant On Arbitrary Password Policies 
+Lets think up an example scenario which I expect some of you may have run into way too often. 
+We are a company `NewStartup!` and we are creating the next big web application. We 
+want to ensure our users don't choose an easily guessable password, so we implement an arbitrary
+policy which says a password must have:
+  an __eight character minimum__ and contain __upper case__, __lower case__, __numbers__, and __special characters__
+  
+Now lets see how that policy applies to two passwords which are at opposite ends of the spectrum.
+
+  Password #1: `Passw0rd!` - This password was chosen to get around an arbitrary policy 
+  
+  Password #2: `5fa83b7e1r39xfa8hmiz0` - This was randomly generated using lowercase alphanumeric 
+
+  Password #1 meets all of the rules in the policy and passes with flying colors.
+  Password #2 does not contain __upper case__, or __special characters__, and thus the policy fails this password.
+  
+Was password #1 actually more secure than password #2 by any metric?  That would be a hard argument to make.
+
+In fact, password #1 is likely to be cracked quite quickly. `password` is one of the top passwords in all password 
+lists an attacker is likely to try using a rule based dictionary attack.  If the attacker knows that our policy requires: 
+__eight character minimum__, __upper case__, __lower case__, __numbers__, and __special characters__ 
+they will then use rules like `toggle case`, `l33t substitution`, and `suffix/prefix special characters` 
+to augment their dictionary list for the attack.
+
+It's quite likely password #1 would fall to an attacker even in a rate limited online attack.
+
+Password #2, while not allowed by our policy, is only susceptible to a brute force attack (if a secure hashing algorithm is used).
 
 ## How to use
 `nbvcxz` can be used as a stand-alone console program, or import it as a library.
