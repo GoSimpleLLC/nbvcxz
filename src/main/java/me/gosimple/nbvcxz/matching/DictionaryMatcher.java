@@ -4,11 +4,10 @@ import me.gosimple.nbvcxz.matching.match.DictionaryMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.Dictionary;
+import me.gosimple.nbvcxz.resources.MungeTable;
+import me.gosimple.nbvcxz.resources.PasswordChain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Look for every part of the password that match an entry in our dictionaries
@@ -18,68 +17,95 @@ import java.util.TreeMap;
 public final class DictionaryMatcher implements PasswordMatcher
 {
     /**
-     * Removes all leet substitutions from the password and returns a list of plain text versions.
+     * Removes all munge substitutions from the password and returns a list of plain text versions.
      *
      * @param configuration the configuration file used to estimate entropy.
-     * @param password      the password to translate from leet.
-     * @return a list of all combinations of possible leet translations for the password with all leet removed.
+     * @param password      the password to unmunge.
+     * @return a list of all combinations of possible unmunged translations for the password with all munges removed.
      */
-    private static List<String> translateLeet(final Configuration configuration, final String password)
+    private static List<String> getUnmungedVariations(final Configuration configuration, final String password)
     {
-        final List<String> translations = new ArrayList();
-        final TreeMap<Integer, Character[]> replacements = new TreeMap<>();
+        final List<String> translations = new ArrayList<>();
+        MungeTable mungeTable = configuration.getMungeTable();
+        PasswordChain chain = new PasswordChain(password);
 
-        for (int i = 0; i < password.length(); i++)
-        {
-            final Character[] replacement = configuration.getLeetTable().get(password.charAt(i));
-            if (replacement != null)
-            {
-                replacements.put(i, replacement);
+        for (String mungeKey : mungeTable.getKeys()) { // keys sorted largest to smallest
+            for (int i = 0; i < chain.size(); i++) {
+                // get the next password part (will be null if it doesn't contain the munge key)
+                String part = chain.getPartIfContainsKey(i, mungeKey);
+                if (part != null) {
+                    // split password segment by the munge key
+                    String[] splitParts = mungeTable.getKeyPattern(mungeKey).split(part);
+
+                    for (int j = 0; j < splitParts.length; j++) {
+                        // index of where the replacements go in the chain
+                        int index = i + j;
+                        String splitPart = splitParts[j];
+                        // check if this substring can be replaced with substitutes, and get the subs if it can
+                        boolean replaceable = mungeTable.isReplaceable(splitPart);
+                        String[] subs = (replaceable ? mungeTable.getSubs(splitPart) : new String[] {splitPart});
+                        // add the replacements back into the chain
+                        if (j == 0) {
+                            chain.replace(index, subs, replaceable);
+                        }
+                        else {
+                            chain.add(index, subs, replaceable);
+                        }
+
+                        if (replaceable) {
+                            chain.recordCharsConverted(splitPart.length());
+                        }
+                    }
+
+                    // do not bother continuing if we're going to replace every single character
+                    if (chain.allReplaced()) {
+                        return translations;
+                    }
+                }
             }
         }
 
-        // Do not bother continuing if we're going to replace every single character
-        if(replacements.keySet().size() == password.length())
-            return translations;
-
-        if (replacements.size() > 0)
+        if (chain.size() > 1)
         {
-            final char[] password_char = new char[password.length()];
-            for (int i = 0; i < password.length(); i++)
-            {
-                password_char[i] = password.charAt(i);
-            }
-            replaceAtIndex(replacements, replacements.firstKey(), password_char, translations);
+            // recursively generate all password permutations using the discovered munges
+            replaceAtIndex(chain.getParts(), 0, new StringBuilder(), translations);
         }
 
         return translations;
     }
 
     /**
-     * Internal function to recursively build the list of un-leet possibilities.
+     * Internal function to recursively build the list of possible unmunged password permutations.
      *
-     * @param replacements    TreeMap of replacement index, and the possible characters at that index to be replaced
-     * @param current_index   internal use for the function
-     * @param password        a Character array of the original password
-     * @param final_passwords List of the final passwords to be filled
+     * @param replacements    2D array of possible password replacement substrings
+     * @param index           Next index to generate all permutations at
+     * @param buffer         Buffer used to incrementally build each password permutation
+     * @param finalPasswords Full list of generated password permutations
      */
-    private static void replaceAtIndex(final TreeMap<Integer, Character[]> replacements, Integer current_index, final char[] password, final List<String> final_passwords)
+    private static void replaceAtIndex(final String[][] replacements, int index, StringBuilder buffer, final List<String> finalPasswords)
     {
-        for (final char replacement : replacements.get(current_index))
+        if (index == replacements.length) {
+            // reached the end; add the contents of the buffer to the list of password permutations
+            finalPasswords.add(buffer.toString());
+            return;
+        }
+
+        // exhaust all of the substring permutations at the current index
+        for (int i = 0; i < replacements[index].length; i++)
         {
-            password[current_index] = replacement;
-            if (current_index.equals(replacements.lastKey()))
+            if (finalPasswords.size() < 100)
             {
-                final_passwords.add(new String(password));
+                // add the next substring permutation to the buffer
+                String postfix = replacements[index][i];
+                buffer.append(postfix);
+                // recursively build the rest of the string
+                replaceAtIndex(replacements, index + 1, buffer, finalPasswords);
+                // backtrack by ignoring the added postfix
+                buffer.setLength(buffer.length() - postfix.length());
             }
-            else if (final_passwords.size() > 100)
-            {
-                // Give up if we've already made 100 replacements
+            else {
+                // give up if we've already generated 100 password permutations
                 return;
-            }
-            else
-            {
-                replaceAtIndex(replacements, replacements.higherKey(current_index), password, final_passwords);
             }
         }
     }
@@ -298,7 +324,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                     }
 
                     // Only do unleet if it's different than the regular lower.
-                    final List<String> unleet_list = translateLeet(configuration, lower_part);
+                    final List<String> unleet_list = getUnmungedVariations(configuration, lower_part);
                     for (final String unleet_part : unleet_list)
                     {
                         final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
