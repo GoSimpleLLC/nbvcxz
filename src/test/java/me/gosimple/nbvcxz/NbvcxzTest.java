@@ -67,9 +67,9 @@ public class NbvcxzTest
 
         final List<EntropyTest> tests = new ArrayList<>();
         tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
-        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.05294537608871D));
-        tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",40.376705346635696D));
-        tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",31.086623767089435D));
+        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.1160874332805D));
+        tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",39.780512760785484D));
+        tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",35.97161172217761D));
         tests.add(new EntropyTest(nbvcxz,"zxcvbnm",5.321928094887363D));
         tests.add(new EntropyTest(nbvcxz,"1qaz2wsx3edc",10.523561956057012D));
         tests.add(new EntropyTest(nbvcxz,"temppass22",16.892495383759368D));
@@ -81,11 +81,11 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"scorpions",13.67529549909406D));
         tests.add(new EntropyTest(nbvcxz,"ScoRpions",19.198857455151074D));
         tests.add(new EntropyTest(nbvcxz,"ScoRpi0ns",20.46971136544417D));
-        tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",44.52675492064834D));
-        tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",42.69087661112469D));
-        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
-        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
-        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
+        tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",43.527848227834916D));
+        tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",44.57277244995398D));
+        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.64522547366256D));
+        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",133.34455508774607D));
+        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",337.32388441829573D));
 
         try
         {
@@ -110,9 +110,9 @@ public class NbvcxzTest
 
         final List<EntropyTest> tests = new ArrayList<>();
         tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
-        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.05294537608871D));
-        tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",40.376705346635696D));
-        tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",31.086623767089435D));
+        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.1160874332805D));
+        tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",39.780512760785484D));
+        tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",35.97161172217761D));
         tests.add(new EntropyTest(nbvcxz,"zxcvbnm",5.321928094887363D));
         tests.add(new EntropyTest(nbvcxz,"1qaz2wsx3edc",10.523561956057012D));
         tests.add(new EntropyTest(nbvcxz,"temppass22",16.892495383759368D));
@@ -124,11 +124,11 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"scorpions",13.67529549909406D));
         tests.add(new EntropyTest(nbvcxz,"ScoRpions",19.198857455151074D));
         tests.add(new EntropyTest(nbvcxz,"ScoRpi0ns",20.46971136544417D));
-        tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",44.52675492064834D));
-        tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",42.69087661112469D));
-        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
-        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
-        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
+        tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",43.527848227834916D));
+        tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",44.57277244995398D));
+        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.64522547366256D));
+        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",133.34455508774607D));
+        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",337.32388441829573D));
 
         List<Future> futures = new ArrayList<>();
         try
