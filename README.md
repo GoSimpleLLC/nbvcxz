@@ -300,5 +300,6 @@ MIT License
 ## Application using this library
 
 - [GoSimple](http://gosimple.me/)
+- [Pazzword - Intelligent Password Evaluator](https://github.com/cyb3rko/pazzword)
 
 Anyone else using the library in their application, i'd love to hear and put a link up here.
