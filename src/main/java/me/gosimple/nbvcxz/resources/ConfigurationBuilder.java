@@ -87,6 +87,7 @@ public class ConfigurationBuilder
     private Map<Character, Character[]> leetTable;
     private Pattern yearPattern;
     private Double minimumEntropy;
+    private Integer maxLength;
     private Locale locale;
     private Boolean distanceCalc;
     private Long combinationAlgorithmTimeout;
@@ -203,6 +204,14 @@ public class ConfigurationBuilder
     }
 
     /**
+     * @return The default value for max length is 72.
+     */
+    public static int getDefaultMaxLength()
+    {
+        return 72;
+    }
+
+    /**
      * @return the default is false
      */
     public static Boolean getDefaultDistanceCalc()
@@ -225,8 +234,6 @@ public class ConfigurationBuilder
     {
         return 20000;
     }
-
-
 
     /**
      * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
@@ -338,6 +345,20 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Used to limit total password length to run estimation on.
+     * Information will be available in the Result if the password was longer
+     * than maxLength.
+     *
+     * @param maxLength Value for maxLength (should be a positive value)
+     * @return Builder
+     */
+    public ConfigurationBuilder setMaxLength(Integer maxLength)
+    {
+        this.maxLength = maxLength;
+        return this;
+    }
+
+    /**
      * Supported locales are en, and fr. <br>
      * Default locale is en.
      *
@@ -431,6 +452,10 @@ public class ConfigurationBuilder
         {
             minimumEntropy = getDefaultMinimumEntropy();
         }
+        if (maxLength == null)
+        {
+            maxLength = getDefaultMaxLength();
+        }
         if (locale == null)
         {
             locale = Locale.getDefault();
@@ -443,7 +468,7 @@ public class ConfigurationBuilder
         {
             combinationAlgorithmTimeout = getDefaultCombinationAlgorithmTimeout();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc, combinationAlgorithmTimeout);
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, combinationAlgorithmTimeout);
     }
 
 

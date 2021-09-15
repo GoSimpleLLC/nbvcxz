@@ -49,9 +49,24 @@ public class Nbvcxz
      * @param index         the index of the password part that needs a {@code BruteForceMatch}
      * @return a {@code Match} object
      */
-    private static Match createBruteForceMatch(final String password, final Configuration configuration, final int index)
+    private static Match createBruteForceMatch(final Configuration configuration, final String password, final int index)
     {
         return new BruteForceMatch(password.charAt(index), configuration, index);
+    }
+
+    /**
+     * Returns the truncated password based on the max length.
+     *
+     * @param configuration
+     * @param password
+     * @return {@code String} of the truncated password
+     */
+    private static String getTruncatedPassword(final Configuration configuration, final String password)
+    {
+        if (configuration.getMaxLength().compareTo(password.length()) > 0)
+            return password;
+        else
+            return password.substring(0, configuration.getMaxLength());
     }
 
     /**
@@ -184,7 +199,10 @@ public class Nbvcxz
 
         System.out.println("----------------------------------------------------------");
         System.out.println(resourceBundle.getString("main.timeToCalculate") + " " + (end - start) + " ms");
-        System.out.println(resourceBundle.getString("main.password") + " " + password);
+        System.out.println(resourceBundle.getString("main.password") + " " + result.getPassword());
+        if (result.isTruncated()) {
+            System.out.println(resourceBundle.getString("main.fullPassword") + " " + result.getFullPassword());
+        }
         System.out.println(resourceBundle.getString("main.entropy") + " " + result.getEntropy());
         Feedback feedback = FeedbackUtil.getFeedback(result);
         System.out.println(resourceBundle.getString(feedback.getResult()));
@@ -232,7 +250,8 @@ public class Nbvcxz
      */
     private Result guessEntropy(final Configuration configuration, final String password)
     {
-        return new Result(configuration, password, getBestCombination(configuration, password));
+        final String truncated_password = getTruncatedPassword(configuration, password);
+        return new Result(configuration, truncated_password, password, getBestCombination(configuration, truncated_password));
     }
 
     /**
@@ -251,7 +270,7 @@ public class Nbvcxz
         final Map<Integer, Match> brute_force_matches = new HashMap<>();
         for (int i = 0; i < password.length(); i++)
         {
-            brute_force_matches.put(i, createBruteForceMatch(password, configuration, i));
+            brute_force_matches.put(i, createBruteForceMatch(configuration, password, i));
         }
 
         final List<Match> good_enough_matches = findGoodEnoughCombination(password, all_matches, brute_force_matches);
