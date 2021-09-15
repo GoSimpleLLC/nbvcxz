@@ -7,7 +7,7 @@
     <groupId>me.gosimple</groupId>
     <artifactId>nbvcxz</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
 
     <name>nbvcxz</name>
     <description>Nbvcxz takes heavy inspiration from the zxcvbn library built by Dropbox, and in a lot of ways is
@@ -83,6 +83,9 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <manifest>
+                            <mainClass>me.gosimple.nbvcxz.Nbvcxz</mainClass>
+                        </manifest>
                         <manifestEntries>
                             <Automatic-Module-Name>me.gosimple.nbvcxz</Automatic-Module-Name>
                         </manifestEntries>
@@ -125,20 +128,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>me.gosimple.nbvcxz.Nbvcxz</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
