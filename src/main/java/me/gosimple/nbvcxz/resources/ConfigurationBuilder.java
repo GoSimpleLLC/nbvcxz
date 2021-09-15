@@ -135,7 +135,7 @@ public class ConfigurationBuilder
         BigDecimal moores_multiplier = getMooresMultiplier();
         BigDecimal cost_multiplier = BigDecimal.valueOf(crackingHardwareCost).divide(BigDecimal.valueOf(getDefaultCrackingHardwareCost()), 5, RoundingMode.HALF_UP);
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(120000000000L))).longValue());
+        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(1200000000000L))).longValue());
         guessTypes.put("OFFLINE_SHA1", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(390000000000L))).longValue());
         guessTypes.put("OFFLINE_SHA512", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(5300000000L))).longValue());
         guessTypes.put("OFFLINE_BCRYPT_5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(4200000L))).longValue());
