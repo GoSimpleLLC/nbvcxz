@@ -76,7 +76,7 @@ public class Nbvcxz
     public static BigDecimal getGuessesFromEntropy(final Double entropy)
     {
         final Double guesses_tmp = Math.pow(2, entropy);
-        return new BigDecimal(guesses_tmp.isInfinite() ? Double.MAX_VALUE : guesses_tmp).setScale(0, RoundingMode.HALF_UP);
+        return BigDecimal.valueOf(guesses_tmp.isInfinite() ? Double.MAX_VALUE : guesses_tmp).setScale(0, RoundingMode.HALF_UP);
     }
 
     /**
