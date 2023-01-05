@@ -112,7 +112,7 @@ public class BruteForceUtilTest
         {
             String password = entry.getKey();
             Integer expectedCardinality = entry.getValue();
-            Integer calcCardinality = BruteForceUtil.getBrutForceCardinality(password);
+            Integer calcCardinality = BruteForceUtil.getBruteForceCardinality(password);
             Assert.assertEquals(password, expectedCardinality, calcCardinality);
         }
     }

@@ -9,13 +9,13 @@ public class BruteForceUtil
 {
     /**
      * Calculates the brute force cardinality of a given password.
-     * The brut force cardinality is the estimated range of character a brute
+     * The brute force cardinality is the estimated range of character a brute
      * force method would use to crack the password.
      *
      * @param password the password we are estimating the brute force cardinality
      * @return the brute force cardinality
      */
-    public static int getBrutForceCardinality(final String password)
+    public static int getBruteForceCardinality(final String password)
     {
 
         boolean lower = false,
@@ -75,13 +75,13 @@ public class BruteForceUtil
 
     /**
      * Calculates the brute force cardinality of a given password.
-     * The brut force cardinality is the estimated range of character a brute
+     * The brute force cardinality is the estimated range of character a brute
      * force method would use to crack the password.
      *
      * @param character the password we are estimating the brute force cardinality
      * @return the brute force cardinality
      */
-    public static int getBrutForceCardinality(final char character)
+    public static int getBruteForceCardinality(final char character)
     {
 
         boolean lower = false,

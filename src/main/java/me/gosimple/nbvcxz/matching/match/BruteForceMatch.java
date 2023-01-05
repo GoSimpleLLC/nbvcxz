@@ -23,7 +23,7 @@ public final class BruteForceMatch extends BaseMatch
 
     private double getEntropy(char character)
     {
-        int cardinality = BruteForceUtil.getBrutForceCardinality(character);
+        int cardinality = BruteForceUtil.getBruteForceCardinality(character);
         return Math.max(0, log2(cardinality * getToken().length()));
     }
 }

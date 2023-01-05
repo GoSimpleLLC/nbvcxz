@@ -84,7 +84,7 @@ public final class DictionaryMatch extends BaseMatch
             else
             // if the length is not shortened then we can add even more
             {
-                return log2(BruteForceUtil.getBrutForceCardinality(getToken()) * (len_diff + char_shift));
+                return log2(BruteForceUtil.getBruteForceCardinality(getToken()) * (len_diff + char_shift));
             }
         }
     }
