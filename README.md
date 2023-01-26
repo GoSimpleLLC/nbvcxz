@@ -299,6 +299,8 @@ MIT License
 
 ## Application using this library
 
-- [GoSimple](http://gosimple.me/)
+- [Blacksmith TPM](https://blacksmithapplications.com/) - Formerly GoSimple TPM
+- [Pazzword - Intelligent Password Evaluator](https://github.com/cyb3rko/pazzword)
+- [KeePassDX - Open source password manager for Android](https://www.keepassdx.com/)
 
 Anyone else using the library in their application, i'd love to hear and put a link up here.
