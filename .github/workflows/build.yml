@@ -2,7 +2,9 @@ name: build
 
 on:
   push:
-    branches: actions
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
 
 jobs:
   build:
