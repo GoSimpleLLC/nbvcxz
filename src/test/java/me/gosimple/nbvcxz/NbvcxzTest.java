@@ -48,7 +48,7 @@ public class NbvcxzTest
             for (final EntropyTest test : tests)
             {
                 test.run();
-                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+                Assert.assertEquals(test.getPassword(), test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
             }
         }
         catch (Exception e)
@@ -77,7 +77,7 @@ public class NbvcxzTest
             for (final EntropyTest test : tests)
             {
                 test.run();
-                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+                Assert.assertEquals(test.getPassword(), test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
             }
         }
         catch (Exception e)
@@ -115,14 +115,14 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
         tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
         tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",132.95506049872384D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",360.5676147181065D));
 
         try
         {
             for (final EntropyTest test : tests)
             {
                 test.run();
-                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+                Assert.assertEquals(test.getPassword(), test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
             }
         }
         catch (Exception e)
@@ -159,7 +159,7 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
         tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
         tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",132.95506049872384D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",360.5676147181065D));
 
         List<Future> futures = new ArrayList<>();
         try
@@ -179,7 +179,7 @@ public class NbvcxzTest
             // Check results
             for (final EntropyTest test : tests)
             {
-                Assert.assertEquals(test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
+                Assert.assertEquals(test.getPassword(), test.getExpectedEntropy(), test.getEntropy(), test.getDelta());
             }
         }
         catch (Exception e)

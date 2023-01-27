@@ -204,11 +204,12 @@ public class ConfigurationBuilder
     }
 
     /**
-     * @return The default value for max length is 72.
+     * @return The default value for max length is 256.
+     * This should match the exact length your algorithm is limited to (72 for most bcrypt implementations).
      */
     public static int getDefaultMaxLength()
     {
-        return 72;
+        return 256;
     }
 
     /**
@@ -348,6 +349,10 @@ public class ConfigurationBuilder
      * Used to limit total password length to run estimation on.
      * Information will be available in the Result if the password was longer
      * than maxLength.
+     *
+     * This should match the exact length your algorithm is limited to (72 for most bcrypt implementations).
+     * If you arbitrarily limit the input for passwords, ensure the passed in value is either already truncated to
+     * the correct length, or this value is set to the same length you will truncate to.
      *
      * @param maxLength Value for maxLength (should be a positive value)
      * @return Builder

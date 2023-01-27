@@ -298,26 +298,28 @@ public final class DictionaryMatcher implements PasswordMatcher
                     }
 
                     // Only do unleet if it's different than the regular lower.
-                    final List<String> unleet_list = translateLeet(configuration, lower_part);
-                    for (final String unleet_part : unleet_list)
+                    if (dictionary.getMaxLength() > split_password.length())
                     {
-                        final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
-                        if (unleet_rank != null)
+                        final List<String> unleet_list = translateLeet(configuration, lower_part);
+                        for (final String unleet_part : unleet_list)
                         {
-                            final List<Character[]> subs = getLeetSub(lower_part, unleet_part);
-                            matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, unleet_part, unleet_rank, subs, dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
-                            continue;
-                        }
-
-                        // Only do reversed if it's different than unleet.
-                        final String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
-                        {
-                            final Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
-                            if (reversed_unleet_rank != null)
+                            final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
+                            if (unleet_rank != null)
                             {
-                                final List<Character[]> subs = getLeetSub(reversed_part, reversed_unleet_part);
-                                matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_unleet_part, reversed_unleet_rank, subs, dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
+                                final List<Character[]> subs = getLeetSub(lower_part, unleet_part);
+                                matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, unleet_part, unleet_rank, subs, dictionary.isExclusion(), false, dictionary.getDictionaryName(), 0));
                                 continue;
+                            }
+
+                            // Only do reversed if it's different than unleet.
+                            final String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
+                            {
+                                final Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
+                                if (reversed_unleet_rank != null)
+                                {
+                                    final List<Character[]> subs = getLeetSub(reversed_part, reversed_unleet_part);
+                                    matches.add(new DictionaryMatch(split_password, configuration, start, end - 1, reversed_unleet_part, reversed_unleet_rank, subs, dictionary.isExclusion(), true, dictionary.getDictionaryName(), 0));
+                                }
                             }
                         }
                     }
