@@ -2,9 +2,15 @@ name: build
 
 on:
   push:
-    branches: [ $default-branch ], dev
+    branches: 
+      - main
+      - dev
+      - 'release/**'
   pull_request:
-    branches: [ $default-branch ], dev
+    branches: 
+      - main
+      - dev
+      - 'release/**'
 
 jobs:
   build:
