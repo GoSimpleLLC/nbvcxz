@@ -19,6 +19,7 @@ public class Result
 {
     final Configuration configuration;
     final String password;
+    final String full_password;
     final List<Match> matches;
 
     /**
@@ -27,10 +28,11 @@ public class Result
      * @param matches       list of matches which when combined make up the original password
      * @throws IllegalStateException if the matches do not equal the original password, this will be thrown.
      */
-    public Result(final Configuration configuration, final String password, final List<Match> matches) throws IllegalStateException
+    public Result(final Configuration configuration, final String password, final String full_password, final List<Match> matches) throws IllegalStateException
     {
         this.configuration = configuration;
         this.password = password;
+        this.full_password = full_password;
         this.matches = matches;
 
         if (!this.isValid())
@@ -92,13 +94,32 @@ public class Result
     }
 
     /**
-     * The original password passed in.
+     * The password passed in truncated to maxLength.
      *
-     * @return {@code String} of the original password.
+     * @return {@code String} of the truncated password.
      */
     public String getPassword()
     {
         return this.password;
+    }
+
+    /**
+     * The original password passed in.
+     *
+     * @return {@code String} of the original password.
+     */
+    public String getFullPassword() {
+        return full_password;
+    }
+
+    /**
+     * Returns whether the password was truncated for estimation because it was longer than maxLength.
+     *
+     * @return {@code true} if the password was truncated; {@code false} if not.
+     */
+    public boolean isTruncated()
+    {
+        return !password.equals(full_password);
     }
 
     /**

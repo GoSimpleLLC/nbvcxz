@@ -25,6 +25,7 @@ public class Configuration
     private final Map<Character, Character[]> leetTable;
     private final Pattern yearPattern;
     private final Double minimumEntropy;
+    private final Integer maxLength;
     private final Locale locale;
     private final boolean distanceCalc;
     private final ResourceBundle mainResource;
@@ -43,7 +44,7 @@ public class Configuration
      * @param distanceCalc                Enable or disable levenshtein distance calculation for dictionary matches
      * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
@@ -52,6 +53,7 @@ public class Configuration
         this.leetTable = leetTable;
         this.yearPattern = yearPattern;
         this.minimumEntropy = minimumEntropy;
+        this.maxLength = maxLength;
         this.locale = locale;
         this.distanceCalc = distanceCalc;
         this.mainResource = ResourceBundle.getBundle("main", locale);
@@ -60,7 +62,7 @@ public class Configuration
     }
 
     /**
-     * @return The list of {@link PasswordMatcher}s which will be used for matching
+     * @return List of {@link PasswordMatcher}s which will be used for matching
      */
     public List<PasswordMatcher> getPasswordMatchers()
     {
@@ -116,6 +118,13 @@ public class Configuration
     }
 
     /**
+     * @return Maximum length to estimate for password, anything longer will be truncated
+     */
+    public Integer getMaxLength() {
+        return maxLength;
+    }
+
+    /**
      * @return Locale for localized text and feedback
      */
     public Locale getLocale()
@@ -124,7 +133,7 @@ public class Configuration
     }
 
     /**
-     * @return if dictionary distance calculations are enabled or not
+     * @return If dictionary distance calculations are enabled or not
      */
     public boolean isDistanceCalc()
     {

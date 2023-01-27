@@ -17,6 +17,7 @@ public class Dictionary
     private final ArrayList<String> sorted_dictionary;
     private final Map<Integer, Integer> sorted_dictionary_length_lookup;
     private final boolean exclusion;
+    private final int max_length;
 
 
     /**
@@ -57,7 +58,7 @@ public class Dictionary
                 sorted_dictionary_length_lookup.put(key.length(), i);
             }
         }
-
+        int i_max_length = 0;
         for (int i = 0; i < sorted_dictionary_length_lookup.size(); i++)
         {
             if (!sorted_dictionary_length_lookup.containsKey(i))
@@ -69,7 +70,9 @@ public class Dictionary
                 }
                 sorted_dictionary_length_lookup.put(i, sorted_dictionary_length_lookup.get(next_key));
             }
+            i_max_length = i;
         }
+        max_length = i_max_length;
     }
 
     /**
@@ -122,5 +125,13 @@ public class Dictionary
     public String getDictionaryName()
     {
         return this.dictionary_name;
+    }
+
+    /**
+     * The longest length of an entry we should check with this dictionary
+     * @return the longest value this dictionary contains
+     */
+    public int getMaxLength() {
+        return max_length;
     }
 }

@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class ConfigurationBuilder
 {
     private static final double YEAR = 365.2422 * 24 * 60 * 60 * 1000; // Average year length
-    private static final long START = 1596254400000L; // Date values were chosen: 2020-08-01
+    private static final long START = 1631678400000L; // Hash speed values were chosen: 2021-09-15
     
     private static final List<Dictionary> defaultDictionaries = new ArrayList<>();
     private static final List<PasswordMatcher> defaultPasswordMatchers = new ArrayList<>();
@@ -87,6 +87,7 @@ public class ConfigurationBuilder
     private Map<Character, Character[]> leetTable;
     private Pattern yearPattern;
     private Double minimumEntropy;
+    private Integer maxLength;
     private Locale locale;
     private Boolean distanceCalc;
     private Long combinationAlgorithmTimeout;
@@ -123,7 +124,7 @@ public class ConfigurationBuilder
     }
 
     /**
-     * This list was compiled in August 2018 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
+     * This list was compiled in September 2021 using a baseline of what could be bought for roughly $20k usd for the offline attack values.
      * <p>
      * In the case this library is no longer maintained (or you choose to stay on an old version of it), we will scale the existing values by Moore's law.
      *
@@ -135,15 +136,16 @@ public class ConfigurationBuilder
         BigDecimal moores_multiplier = getMooresMultiplier();
         BigDecimal cost_multiplier = BigDecimal.valueOf(crackingHardwareCost).divide(BigDecimal.valueOf(getDefaultCrackingHardwareCost()), 5, RoundingMode.HALF_UP);
         Map<String, Long> guessTypes = new HashMap<>();
-        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(500750000000L))).longValue());
-        guessTypes.put("OFFLINE_SHA1", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(171927500000L))).longValue());
-        guessTypes.put("OFFLINE_SHA512", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(21561750000L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(1047000L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_8", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(132128L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_10", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(33032L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_12", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(8264L))).longValue());
-        guessTypes.put("OFFLINE_BCRYPT_14", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(2072L))).longValue());
-        guessTypes.put("ONLINE_UNTHROTTLED", 100L);
+        guessTypes.put("OFFLINE_MD5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(1200000000000L))).longValue());
+        guessTypes.put("OFFLINE_SHA1", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(390000000000L))).longValue());
+        guessTypes.put("OFFLINE_SHA512", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(5300000000L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_5", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(4200000L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_8", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(530303L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_10", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(132575L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_12", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(33143L))).longValue());
+        guessTypes.put("OFFLINE_BCRYPT_14", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(8285L))).longValue());
+        guessTypes.put("OFFLINE_ARGON2_ID", cost_multiplier.multiply(moores_multiplier.multiply(BigDecimal.valueOf(6540L))).longValue());
+        guessTypes.put("ONLINE_UNTHROTTLED", 600L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
         return guessTypes;
     }
@@ -202,6 +204,15 @@ public class ConfigurationBuilder
     }
 
     /**
+     * @return The default value for max length is 256.
+     * This should match the exact length your algorithm is limited to (72 for most bcrypt implementations).
+     */
+    public static int getDefaultMaxLength()
+    {
+        return 256;
+    }
+
+    /**
      * @return the default is false
      */
     public static Boolean getDefaultDistanceCalc()
@@ -214,7 +225,7 @@ public class ConfigurationBuilder
      */
     public static long getDefaultCombinationAlgorithmTimeout()
     {
-        return 500l;
+        return 500L;
     }
 
     /**
@@ -224,8 +235,6 @@ public class ConfigurationBuilder
     {
         return 20000;
     }
-
-
 
     /**
      * {@link PasswordMatcher} are what look for different patterns within the password and create an associated {@link Match} object.
@@ -337,6 +346,24 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Used to limit total password length to run estimation on.
+     * Information will be available in the Result if the password was longer
+     * than maxLength.
+     *
+     * This should match the exact length your algorithm is limited to (72 for most bcrypt implementations).
+     * If you arbitrarily limit the input for passwords, ensure the passed in value is either already truncated to
+     * the correct length, or this value is set to the same length you will truncate to.
+     *
+     * @param maxLength Value for maxLength (should be a positive value)
+     * @return Builder
+     */
+    public ConfigurationBuilder setMaxLength(Integer maxLength)
+    {
+        this.maxLength = maxLength;
+        return this;
+    }
+
+    /**
      * Supported locales are en, and fr. <br>
      * Default locale is en.
      *
@@ -430,6 +457,10 @@ public class ConfigurationBuilder
         {
             minimumEntropy = getDefaultMinimumEntropy();
         }
+        if (maxLength == null)
+        {
+            maxLength = getDefaultMaxLength();
+        }
         if (locale == null)
         {
             locale = Locale.getDefault();
@@ -442,7 +473,7 @@ public class ConfigurationBuilder
         {
             combinationAlgorithmTimeout = getDefaultCombinationAlgorithmTimeout();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, locale, distanceCalc, combinationAlgorithmTimeout);
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, combinationAlgorithmTimeout);
     }
 
 
