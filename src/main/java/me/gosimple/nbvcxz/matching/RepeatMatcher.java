@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 public final class RepeatMatcher implements PasswordMatcher
 {
-    public List<Match> match(final Configuration configuration, final String password)
+    public List<Match> match(final Configuration configuration, final String password, String... userInput)
     {
         List<Match> matches = new ArrayList<>();
 

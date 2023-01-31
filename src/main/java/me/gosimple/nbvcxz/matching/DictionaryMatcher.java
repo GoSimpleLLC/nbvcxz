@@ -4,6 +4,7 @@ import me.gosimple.nbvcxz.matching.match.DictionaryMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.Dictionary;
+import me.gosimple.nbvcxz.resources.DictionaryBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -261,8 +262,21 @@ public final class DictionaryMatcher implements PasswordMatcher
         return -1;
     }
 
-    public List<Match> match(final Configuration configuration, final String password)
+    public List<Match> match(final Configuration configuration, final String password, String... userInput)
     {
+        DictionaryBuilder userInputBuilder = new DictionaryBuilder()
+                .setDictionaryName("userInput")
+                .setExclusion(true);
+        for (String input : userInput)
+        {
+            userInputBuilder = userInputBuilder.addWord(input, 0);
+        }
+        final Dictionary userInputDict = userInputBuilder.createDictionary();
+
+        List<Dictionary> dictionaries = new ArrayList<>();
+        dictionaries.add(userInputDict);
+        dictionaries.addAll(configuration.getDictionaries());
+
         final List<Match> matches = new ArrayList<>();
 
         // Create all possible sub-sequences of the password
@@ -273,7 +287,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                 final String split_password = password.substring(start, end);
 
                 // Iterate through all our dictionaries
-                for (final Dictionary dictionary : configuration.getDictionaries())
+                for (final Dictionary dictionary : dictionaries)
                 {
                     // Match on lower
                     final String lower_part = split_password.toLowerCase();
@@ -311,7 +325,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                                 continue;
                             }
 
-                            // Only do reversed if it's different than unleet.
+                            // Only do reverse if it's different from unleet.
                             final String reversed_unleet_part = new StringBuilder(unleet_part).reverse().toString();
                             {
                                 final Integer reversed_unleet_rank = dictionary.getDictonary().get(reversed_unleet_part);
