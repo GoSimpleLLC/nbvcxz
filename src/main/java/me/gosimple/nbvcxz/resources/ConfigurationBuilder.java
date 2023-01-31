@@ -98,7 +98,7 @@ public class ConfigurationBuilder
      */
     public static List<PasswordMatcher> getDefaultPasswordMatchers()
     {
-        return defaultPasswordMatchers;
+        return new ArrayList<>(defaultPasswordMatchers);
     }
 
     /**
@@ -168,7 +168,7 @@ public class ConfigurationBuilder
      */
     public static List<Dictionary> getDefaultDictionaries()
     {
-        return defaultDictionaries;
+        return new ArrayList<>(defaultDictionaries);
     }
 
     /**
@@ -176,7 +176,7 @@ public class ConfigurationBuilder
      */
     public static List<AdjacencyGraph> getDefaultAdjacencyGraphs()
     {
-        return defaultAdjacencyGraphs;
+        return new ArrayList<>(defaultAdjacencyGraphs);
     }
 
     /**
@@ -184,7 +184,7 @@ public class ConfigurationBuilder
      */
     public static Map<Character, Character[]> getDefaultLeetTable()
     {
-        return defaultLeetTable;
+        return new HashMap<>(defaultLeetTable);
     }
 
     /**

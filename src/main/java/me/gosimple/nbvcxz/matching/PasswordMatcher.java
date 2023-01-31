@@ -17,7 +17,8 @@ public interface PasswordMatcher
      *
      * @param configuration configuration for the matcher.
      * @param password      password to match.
+     * @param userInput     other input from the user which is added to an exclusion dictionary.
      * @return a {@code List} of {@code Match}es that this matcher found for the given password and configuration.
      */
-    List<Match> match(final Configuration configuration, final String password);
+    List<Match> match(final Configuration configuration, final String password, final String... userInput);
 }
