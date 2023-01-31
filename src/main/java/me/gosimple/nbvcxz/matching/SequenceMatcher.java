@@ -14,7 +14,7 @@ import java.util.List;
  */
 public final class SequenceMatcher implements PasswordMatcher
 {
-    public List<Match> match(final Configuration configuration, final String password)
+    public List<Match> match(final Configuration configuration, final String password, String... userInput)
     {
         List<Match> matches = new ArrayList<>();
         char[] characters = password.toCharArray();

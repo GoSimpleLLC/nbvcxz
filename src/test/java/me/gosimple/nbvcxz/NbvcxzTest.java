@@ -43,6 +43,12 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"halsha6user",0D));
         tests.add(new EntropyTest(nbvcxz,"halshauser5696311",18.702389159976338D));
         tests.add(new EntropyTest(nbvcxz,"halsHauser5696311",18.702389159976338D));
+
+        //Test exclusion dictionary through userInput
+        tests.add(new EntropyTest(nbvcxz,"halsHauser5696311",18.702389159976338D, "user", "hal"));
+        tests.add(new EntropyTest(nbvcxz,"halsHauser5696311",0D, "5696311"));
+        tests.add(new EntropyTest(nbvcxz,"john.doe@gmail.com",8.366322214245816D, "john", "doe", "gmail.com"));
+        tests.add(new EntropyTest(nbvcxz,"johndoe1986!",3.3219280948873626D, "john.doe@gmail.com", "john", "doe", "gmail.com", "1986"));
         try
         {
             for (final EntropyTest test : tests)
@@ -195,11 +201,13 @@ public class NbvcxzTest
         private final String password;
         private final Double expectedEntropy;
         private Result result;
+        private String[] userInput;
 
-        public EntropyTest(Nbvcxz nbvcxz, String password, Double expectedEntropy) {
+        public EntropyTest(Nbvcxz nbvcxz, String password, Double expectedEntropy, String... userInput) {
             this.nbvcxz = nbvcxz;
             this.password = password;
             this.expectedEntropy = expectedEntropy;
+            this.userInput = userInput;
         }
 
         public String getPassword() {
@@ -224,7 +232,7 @@ public class NbvcxzTest
 
         @Override
         public void run() {
-            result = nbvcxz.estimate(password);
+            result = nbvcxz.estimate(password, userInput);
         }
     }
 }

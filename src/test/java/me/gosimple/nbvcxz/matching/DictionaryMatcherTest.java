@@ -190,6 +190,38 @@ public class DictionaryMatcherTest
 
     }
 
+
+    /**
+     * Test of match method, of class DictionaryMatcher, using LD.
+     */
+    @Test
+    public void testDictionaryUserInput()
+    {
+        System.out.println("Test of dictionaryMatch method with userInput specified, of class DictionaryMatcher");
+
+        PasswordMatcher matcher = new DictionaryMatcher();
+
+        ArrayList<String> inputs = new ArrayList<>();
+        inputs.add("john");
+        inputs.add("doe");
+        inputs.add("google.com");
+
+        List<Match> computed = matcher.match(configuration, "john.doe1985@google.com", inputs.toArray(new String[0]));
+
+        int i = 0;
+        for (Match match : computed)
+        {
+            if (!DictionaryMatch.class.isInstance(match))
+                continue;
+
+            if (((DictionaryMatch) match).getDictionaryName().equals("userInput"))
+                i++;
+        }
+        // Ensure we have the 3 matches from the userInput, not checking any further than that
+        Assert.assertEquals(i, 3);
+
+    }
+
     private int calcHash(List<Match> matches)
     {
         int calculatedHash = 0;
