@@ -248,10 +248,11 @@ public class Nbvcxz
      * @param password      the password you are guessing entropy for.
      * @return the {@code Result} of this estimate.
      */
-    private Result guessEntropy(final Configuration configuration, final String password)
+    private Result guessEntropy(final Configuration configuration, final String password, final String... userInput)
     {
-        final String truncated_password = getTruncatedPassword(configuration, password);
-        return new Result(configuration, truncated_password, password, getBestCombination(configuration, truncated_password));
+        final String truncatedPassword = getTruncatedPassword(configuration, password);
+        final List<Match> matches = getBestCombination(configuration, truncatedPassword, userInput);
+        return new Result(configuration, truncatedPassword, password, matches);
     }
 
     /**
@@ -264,9 +265,9 @@ public class Nbvcxz
      * @param password      the password
      * @return the best list of matches, sorted by start index.
      */
-    private List<Match> getBestCombination(final Configuration configuration, final String password)
+    private List<Match> getBestCombination(final Configuration configuration, final String password, final String... userInput)
     {
-        final List<Match> all_matches = getAllMatches(configuration, password);
+        final List<Match> all_matches = getAllMatches(configuration, password, userInput);
         final Map<Integer, Match> brute_force_matches = new HashMap<>();
         for (int i = 0; i < password.length(); i++)
         {
@@ -586,13 +587,13 @@ public class Nbvcxz
      * @param password      the password to get matches for.
      * @return a {@code List} of {@code Match} objects for the supplied password.
      */
-    private List<Match> getAllMatches(final Configuration configuration, final String password)
+    private List<Match> getAllMatches(final Configuration configuration, final String password, final String... userInput)
     {
         List<Match> matches = new ArrayList<>();
 
         for (PasswordMatcher passwordMatcher : configuration.getPasswordMatchers())
         {
-            matches.addAll(passwordMatcher.match(configuration, password));
+            matches.addAll(passwordMatcher.match(configuration, password, userInput));
         }
         keepLowestMatches(matches);
         return matches;
@@ -646,12 +647,13 @@ public class Nbvcxz
     /**
      * Guess the entropy of a password with the configuration provided.
      *
-     * @param password The password you would like to attempt to estimate on.
+     * @param password  The password you would like to attempt to estimate on.
+     * @param userInput Other input from the user which is added to an exclusion dictionary.
      * @return Result object that contains info about the password.
      */
-    public Result estimate(final String password)
+    public Result estimate(final String password, final String... userInput)
     {
-        return guessEntropy(this.configuration, password);
+        return guessEntropy(this.configuration, password, userInput);
     }
 
     /**
