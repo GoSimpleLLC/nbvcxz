@@ -1,5 +1,7 @@
 package me.gosimple.nbvcxz;
 
+import me.gosimple.nbvcxz.matching.PasswordMatcher;
+import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
 import me.gosimple.nbvcxz.resources.Dictionary;
@@ -61,6 +63,21 @@ public class NbvcxzTest
         {
             assert false;
         }
+    }
+
+    @Test
+    public void testConcurrency()
+    {
+        List<PasswordMatcher> matchers = ConfigurationBuilder.getDefaultPasswordMatchers();
+        PasswordMatcher testMatcher = new PasswordMatcher() {
+            @Override
+            public List<Match> match(Configuration configuration, String password) {
+                return new ArrayList<>();
+            }
+        };
+        matchers.add(testMatcher);
+
+        Assert.assertFalse(ConfigurationBuilder.getDefaultPasswordMatchers().contains(testMatcher));
     }
 
     @Test
