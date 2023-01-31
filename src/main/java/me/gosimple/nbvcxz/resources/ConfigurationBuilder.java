@@ -1,14 +1,7 @@
 package me.gosimple.nbvcxz.resources;
 
 import me.gosimple.nbvcxz.Nbvcxz;
-import me.gosimple.nbvcxz.matching.DateMatcher;
-import me.gosimple.nbvcxz.matching.DictionaryMatcher;
-import me.gosimple.nbvcxz.matching.PasswordMatcher;
-import me.gosimple.nbvcxz.matching.RepeatMatcher;
-import me.gosimple.nbvcxz.matching.SeparatorMatcher;
-import me.gosimple.nbvcxz.matching.SequenceMatcher;
-import me.gosimple.nbvcxz.matching.SpacialMatcher;
-import me.gosimple.nbvcxz.matching.YearMatcher;
+import me.gosimple.nbvcxz.matching.*;
 import me.gosimple.nbvcxz.matching.match.Match;
 
 import java.math.BigDecimal;
@@ -44,6 +37,7 @@ public class ConfigurationBuilder
         defaultPasswordMatchers.add(new SpacialMatcher());
         defaultPasswordMatchers.add(new DictionaryMatcher());
         defaultPasswordMatchers.add(new SeparatorMatcher());
+        defaultPasswordMatchers.add(new LeakMatcher());
 
         defaultDictionaries.add(new Dictionary("passwords", DictionaryUtil.loadRankedDictionary(DictionaryUtil.passwords), false));
         defaultDictionaries.add(new Dictionary("male_names", DictionaryUtil.loadRankedDictionary(DictionaryUtil.male_names), false));
@@ -92,6 +86,8 @@ public class ConfigurationBuilder
     private Boolean distanceCalc;
     private Long combinationAlgorithmTimeout;
     private Long crackingHardwareCost;
+    private String leakApiEndpoint;
+    private Boolean leakApiEnabled;
 
     /**
      * @return Includes all standard password matchers included with Nbvcxz.
@@ -234,6 +230,22 @@ public class ConfigurationBuilder
     public static long getDefaultCrackingHardwareCost()
     {
         return 20000;
+    }
+
+    /**
+     * @return The default Leak API Endpoint, HIBP(v3) by default
+     */
+    public static String getDefaultLeakApiEndpoint()
+    {
+        return "https://api.pwnedpasswords.com/range/";
+    }
+
+    /**
+     * @return true, the leak API is enabled by default
+     */
+    public static boolean getDefaultLeakApiEnabled()
+    {
+        return true;
     }
 
     /**
@@ -419,6 +431,27 @@ public class ConfigurationBuilder
     }
 
     /**
+     * Sets the Leak API Endpoint to be used by the LeakMatcher.
+     * By default, this is the HIBP(v3) api. You can point it to any compatible API endpoint.
+     * @param leakApiEndpoint the API endpoint URL
+     * @return Builder
+     */
+    public ConfigurationBuilder setLeakApiEndpoint(final String leakApiEndpoint) {
+        this.leakApiEndpoint = leakApiEndpoint;
+        return this;
+    }
+
+    /**
+     * Enables the LeakMatcher using the configured LeakApiEndpoint
+     * @param leakApiEnabled the key used to authenticate to the Leak API
+     * @return Builder
+     */
+    public ConfigurationBuilder setLeakApiEnabled(final boolean leakApiEnabled) {
+        this.leakApiEnabled = leakApiEnabled;
+        return this;
+    }
+
+    /**
      * Creates the {@link Configuration} object using all values set in this builder, or default values if unset.
      *
      * @return Configuration object from builder
@@ -473,7 +506,15 @@ public class ConfigurationBuilder
         {
             combinationAlgorithmTimeout = getDefaultCombinationAlgorithmTimeout();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, combinationAlgorithmTimeout);
+        if (leakApiEndpoint == null)
+        {
+            leakApiEndpoint = getDefaultLeakApiEndpoint();
+        }
+        if (leakApiEnabled == null)
+        {
+            leakApiEnabled = getDefaultLeakApiEnabled();
+        }
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, combinationAlgorithmTimeout, leakApiEndpoint, leakApiEnabled);
     }
 
 
