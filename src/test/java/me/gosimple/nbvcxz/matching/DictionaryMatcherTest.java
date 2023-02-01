@@ -29,7 +29,7 @@ public class DictionaryMatcherTest
             }
         }
 
-        this.configuration = new ConfigurationBuilder().setDictionaries(dictionaries).createConfiguration();
+        this.configuration = new ConfigurationBuilder().setLeakApiEnabled(false).setDictionaries(dictionaries).createConfiguration();
     }
 
 

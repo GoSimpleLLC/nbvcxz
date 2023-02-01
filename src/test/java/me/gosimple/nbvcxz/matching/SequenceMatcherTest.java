@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class SequenceMatcherTest
 {
-    final Configuration configuration = new ConfigurationBuilder().createConfiguration();
+    final Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
 
     /**
      * Test of match method, of class DateMatcher.

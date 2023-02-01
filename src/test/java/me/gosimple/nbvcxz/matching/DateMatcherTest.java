@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class DateMatcherTest
 {
-    final Configuration configuration = new ConfigurationBuilder().createConfiguration();
+    final Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
 
     /**
      * Test of match method, of class DateMatcher.

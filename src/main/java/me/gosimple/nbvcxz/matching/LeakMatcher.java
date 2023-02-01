@@ -23,7 +23,7 @@ import java.util.List;
  */
 public final class LeakMatcher implements PasswordMatcher
 {
-    public List<Match> match(final Configuration configuration, final String password)
+    public List<Match> match(final Configuration configuration, final String password, final String... userInput)
     {
         ArrayList<Match> result = new ArrayList<>();
 

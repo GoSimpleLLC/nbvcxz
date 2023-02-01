@@ -25,7 +25,7 @@ public class ScoreTest
         String password;
         Result result;
 
-        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
         final Nbvcxz nbvcxz = new Nbvcxz(configuration);
 
         try
