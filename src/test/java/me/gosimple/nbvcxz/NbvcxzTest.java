@@ -71,7 +71,7 @@ public class NbvcxzTest
         List<PasswordMatcher> matchers = ConfigurationBuilder.getDefaultPasswordMatchers();
         PasswordMatcher testMatcher = new PasswordMatcher() {
             @Override
-            public List<Match> match(Configuration configuration, String password) {
+            public List<Match> match(Configuration configuration, String password, String... userInput) {
                 return new ArrayList<>();
             }
         };
