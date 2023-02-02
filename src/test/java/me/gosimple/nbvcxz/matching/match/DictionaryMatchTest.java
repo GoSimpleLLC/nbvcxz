@@ -22,7 +22,7 @@ public class DictionaryMatchTest
     {
         System.out.println("Test of guessEntropy method, of class DictionaryMatch");
 
-        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
 
         ArrayList<Character[]> sub = new ArrayList<>();
         double entropy;

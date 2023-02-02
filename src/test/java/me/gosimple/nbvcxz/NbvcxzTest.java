@@ -32,6 +32,7 @@ public class NbvcxzTest
 
         Configuration configuration = new ConfigurationBuilder()
                 .setDictionaries(dictionaryList)
+                .setLeakApiEnabled(false)
                 .createConfiguration();
 
         final Nbvcxz nbvcxz = new Nbvcxz(configuration);
@@ -85,6 +86,7 @@ public class NbvcxzTest
     {
         Configuration configuration = new ConfigurationBuilder()
                 .setMaxLength(50)
+                .setLeakApiEnabled(false)
                 .createConfiguration();
 
         final Nbvcxz nbvcxz = new Nbvcxz(configuration);
@@ -115,7 +117,8 @@ public class NbvcxzTest
     @Test
     public void testEstimate()
     {
-        final Nbvcxz nbvcxz = new Nbvcxz();
+        final Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
+        final Nbvcxz nbvcxz = new Nbvcxz(configuration);
 
         final List<EntropyTest> tests = new ArrayList<>();
         tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
@@ -157,7 +160,8 @@ public class NbvcxzTest
     @Test
     public void testEstimateConcurrently()
     {
-        final Nbvcxz nbvcxz = new Nbvcxz();
+        final Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
+        final Nbvcxz nbvcxz = new Nbvcxz(configuration);
 
         final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 
@@ -220,7 +224,7 @@ public class NbvcxzTest
         private Result result;
         private String[] userInput;
 
-        public EntropyTest(Nbvcxz nbvcxz, String password, Double expectedEntropy, String... userInput) {
+        public EntropyTest(Nbvcxz nbvcxz, String password, Double expectedEntropy, final String... userInput) {
             this.nbvcxz = nbvcxz;
             this.password = password;
             this.expectedEntropy = expectedEntropy;

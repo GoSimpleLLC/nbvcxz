@@ -72,7 +72,7 @@ public class RepeatMatchTest
         repeatMap.put("6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p", "6p");
 
         // Test the fixture
-        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
         for (Map.Entry<String, Double> entry : entropyMap.entrySet())
         {
             String password = entry.getKey();

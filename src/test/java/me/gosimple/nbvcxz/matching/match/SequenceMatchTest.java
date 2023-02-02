@@ -57,7 +57,7 @@ public class SequenceMatchTest
 
     private void testHelper(HashMap<String, Double> fixture)
     {
-        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
         for (Map.Entry<String, Double> entry : fixture.entrySet())
         {
             String password = entry.getKey();

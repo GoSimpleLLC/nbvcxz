@@ -86,7 +86,7 @@ public class BaseMatchTest
 
         public BaseMatchImpl(String s)
         {
-            super(s, new ConfigurationBuilder().createConfiguration(), 0, s == null ? 0 : s.length() - 1);
+            super(s, new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration(), 0, s == null ? 0 : s.length() - 1);
         }
     }
 

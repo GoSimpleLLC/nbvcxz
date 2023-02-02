@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class SpacialMatchTest
 {
-    final Configuration configuration = new ConfigurationBuilder().createConfiguration();
+    final Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
 
     /**
      * Test of guessEntropy method, of class SpacialMatch.

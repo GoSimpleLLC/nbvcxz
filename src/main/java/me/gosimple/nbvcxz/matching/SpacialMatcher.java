@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public final class SpacialMatcher implements PasswordMatcher
 {
-    public List<Match> match(final Configuration configuration, final String password, String... userInput)
+    public List<Match> match(final Configuration configuration, final String password, final String... userInput)
     {
         List<Match> matches = new ArrayList<>();
         Map<Integer, Set<Character>> neighbors = new HashMap<>();

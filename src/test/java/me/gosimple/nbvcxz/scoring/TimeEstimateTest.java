@@ -47,7 +47,7 @@ public class TimeEstimateTest
         guessTypes.put("ONLINE_UNTHROTTLED", 100L);
         guessTypes.put("ONLINE_THROTTLED", 2L);
 
-        Configuration configuration = new ConfigurationBuilder().setGuessTypes(guessTypes).createConfiguration();
+        Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).setGuessTypes(guessTypes).createConfiguration();
         final Nbvcxz nbvcxz = new Nbvcxz(configuration);
 
         try

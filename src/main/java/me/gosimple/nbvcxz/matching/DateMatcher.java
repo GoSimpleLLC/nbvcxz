@@ -226,7 +226,7 @@ public final class DateMatcher implements PasswordMatcher
         }
     }
 
-    public List<Match> match(final Configuration configuration, final String password, String... userInput)
+    public List<Match> match(final Configuration configuration, final String password, final String... userInput)
     {
 
         List<Match> dateMatches = new ArrayList<>();

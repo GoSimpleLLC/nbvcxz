@@ -25,7 +25,7 @@ public class DateMatchTest
     public void testCalculateEntropy()
     {
         System.out.println("Test of guessEntropy method, of class DateMatch");
-        Configuration configuration = new ConfigurationBuilder().createConfiguration();
+        Configuration configuration = new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration();
 
         HashMap<DateMatch, Double> expectedMatches = new HashMap<>();
         expectedMatches.put(new DateMatch("0090", configuration, 0, 0, 1990, null, 0, 3), 15.550386066531285);

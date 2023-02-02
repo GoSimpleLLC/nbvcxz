@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public final class YearMatcher implements PasswordMatcher
 {
-    public List<Match> match(final Configuration configuration, final String password, String... userInput)
+    public List<Match> match(final Configuration configuration, final String password, final String... userInput)
     {
         Pattern pattern = configuration.getYearPattern();
         Matcher matcher = pattern.matcher(password);

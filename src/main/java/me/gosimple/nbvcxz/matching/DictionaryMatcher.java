@@ -262,7 +262,7 @@ public final class DictionaryMatcher implements PasswordMatcher
         return -1;
     }
 
-    public List<Match> match(final Configuration configuration, final String password, String... userInput)
+    public List<Match> match(final Configuration configuration, final String password, final String... userInput)
     {
         DictionaryBuilder userInputBuilder = new DictionaryBuilder()
                 .setDictionaryName("userInput")

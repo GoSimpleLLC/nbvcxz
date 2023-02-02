@@ -41,7 +41,7 @@ public class YearMatchTest
         {
             String password = entry.getKey();
             double expected = entry.getValue();
-            double computed = new YearMatch(password, new ConfigurationBuilder().createConfiguration(), 0, password.length() - 1).calculateEntropy();
+            double computed = new YearMatch(password, new ConfigurationBuilder().setLeakApiEnabled(false).createConfiguration(), 0, password.length() - 1).calculateEntropy();
             Assert.assertEquals(password, expected, computed, 0.000000000000001);
         }
     }

@@ -31,6 +31,8 @@ public class Configuration
     private final ResourceBundle mainResource;
     private final ResourceBundle feedbackResource;
     private final long combinationAlgorithmTimeout;
+    private final String leakApiEndpoint;
+    private final boolean leakApiEnabled;
 
     /**
      * @param passwordMatchers            The list of {@link PasswordMatcher}s which will be used for matching
@@ -44,7 +46,7 @@ public class Configuration
      * @param distanceCalc                Enable or disable levenshtein distance calculation for dictionary matches
      * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout, String leakApiEndpoint, boolean leakApiEnabled)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
@@ -59,6 +61,8 @@ public class Configuration
         this.mainResource = ResourceBundle.getBundle("main", locale);
         this.feedbackResource = ResourceBundle.getBundle("feedback", locale);
         this.combinationAlgorithmTimeout = combinationAlgorithmTimeout;
+        this.leakApiEndpoint = leakApiEndpoint;
+        this.leakApiEnabled = leakApiEnabled;
     }
 
     /**
@@ -146,6 +150,20 @@ public class Configuration
     public long getCombinationAlgorithmTimeout()
     {
         return combinationAlgorithmTimeout;
+    }
+
+    /**
+     * @return The endpoint for the Leak API, used by the LeakMatcher
+     */
+    public String getLeakApiEndpoint() {
+        return leakApiEndpoint;
+    }
+
+    /**
+     * @return The API key used for the Leak API Endpoint
+     */
+    public boolean getLeakApiEnabled() {
+        return leakApiEnabled;
     }
 
     /**

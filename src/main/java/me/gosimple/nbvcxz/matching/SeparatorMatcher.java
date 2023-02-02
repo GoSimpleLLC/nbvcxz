@@ -21,7 +21,7 @@ public final class SeparatorMatcher implements PasswordMatcher
 
     private static final Pattern NON_ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z\\d]");
 
-    public List<Match> match(final Configuration configuration, final String password, String... userInput)
+    public List<Match> match(final Configuration configuration, final String password, final String... userInput)
     {
         Matcher matcher = NON_ALPHA_NUMERIC.matcher(password);
 
