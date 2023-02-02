@@ -51,7 +51,7 @@ public class Nbvcxz
      */
     private static Match createBruteForceMatch(final Configuration configuration, final String password, final int index)
     {
-        return new BruteForceMatch(password.charAt(index), configuration, index);
+        return new BruteForceMatch(password.charAt(index), password, configuration, index);
     }
 
     /**
@@ -268,18 +268,12 @@ public class Nbvcxz
     private List<Match> getBestCombination(final Configuration configuration, final String password, final String... userInput)
     {
         final List<Match> all_matches = getAllMatches(configuration, password, userInput);
-        final Map<Integer, Match> brute_force_matches = new HashMap<>();
-        for (int i = 0; i < password.length(); i++)
-        {
-            brute_force_matches.put(i, createBruteForceMatch(configuration, password, i));
-        }
-
-        final List<Match> good_enough_matches = findGoodEnoughCombination(password, all_matches, brute_force_matches);
+        final List<Match> good_enough_matches = findGoodEnoughCombination(password, all_matches);
 
         if (all_matches == null || all_matches.size() == 0 || isRandom(password, good_enough_matches))
         {
             List<Match> matches = new ArrayList<>();
-            backfillBruteForce(password, brute_force_matches, matches);
+            backfillBruteForce(password, matches);
             Collections.sort(matches, comparator);
             return matches;
         }
@@ -287,7 +281,7 @@ public class Nbvcxz
 
         try
         {
-            return findBestCombination(password, all_matches, brute_force_matches);
+            return findBestCombination(password, all_matches);
         }
         catch (TimeoutException e)
         {
@@ -302,10 +296,9 @@ public class Nbvcxz
      *
      * @param password            the password
      * @param all_matches         all matches which have been found for this password
-     * @param brute_force_matches map of index and brute force match to fit that index
      * @return a list of matches which is good enough for most uses
      */
-    private List<Match> findGoodEnoughCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches)
+    private List<Match> findGoodEnoughCombination(final String password, final List<Match> all_matches)
     {
         int length = password.length();
         Match[] match_at_index = new Match[length];
@@ -336,7 +329,7 @@ public class Nbvcxz
             Match match = match_at_index[k];
             if (match == null)
             {
-                match_list.add(brute_force_matches.get(k));
+                match_list.add(createBruteForceMatch(configuration, password, k));
                 k--;
                 continue;
             }
@@ -354,10 +347,9 @@ public class Nbvcxz
      *
      * @param password            the password
      * @param all_matches         all matches which have been found for this password
-     * @param brute_force_matches map of index and brute force match to fit that index
      * @return the best possible combination of matches for this password
      */
-    private List<Match> findBestCombination(final String password, final List<Match> all_matches, final Map<Integer, Match> brute_force_matches) throws TimeoutException
+    private List<Match> findBestCombination(final String password, final List<Match> all_matches) throws TimeoutException
     {
         if (configuration.getCombinationAlgorithmTimeout() <= 0)
         {
@@ -426,7 +418,7 @@ public class Nbvcxz
         BestMatches best_matches = new BestMatches();
         for (Match match : seed_matches)
         {
-            generateMatches(start_time, password, match, non_intersecting_matches, brute_force_matches, new ArrayList<Match>(), 0, best_matches);
+            generateMatches(start_time, password, match, non_intersecting_matches, new ArrayList<Match>(), 0, best_matches);
         }
         best_matches.sortMatches(comparator);
 
@@ -440,12 +432,11 @@ public class Nbvcxz
      * @param password                 the password
      * @param match                    a match to start with (or the next match in line)
      * @param non_intersecting_matches map of all non-intersecting matches
-     * @param brute_force_matches      map of index and brute force match to fit that index
      * @param matches                  the list of matches being built
      * @param matches_length           the length of the password the matches  take up
      * @param best_matches             wrapper for the best matches list and length
      */
-    private void generateMatches(final long start_time, final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final Map<Integer, Match> brute_force_matches, final List<Match> matches, int matches_length, BestMatches best_matches) throws TimeoutException
+    private void generateMatches(final long start_time, final String password, final Match match, final Map<Match, List<Match>> non_intersecting_matches, final List<Match> matches, int matches_length, BestMatches best_matches) throws TimeoutException
     {
         if (System.currentTimeMillis() - start_time > configuration.getCombinationAlgorithmTimeout())
         {
@@ -467,7 +458,7 @@ public class Nbvcxz
                     continue;
                 }
             }
-            generateMatches(start_time, password, next_match, non_intersecting_matches, brute_force_matches, matches, matches_length, best_matches);
+            generateMatches(start_time, password, next_match, non_intersecting_matches, matches, matches_length, best_matches);
             found_next = true;
         }
 
@@ -482,7 +473,7 @@ public class Nbvcxz
                 best_matches_list.clear();
                 best_matches_list.addAll(matches);
                 best_matches.setMatchLength(matches_length);
-                backfillBruteForce(password, brute_force_matches, best_matches_list);
+                backfillBruteForce(password, best_matches_list);
                 best_matches.setBestMatches(best_matches_list);
             }
         }
@@ -554,29 +545,34 @@ public class Nbvcxz
      * Returns them unsorted.
      *
      * @param password            the password
-     * @param brute_force_matches map of index and brute force match to fit that index
      * @param matches             the list of matches to fill in
      */
-    private void backfillBruteForce(final String password, final Map<Integer, Match> brute_force_matches, final List<Match> matches)
+    private void backfillBruteForce(final String password, final List<Match> matches)
     {
+        Map<Integer, Match> matchMap = new HashMap<>();
         Set<Match> bf_matches = new HashSet<>();
-        int index = 0;
-        while (index < password.length())
-        {
-            boolean has_match = false;
-            for (Match match : matches)
-            {
-                if (index >= match.getStartIndex() && index <= match.getEndIndex())
-                {
-                    has_match = true;
+
+        for (int i = 0; i < password.length(); i++) {
+            for (Match match : matches) {
+                if (i >= match.getStartIndex() && i <= match.getEndIndex()) {
+                    matchMap.put(i, match);
                 }
             }
-            if (!has_match)
-            {
-                bf_matches.add(brute_force_matches.get(index));
+            if (!matchMap.containsKey(i)) {
+                matchMap.put(i, null);
             }
-            index++;
         }
+        for (int i = 0; i < password.length(); i++) {
+            if (matchMap.get(i) == null) {
+                int j = i;
+                while (j < password.length() && matchMap.get(j) == null) {
+                    j++;
+                }
+                bf_matches.add(new BruteForceMatch(password.substring(i, j), password, configuration, i, j - 1));
+                i = j - 1;
+            }
+        }
+
         matches.addAll(bf_matches);
     }
 

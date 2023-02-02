@@ -49,7 +49,7 @@ public class NbvcxzTest
         //Test exclusion dictionary through userInput
         tests.add(new EntropyTest(nbvcxz,"halsHauser5696311",18.702389159976338D, "user", "hal"));
         tests.add(new EntropyTest(nbvcxz,"halsHauser5696311",0D, "5696311"));
-        tests.add(new EntropyTest(nbvcxz,"john.doe@gmail.com",8.366322214245816D, "john", "doe", "gmail.com"));
+        tests.add(new EntropyTest(nbvcxz,"john.doe@gmail.com",9.204571144249204D, "john", "doe", "gmail.com"));
         tests.add(new EntropyTest(nbvcxz,"johndoe1986!",3.3219280948873626D, "john.doe@gmail.com", "john", "doe", "gmail.com", "1986"));
         try
         {
@@ -92,9 +92,9 @@ public class NbvcxzTest
         Assert.assertEquals(nbvcxz.estimate("shortened_password_shortened_password_shortened_password_shortened_password_shortened_password").getPassword().length(), 50);
 
         final List<EntropyTest> tests = new ArrayList<>();
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",88.92309252275015D));
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",88.92309252275015D));
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password!!!!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@$$$$$",88.92309252275015D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",91.28749918519163D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",91.28749918519163D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password!!!!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@$$$$$",91.28749918519163D));
         try
         {
             for (final EntropyTest test : tests)
@@ -119,7 +119,7 @@ public class NbvcxzTest
 
         final List<EntropyTest> tests = new ArrayList<>();
         tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
-        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.05294537608871D));
+        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",39.7817587009717D));
         tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",40.376705346635696D));
         tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",31.086623767089435D));
         tests.add(new EntropyTest(nbvcxz,"zxcvbnm",5.321928094887363D));
@@ -135,10 +135,10 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"ScoRpi0ns",20.46971136544417D));
         tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",44.52675492064834D));
         tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",42.69087661112469D));
-        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
-        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
-        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",360.5676147181065D));
+        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",86.59217837317834D));
+        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",165.437600046154D));
+        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",330.875200092308D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",374.75405469275546D));
 
         try
         {
@@ -163,7 +163,7 @@ public class NbvcxzTest
 
         final List<EntropyTest> tests = new ArrayList<>();
         tests.add(new EntropyTest(nbvcxz,"correcthorsebatterystaple",16.60965490131509D));
-        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",35.05294537608871D));
+        tests.add(new EntropyTest(nbvcxz,"a.b.c.defy",39.7817587009717D));
         tests.add(new EntropyTest(nbvcxz,"helpimaliveinhere",40.376705346635696D));
         tests.add(new EntropyTest(nbvcxz,"damnwindowsandpaper",31.086623767089435D));
         tests.add(new EntropyTest(nbvcxz,"zxcvbnm",5.321928094887363D));
@@ -179,10 +179,10 @@ public class NbvcxzTest
         tests.add(new EntropyTest(nbvcxz,"ScoRpi0ns",20.46971136544417D));
         tests.add(new EntropyTest(nbvcxz,"thereisneveragoodmonday",44.52675492064834D));
         tests.add(new EntropyTest(nbvcxz,"forgetthatchristmaspartytheotheryear",42.69087661112469D));
-        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",84.88322715518174D));
-        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",124.22235013869417D));
-        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",247.06618865413472D));
-        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",360.5676147181065D));
+        tests.add(new EntropyTest(nbvcxz,"A Fool and His Money Are Soon Parted",86.59217837317834D));
+        tests.add(new EntropyTest(nbvcxz,"6c891879ed0a0bbf701d5ca8af39a766",165.437600046154D));
+        tests.add(new EntropyTest(nbvcxz,"ef00623ced862e84ea15a6f97cb3fbb9f177bd6f23e54459a96ca5926c28c653",330.875200092308D));
+        tests.add(new EntropyTest(nbvcxz,"shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password_shortened_password",374.75405469275546D));
 
         List<Future> futures = new ArrayList<>();
         try
