@@ -2,14 +2,10 @@ package me.gosimple.nbvcxz.matching;
 
 import me.gosimple.nbvcxz.matching.match.DictionaryMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
-import me.gosimple.nbvcxz.resources.Configuration;
+import me.gosimple.nbvcxz.resources.*;
 import me.gosimple.nbvcxz.resources.Dictionary;
-import me.gosimple.nbvcxz.resources.DictionaryBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Look for every part of the password that match an entry in our dictionaries
@@ -18,74 +14,6 @@ import java.util.TreeMap;
  */
 public final class DictionaryMatcher implements PasswordMatcher
 {
-    /**
-     * Removes all leet substitutions from the password and returns a list of plain text versions.
-     *
-     * @param configuration the configuration file used to estimate entropy.
-     * @param password      the password to translate from leet.
-     * @return a list of all combinations of possible leet translations for the password with all leet removed.
-     */
-    private static List<String> translateLeet(final Configuration configuration, final String password)
-    {
-        final List<String> translations = new ArrayList();
-        final TreeMap<Integer, Character[]> replacements = new TreeMap<>();
-
-        for (int i = 0; i < password.length(); i++)
-        {
-            final Character[] replacement = configuration.getLeetTable().get(password.charAt(i));
-            if (replacement != null)
-            {
-                replacements.put(i, replacement);
-            }
-        }
-
-        // Do not bother continuing if we're going to replace every single character
-        if(replacements.keySet().size() == password.length())
-            return translations;
-
-        if (replacements.size() > 0)
-        {
-            final char[] password_char = new char[password.length()];
-            for (int i = 0; i < password.length(); i++)
-            {
-                password_char[i] = password.charAt(i);
-            }
-            replaceAtIndex(replacements, replacements.firstKey(), password_char, translations);
-        }
-
-        return translations;
-    }
-
-    /**
-     * Internal function to recursively build the list of un-leet possibilities.
-     *
-     * @param replacements    TreeMap of replacement index, and the possible characters at that index to be replaced
-     * @param current_index   internal use for the function
-     * @param password        a Character array of the original password
-     * @param final_passwords List of the final passwords to be filled
-     */
-    private static void replaceAtIndex(final TreeMap<Integer, Character[]> replacements, Integer current_index, final char[] password, final List<String> final_passwords)
-    {
-        for (final char replacement : replacements.get(current_index))
-        {
-            password[current_index] = replacement;
-            if (current_index.equals(replacements.lastKey()))
-            {
-                final_passwords.add(new String(password));
-            }
-            else if (final_passwords.size() > 100)
-            {
-                // Give up if we've already made 100 replacements
-                return;
-            }
-            else
-            {
-                replaceAtIndex(replacements, replacements.higherKey(current_index), password, final_passwords);
-            }
-        }
-    }
-
-
     /**
      * Gets the substitutions for the password.
      *
@@ -279,6 +207,8 @@ public final class DictionaryMatcher implements PasswordMatcher
 
         final List<Match> matches = new ArrayList<>();
 
+        final SubstitutionComboGen substitutionComboGen = new SubstitutionComboGen(configuration.getTrieNodeRoot());
+
         // Create all possible sub-sequences of the password
         for (int start = 0; start < password.length(); start++)
         {
@@ -314,7 +244,7 @@ public final class DictionaryMatcher implements PasswordMatcher
                     // Only do unleet if it's different than the regular lower.
                     if (dictionary.getMaxLength() > split_password.length())
                     {
-                        final List<String> unleet_list = translateLeet(configuration, lower_part);
+                        final List<String> unleet_list = substitutionComboGen.getAllSubCombos(lower_part, configuration.getSubstituteComboLimit());
                         for (final String unleet_part : unleet_list)
                         {
                             final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);

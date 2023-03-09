@@ -1,9 +1,6 @@
 package me.gosimple.nbvcxz.resources;
 
-import me.gosimple.nbvcxz.matching.DictionaryMatcher;
-import me.gosimple.nbvcxz.matching.PasswordMatcher;
-import me.gosimple.nbvcxz.matching.SpacialMatcher;
-import me.gosimple.nbvcxz.matching.YearMatcher;
+import me.gosimple.nbvcxz.matching.*;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,10 +19,11 @@ public class Configuration
     private final Map<String, Long> guessTypes;
     private final List<Dictionary> dictionaries;
     private final List<AdjacencyGraph> adjacencyGraphs;
-    private final Map<Character, Character[]> leetTable;
+    private final TrieNode trieNodeRoot;
     private final Pattern yearPattern;
     private final Double minimumEntropy;
     private final Integer maxLength;
+    private final Integer substituteComboLimit;
     private final Locale locale;
     private final boolean distanceCalc;
     private final ResourceBundle mainResource;
@@ -37,23 +35,24 @@ public class Configuration
      * @param guessTypes                  Map of types of guesses, and associated guesses/sec
      * @param dictionaries                List of {@link Dictionary} to use for the {@link DictionaryMatcher}
      * @param adjacencyGraphs             List of adjacency graphs to be used by the {@link SpacialMatcher}
-     * @param leetTable                   Leet table for use with {@link DictionaryMatcher}
+     * @param trieNodeRoot                Root trie node to help find possible string substitutions, for use with {@link DictionaryMatcher}
      * @param yearPattern                 Regex {@link Pattern} for use with {@link YearMatcher}
      * @param minimumEntropy              Minimum entropy value passwords should meet
      * @param locale                      Locale for localized text and feedback
      * @param distanceCalc                Enable or disable levenshtein distance calculation for dictionary matches
      * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, TrieNode trieNodeRoot, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Integer substituteComboLimit, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
         this.dictionaries = dictionaries;
         this.adjacencyGraphs = adjacencyGraphs;
-        this.leetTable = leetTable;
+        this.trieNodeRoot = trieNodeRoot;
         this.yearPattern = yearPattern;
         this.minimumEntropy = minimumEntropy;
         this.maxLength = maxLength;
+        this.substituteComboLimit = substituteComboLimit;
         this.locale = locale;
         this.distanceCalc = distanceCalc;
         this.mainResource = ResourceBundle.getBundle("main", locale);
@@ -96,9 +95,9 @@ public class Configuration
     /**
      * @return Leet table for use with {@link DictionaryMatcher}
      */
-    public Map<Character, Character[]> getLeetTable()
+    public TrieNode getTrieNodeRoot()
     {
-        return leetTable;
+        return trieNodeRoot;
     }
 
     /**
@@ -122,6 +121,13 @@ public class Configuration
      */
     public Integer getMaxLength() {
         return maxLength;
+    }
+
+    /**
+     * @return The default maximum number of string combos to generate, based on the possible string substitutions.
+     */
+    public Integer getSubstituteComboLimit() {
+        return substituteComboLimit;
     }
 
     /**
