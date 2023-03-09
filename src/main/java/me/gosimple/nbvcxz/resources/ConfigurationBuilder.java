@@ -33,7 +33,7 @@ public class ConfigurationBuilder
     private static final List<Dictionary> defaultDictionaries = new ArrayList<>();
     private static final List<PasswordMatcher> defaultPasswordMatchers = new ArrayList<>();
     private static final List<AdjacencyGraph> defaultAdjacencyGraphs = new ArrayList<>();
-    private static final Map<Character, Character[]> defaultLeetTable = new HashMap<>();
+    private static final TrieNode defaultTrieNodeRoot;
     
     static 
     {
@@ -56,38 +56,59 @@ public class ConfigurationBuilder
         defaultAdjacencyGraphs.add(new AdjacencyGraph("Standard Keypad", AdjacencyGraphUtil.standardKeypad));
         defaultAdjacencyGraphs.add(new AdjacencyGraph("Mac Keypad", AdjacencyGraphUtil.macKeypad));
 
-        defaultLeetTable.put('4', new Character[]{'a'});
-        defaultLeetTable.put('@', new Character[]{'a'});
-        defaultLeetTable.put('8', new Character[]{'b'});
-        defaultLeetTable.put('(', new Character[]{'c'});
-        defaultLeetTable.put('{', new Character[]{'c'});
-        defaultLeetTable.put('[', new Character[]{'c'});
-        defaultLeetTable.put('<', new Character[]{'c'});
-        defaultLeetTable.put('3', new Character[]{'e'});
-        defaultLeetTable.put('9', new Character[]{'g'});
-        defaultLeetTable.put('6', new Character[]{'g'});
-        defaultLeetTable.put('&', new Character[]{'g'});
-        defaultLeetTable.put('#', new Character[]{'h'});
-        defaultLeetTable.put('!', new Character[]{'i', 'l'});
-        defaultLeetTable.put('1', new Character[]{'i', 'l'});
-        defaultLeetTable.put('|', new Character[]{'i', 'l'});
-        defaultLeetTable.put('0', new Character[]{'o'});
-        defaultLeetTable.put('$', new Character[]{'s'});
-        defaultLeetTable.put('5', new Character[]{'s'});
-        defaultLeetTable.put('+', new Character[]{'t'});
-        defaultLeetTable.put('7', new Character[]{'t', 'l'});
-        defaultLeetTable.put('%', new Character[]{'x'});
-        defaultLeetTable.put('2', new Character[]{'z'});
+        defaultTrieNodeRoot = new TrieNode()
+            // simple single character substitutions (mostly leet speak)
+            .addSub("4", "a")
+            .addSub("@", "a")
+            .addSub("8", "b")
+            .addSub("(", "c")
+            .addSub("{", "c")
+            .addSub("[", "c")
+            .addSub("<", "c", "k", "v")
+            .addSub(">", "v")
+            .addSub("3", "e")
+            .addSub("9", "g", "q")
+            .addSub("6", "d", "g")
+            .addSub("&", "g")
+            .addSub("#", "f", "h")
+            .addSub("!", "i", "l")
+            .addSub("1", "i", "l")
+            .addSub("|", "i", "l")
+            .addSub("0", "o")
+            .addSub("$", "s")
+            .addSub("5", "s")
+            .addSub("+", "t")
+            .addSub("7", "t", "l")
+            .addSub("%", "x")
+            .addSub("2", "z")
+            // extra "munged" variations from here: https://en.wikipedia.org/wiki/Munged_password
+            .addSub("?", "y") // (y = why?)
+            .addSub("uu", "w")
+            .addSub("vv", "w")
+            .addSub("nn", "m")
+            .addSub("2u", "uu", "w")
+            .addSub("2v", "vv", "w")
+            .addSub("2n", "nn", "m")
+            .addSub("2b", "bb")
+            .addSub("2d", "dd")
+            .addSub("2g", "gg")
+            .addSub("2l", "ll")
+            .addSub("2p", "pp")
+            .addSub("2t", "tt")
+            .addSub("\\/\\/", "w")
+            .addSub("/\\/\\", "m")
+            .addSub("|)", "d");
     }
 
     private List<PasswordMatcher> passwordMatchers;
     private Map<String, Long> guessTypes;
     private List<Dictionary> dictionaries;
     private List<AdjacencyGraph> adjacencyGraphs;
-    private Map<Character, Character[]> leetTable;
+    private TrieNode trieNodeRoot;
     private Pattern yearPattern;
     private Double minimumEntropy;
     private Integer maxLength;
+    private Integer substituteComboLimit;
     private Locale locale;
     private Boolean distanceCalc;
     private Long combinationAlgorithmTimeout;
@@ -180,11 +201,11 @@ public class ConfigurationBuilder
     }
 
     /**
-     * @return The default table of common english leet substitutions
+     * @return The default trie node root to find string substitutions
      */
-    public static Map<Character, Character[]> getDefaultLeetTable()
+    public static TrieNode getTrieNodeRoot()
     {
-        return new HashMap<>(defaultLeetTable);
+        return defaultTrieNodeRoot;
     }
 
     /**
@@ -210,6 +231,14 @@ public class ConfigurationBuilder
     public static int getDefaultMaxLength()
     {
         return 256;
+    }
+
+    /**
+     * @return The default maximum number of password substitutions combos to generate, for a given password
+     */
+    public static int getSubstituteComboLimit()
+    {
+        return 250;
     }
 
     /**
@@ -289,12 +318,12 @@ public class ConfigurationBuilder
     /**
      * The leet table is used to check within a password for common character substitutions (e.g. s to $).
      *
-     * @param leetTable Map for leetTable
+     * @param trieNodeRoot Map for leetTable
      * @return Builder
      */
-    public ConfigurationBuilder setLeetTable(Map<Character, Character[]> leetTable)
+    public ConfigurationBuilder setLeetTable(TrieNode trieNodeRoot)
     {
-        this.leetTable = leetTable;
+        this.trieNodeRoot = trieNodeRoot;
         return this;
     }
 
@@ -445,9 +474,9 @@ public class ConfigurationBuilder
         {
             adjacencyGraphs = getDefaultAdjacencyGraphs();
         }
-        if (leetTable == null)
+        if (trieNodeRoot == null)
         {
-            leetTable = getDefaultLeetTable();
+            trieNodeRoot = getTrieNodeRoot();
         }
         if (yearPattern == null)
         {
@@ -461,6 +490,9 @@ public class ConfigurationBuilder
         {
             maxLength = getDefaultMaxLength();
         }
+        if (substituteComboLimit == null) {
+            substituteComboLimit = getSubstituteComboLimit();
+        }
         if (locale == null)
         {
             locale = Locale.getDefault();
@@ -473,7 +505,7 @@ public class ConfigurationBuilder
         {
             combinationAlgorithmTimeout = getDefaultCombinationAlgorithmTimeout();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, combinationAlgorithmTimeout);
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, trieNodeRoot, yearPattern, minimumEntropy, maxLength, substituteComboLimit, locale, distanceCalc, combinationAlgorithmTimeout);
     }
 
 

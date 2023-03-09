@@ -9,7 +9,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Adam Brusselback
@@ -190,6 +193,44 @@ public class DictionaryMatcherTest
 
     }
 
+    /**
+     * Test of passwords that contain substituted substrings of arbitrary lengths
+     * (E.g. 'w' could be written as 'uu')
+     */
+    @Test
+    public void testArbitraryLengthSubstitutions()
+    {
+        System.out.println("Test of arbitrary length substitutions, of class DictionaryMatcher");
+
+        PasswordMatcher matcher = new DictionaryMatcher();
+
+        // create a table of expected dictionary matches
+        Map<String, String> mappings = new HashMap<>();
+        mappings.put("P@55uu0rd", "password"); // uu = w (from issue #45)
+        mappings.put("/\\/\\3GA", "mega"); // /\/\ = m
+        mappings.put("|)R!2b|3", "dribble"); // |) = D, 2b = bb
+        mappings.put("/\\/\\02!2la", "mozilla"); // /\/\02!2l4 (2l = l)
+        mappings.put("B02t13", "bottle"); // 2t = tt
+        mappings.put("nn!|)|)l3", "middle"); // nn = m
+        mappings.put("so2n3", "some"); // 2n could mean nn or m, make sure 'm' is used
+        mappings.put("pe2n", "penn"); // same as above, but expecting 2n = nn
+
+        for (String substitutedPass : mappings.keySet())
+        {
+            // make a list of all the dictionary matches that were made,
+            // using streams to convert a list of matches to a list of each match's dictionary value
+            List<String> dictValues = matcher.match(configuration, substitutedPass)
+                    .stream()
+                    .map(DictionaryMatch.class::cast)
+                    .map(DictionaryMatch::getDictionaryValue)
+                    .collect(Collectors.toList());
+
+            // make sure the converted version is in the list of dictionary value matches somewhere
+            String converted = mappings.get(substitutedPass);
+            String message = String.format("'%s' did not get matched to '%s'", substitutedPass, converted);
+            Assert.assertTrue(message, dictValues.contains(converted));
+        }
+    }
 
     /**
      * Test of match method, of class DictionaryMatcher, using LD.
