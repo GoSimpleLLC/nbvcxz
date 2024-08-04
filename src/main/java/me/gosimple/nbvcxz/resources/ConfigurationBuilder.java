@@ -213,7 +213,7 @@ public class ConfigurationBuilder
     }
 
     /**
-     * @return the default is false
+     * @return the default is true
      */
     public static Boolean getDefaultDistanceCalc()
     {
