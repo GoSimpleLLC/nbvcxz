@@ -53,7 +53,7 @@ public class Configuration
         this.leetTable = leetTable;
         this.yearPattern = yearPattern;
         this.minimumEntropy = minimumEntropy;
-        this.maxLength = maxLength; 
+        this.maxLength = maxLength;
         this.locale = locale;
         this.distanceCalc = distanceCalc;
         ResourceBundle.Control noFallbackControl = ResourceBundle.Control.getNoFallbackControl(
