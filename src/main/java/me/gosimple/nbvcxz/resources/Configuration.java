@@ -56,8 +56,10 @@ public class Configuration
         this.maxLength = maxLength;
         this.locale = locale;
         this.distanceCalc = distanceCalc;
-        this.mainResource = ResourceBundle.getBundle("main", locale);
-        this.feedbackResource = ResourceBundle.getBundle("feedback", locale);
+        ResourceBundle.Control noFallbackControl = ResourceBundle.Control.getNoFallbackControl(
+                ResourceBundle.Control.FORMAT_PROPERTIES);
+        this.mainResource = ResourceBundle.getBundle("main", locale, noFallbackControl);
+        this.feedbackResource = ResourceBundle.getBundle("feedback", locale, noFallbackControl);
         this.combinationAlgorithmTimeout = combinationAlgorithmTimeout;
     }
 
