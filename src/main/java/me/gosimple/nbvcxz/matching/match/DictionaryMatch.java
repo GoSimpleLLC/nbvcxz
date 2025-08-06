@@ -159,7 +159,7 @@ public final class DictionaryMatch extends BaseMatch
             return 0d;
         }
 
-        int possibilities = 0;
+        long possibilities = 0;
         for (Character[] sub : leetSubstitution)
         {
             char original = sub[0];
@@ -248,6 +248,14 @@ public final class DictionaryMatch extends BaseMatch
     public boolean isReversed()
     {
         return reversed;
+    }
+
+    /**
+     * @return true if the dictionary entry is `excluded`
+     */
+    public boolean isExcluded()
+    {
+        return excluded;
     }
 
     /**

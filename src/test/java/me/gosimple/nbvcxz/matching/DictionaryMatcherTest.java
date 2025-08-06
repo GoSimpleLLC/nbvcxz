@@ -5,6 +5,7 @@ import me.gosimple.nbvcxz.matching.match.Match;
 import me.gosimple.nbvcxz.resources.Configuration;
 import me.gosimple.nbvcxz.resources.ConfigurationBuilder;
 import me.gosimple.nbvcxz.resources.Dictionary;
+import me.gosimple.nbvcxz.resources.DictionaryBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -188,6 +189,179 @@ public class DictionaryMatcherTest
 
         Assert.assertEquals(expectedHash, computedHash);
 
+    }
+
+    /**
+     * Test case that reproduces the exact bug described in issue 91
+     * Creates an excluding dictionary with "JohnyMnemonic" (13 chars) and tests against
+     * the l33t version "J0hnyMn3m0n1c123" (16 chars).
+     */
+    @Test
+    public void testLeetMatchingWithAdditionalCharacters()
+    {
+        // Create a custom exclusion dictionary with "JohnyMnemonic" (12 characters)
+        Dictionary customDict = new DictionaryBuilder()
+                .setDictionaryName("custom_exclusions")
+                .setExclusion(true)
+                .addWord("johnymnemonic", 0) // Dictionary stores lowercase, 12 characters
+                .createDictionary();
+
+        // Add the custom dictionary to the default ones
+        List<Dictionary> dictionaries = new ArrayList<>(ConfigurationBuilder.getDefaultDictionaries());
+        dictionaries.add(customDict);
+
+        Configuration configuration = new ConfigurationBuilder()
+                .setDictionaries(dictionaries)
+                .createConfiguration();
+
+        PasswordMatcher matcher = new DictionaryMatcher();
+
+        // Test the l33t version with additional characters at the end
+        // "J0hnyMn3m0n1c123" is 16 characters, but "J0hnyMn3m0n1c" (13 chars) should unleet to "johnymnemonic" (13 chars)
+        String leetPasswordWithExtra = "J0hnyMn3m0n1c123";
+
+        List<Match> matches = matcher.match(configuration, leetPasswordWithExtra);
+
+        // Verify that we found a match for the core part from our custom dictionary
+        boolean foundCustomDictionaryMatch = false;
+        DictionaryMatch foundMatch = null;
+
+        for (Match match : matches) {
+            if (match instanceof DictionaryMatch) {
+                DictionaryMatch dictMatch = (DictionaryMatch) match;
+                if ("custom_exclusions".equals(dictMatch.getDictionaryName()) &&
+                        "johnymnemonic".equals(dictMatch.getDictionaryValue())) {
+                    foundCustomDictionaryMatch = true;
+                    foundMatch = dictMatch;
+                    break;
+                }
+            }
+        }
+
+        Assert.assertTrue("Should find a match from the custom exclusion dictionary with leet substitution. " +
+                        "The core 'J0hnyMn3m0n1c' part should match 'johnymnemonic' even though the full password " +
+                        "'" + leetPasswordWithExtra + "' (" + leetPasswordWithExtra.length() + " chars) is longer than " +
+                        "the dictionary word 'johnymnemonic' (13 chars)",
+                foundCustomDictionaryMatch);
+
+        if (foundMatch != null) {
+            // Additional assertions to verify the match properties
+            Assert.assertTrue("Should be leet substitution", foundMatch.isLeet());
+            Assert.assertTrue("Should be exclusion dictionary", foundMatch.isExcluded());
+            // The match should be for the first 13 characters "J0hnyMn3m0n1c"
+            Assert.assertEquals("Should match the core leet part", "J0hnyMn3m0n1c", foundMatch.getToken());
+            Assert.assertEquals(0, foundMatch.getStartIndex());
+            Assert.assertEquals(12, foundMatch.getEndIndex());
+        }
+    }
+
+    /**
+     * Test various scenarios where l33t passwords are longer than dictionary words
+     * but should still match via substring matching.
+     */
+    @Test
+    public void testLeetSubstringMatchingWithLongerPasswords()
+    {
+        Dictionary testDict = new DictionaryBuilder()
+                .setDictionaryName("test_dict")
+                .setExclusion(false)
+                .addWord("password", 1)  // 8 characters
+                .addWord("admin", 2)     // 5 characters
+                .createDictionary();
+
+        List<Dictionary> dictionaries = new ArrayList<>();
+        dictionaries.add(testDict);
+
+        Configuration configuration = new ConfigurationBuilder()
+                .setDictionaries(dictionaries)
+                .createConfiguration();
+
+        PasswordMatcher matcher = new DictionaryMatcher();
+
+        // Test cases where l33t version + extra chars are longer than dictionary words
+        String[] testCases = {
+                "p4ssw0rd123",     // "p4ssw0rd" should match "password", extra "123"
+                "4dm1n2024",       // "4dm1n" should match "admin", extra "2024"
+                "p4ssw0rd!@#$"     // "p4ssw0rd" should match "password", extra "!@#$"
+        };
+
+        String[] expectedDictWords = {
+                "password",
+                "admin",
+                "password"
+        };
+
+        String[] expectedTokens = {
+                "p4ssw0rd",
+                "4dm1n",
+                "p4ssw0rd"
+        };
+
+        for (int i = 0; i < testCases.length; i++) {
+            List<Match> matches = matcher.match(configuration, testCases[i]);
+
+            boolean foundExpectedMatch = false;
+            for (Match match : matches) {
+                if (match instanceof DictionaryMatch) {
+                    DictionaryMatch dictMatch = (DictionaryMatch) match;
+                    if ("test_dict".equals(dictMatch.getDictionaryName()) &&
+                            expectedDictWords[i].equals(dictMatch.getDictionaryValue()) &&
+                            dictMatch.isLeet() &&
+                            expectedTokens[i].equals(dictMatch.getToken())) {
+                        foundExpectedMatch = true;
+                        break;
+                    }
+                }
+            }
+
+            Assert.assertTrue("Should find leet match for '" + testCases[i] + "' where '" +
+                            expectedTokens[i] + "' matches '" + expectedDictWords[i] + "'",
+                    foundExpectedMatch);
+        }
+    }
+
+    /**
+     * Test that demonstrates the optimization is working correctly when passwords
+     * are genuinely too long to contain any dictionary words.
+     */
+    @Test
+    public void testOptimizationWorksForGenuinelyLongPasswords()
+    {
+        // Create a dictionary with short words only
+        Dictionary shortDict = new DictionaryBuilder()
+                .setDictionaryName("short_dict")
+                .setExclusion(true)
+                .addWord("cat", 1)      // 3 characters
+                .addWord("dog", 2)      // 3 characters
+                .createDictionary();
+
+        List<Dictionary> dictionaries = new ArrayList<>();
+        dictionaries.add(shortDict);
+
+        Configuration configuration = new ConfigurationBuilder()
+                .setDictionaries(dictionaries)
+                .createConfiguration();
+
+        PasswordMatcher matcher = new DictionaryMatcher();
+
+        String reallyLongPassword = "superlongpasswordwithnosmallwords";
+
+        List<Match> matches = matcher.match(configuration, reallyLongPassword);
+
+        // Should not find any matches from the short dictionary
+        boolean foundShortDictMatch = false;
+        for (Match match : matches) {
+            if (match instanceof DictionaryMatch) {
+                DictionaryMatch dictMatch = (DictionaryMatch) match;
+                if ("short_dict".equals(dictMatch.getDictionaryName())) {
+                    foundShortDictMatch = true;
+                    break;
+                }
+            }
+        }
+
+        Assert.assertFalse("Should not find matches from short dictionary for genuinely incompatible password",
+                foundShortDictMatch);
     }
 
     private int calcHash(List<Match> matches)

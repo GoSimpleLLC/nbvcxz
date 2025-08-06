@@ -26,7 +26,7 @@ public final class DictionaryMatcher implements PasswordMatcher
      */
     private static List<String> translateLeet(final Configuration configuration, final String password)
     {
-        final List<String> translations = new ArrayList();
+        final List<String> translations = new ArrayList<>();
         final TreeMap<Integer, Character[]> replacements = new TreeMap<>();
 
         for (int i = 0; i < password.length(); i++)
@@ -297,12 +297,12 @@ public final class DictionaryMatcher implements PasswordMatcher
                         }
                     }
 
-                    // Only do unleet if it's different than the regular lower.
-                    if (dictionary.getMaxLength() > split_password.length())
+                    if (dictionary.getMaxLength() >= split_password.length())
                     {
                         final List<String> unleet_list = translateLeet(configuration, lower_part);
                         for (final String unleet_part : unleet_list)
                         {
+                            // Only do unleet if it's different than the regular lower.
                             final Integer unleet_rank = dictionary.getDictonary().get(unleet_part);
                             if (unleet_rank != null)
                             {
