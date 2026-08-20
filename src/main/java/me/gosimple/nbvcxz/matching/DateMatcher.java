@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  *
  * @author Adam Brusselback
  */
-public final class DateMatcher implements PasswordMatcher
+public final class DateMatcher implements DeadlinePasswordMatcher
 {
 
     private static final Pattern DATE_WITHOUT_SEPARATOR = Pattern.compile("^\\d{6,8}$");
@@ -37,7 +37,7 @@ public final class DateMatcher implements PasswordMatcher
      * @param password the password that is analyzed
      * @return the list of all the date without separator found
      */
-    private static ArrayList<DateMatch> matchDatesWithoutSeparator(Configuration configuration, String password)
+    private static ArrayList<DateMatch> matchDatesWithoutSeparator(Configuration configuration, String password, long deadline)
     {
 
         // Initialize the list of matching dates
@@ -46,6 +46,11 @@ public final class DateMatcher implements PasswordMatcher
         // Create all possible subsequences of the password
         for (int start = 0; start < password.length(); start++)
         {
+            if (deadline > 0 && System.currentTimeMillis() > deadline)
+            {
+                return dateMatches;
+            }
+
             for (int end = start + 4; end <= password.length(); end++)
             {
 
@@ -149,7 +154,7 @@ public final class DateMatcher implements PasswordMatcher
      * @param password the password that is analyzed
      * @return the list of all the date with separator found
      */
-    private static ArrayList<DateMatch> matchDatesWithSeparator(Configuration configuration, String password)
+    private static ArrayList<DateMatch> matchDatesWithSeparator(Configuration configuration, String password, long deadline)
     {
 
         // Initialize the list of matching dates
@@ -158,6 +163,11 @@ public final class DateMatcher implements PasswordMatcher
         // Create all possible subsequences of the password
         for (int start = 0; start < password.length(); start++)
         {
+            if (deadline > 0 && System.currentTimeMillis() > deadline)
+            {
+                return dateMatches;
+            }
+
             for (int end = start + 6; end <= password.length(); end++)
             {
 
@@ -228,10 +238,15 @@ public final class DateMatcher implements PasswordMatcher
 
     public List<Match> match(final Configuration configuration, final String password)
     {
+        return match(configuration, password, 0L);
+    }
+
+    public List<Match> match(final Configuration configuration, final String password, final long deadline)
+    {
 
         List<Match> dateMatches = new ArrayList<>();
-        dateMatches.addAll(matchDatesWithoutSeparator(configuration, password));
-        dateMatches.addAll(matchDatesWithSeparator(configuration, password));
+        dateMatches.addAll(matchDatesWithoutSeparator(configuration, password, deadline));
+        dateMatches.addAll(matchDatesWithSeparator(configuration, password, deadline));
 
         return dateMatches;
     }

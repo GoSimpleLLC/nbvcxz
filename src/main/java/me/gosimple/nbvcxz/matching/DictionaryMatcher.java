@@ -15,7 +15,7 @@ import java.util.TreeMap;
  *
  * @author Adam Brusselback
  */
-public final class DictionaryMatcher implements PasswordMatcher
+public final class DictionaryMatcher implements DeadlinePasswordMatcher
 {
     /**
      * Removes all leet substitutions from the password and returns a list of plain text versions.
@@ -263,11 +263,22 @@ public final class DictionaryMatcher implements PasswordMatcher
 
     public List<Match> match(final Configuration configuration, final String password)
     {
+        return match(configuration, password, 0L);
+    }
+
+    public List<Match> match(final Configuration configuration, final String password, final long deadline)
+    {
         final List<Match> matches = new ArrayList<>();
 
         // Create all possible sub-sequences of the password
         for (int start = 0; start < password.length(); start++)
         {
+            // This is the expensive matcher, so give up here rather than blow the whole budget.
+            if (deadline > 0 && System.currentTimeMillis() > deadline)
+            {
+                return matches;
+            }
+
             for (int end = start + 1; end <= password.length(); end++)
             {
                 final String split_password = password.substring(start, end);

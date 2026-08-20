@@ -1,4 +1,4 @@
-# Nbvcxz - Password strength estimator - [![Build Status](https://travis-ci.org/GoSimpleLLC/nbvcxz.svg?branch=master)]
+# Nbvcxz - Password strength estimator - [![build](https://github.com/GoSimpleLLC/nbvcxz/actions/workflows/build.yml/badge.svg)](https://github.com/GoSimpleLLC/nbvcxz/actions/workflows/build.yml)
 `nbvcxz` is java library (and standalone console program) which is heavily inspired by the work in [zxcvbn](https://github.com/dropbox/zxcvbn).
 
 Password strength estimation is a bit of an art and science.  Strength estimation is accomplished by running 
@@ -32,6 +32,7 @@ each new method.
   * [Bugs and Feedback](#bugs-and-feedback)
   * [License](#license)
   * [Requires Java](#requires-java)
+  * [A Note On Long Passwords](#a-note-on-long-passwords)
   * [Application using this library](#application-using-this-library)
 
 ## Maven Central
@@ -57,6 +58,9 @@ mvn package
 
 The project will be built, and the jar file will be placed in the target sub-directory.
 
+The build targets 1.7 bytecode, and JDK 20 dropped support for `-source 7`, so building currently
+requires a JDK between 8 and 19.  The library itself still runs on 1.7 and later.
+
 ## Differentiating Features
 * Internationalization support for all text output by the library (for feedback, console output, etc).
     * Currently supported languages
@@ -75,7 +79,8 @@ The project will be built, and the jar file will be placed in the target sub-dir
         - Telugu (te)
         - Ukrainian (uk)
         - Chinese (zh)
-* Better match generation algorithm which will find the absolute lowest entropy combination of the matches.
+* Match combination is solved exactly.  The lowest entropy combination of matches is found in a single linear pass over the password, with no search and no heuristic fallback.
+* Estimates are bounded by a configurable wall clock budget, and a timed out estimate fails safe.  Stopping early can only find fewer matches, which can only make the entropy come out too high, so a timed out `Result` reports `isTimedOut()`, `isMinimumEntropyMet()` of false, and a basic score of 0 regardless of the entropy it arrived at.  Set it with `ConfigurationBuilder setEstimateTimeout(Long)`, or to 0 to run unbounded.
 * Support for ranked and un-ranked dictionaries.
 * Dictionary matching has the ability to use Levenshtein Distance (LD) calculations to match passwords which are non-exact matches to a dictionary entry.
     * LD calculations happen on full passwords only, and have a `threshold` of 1/4th the length of the password.
@@ -109,13 +114,12 @@ Use ConfigurationBuilder setDictionaries(List<Dictionary> dictionaries)
 detection and accurately scoring them, but if we are going for compatibility we need to disable it.
 Use ConfigurationBuilder setPasswordMatchers(List<PasswordMatcher> passwordMatchers)
 
-4. The algorithm to find the best matches is different between nbvcxz and zxcvbn, that is likely to produce slightly 
-different results in cases where zxcvbn is unable to find the best combination of matches due to the algorithm used. 
-There were quite a few instances I noted that brought about the change to the algorithm used by nbvcxz where there were 
-obviously "wrong" results for entropy based on the combination of matches because it got stuck in a local minimum. This 
-is no longer an issue with nbvcxz, but will inherently produce different results for some passwords compared to the 
-original algorithm used by zxcvbn. In the majority of cases both algorithms are able to figure out what the lowest 
-entropy combination of matches on the password are, so I don't see this being too big of an issue.
+4. The two libraries combine matches differently, which will produce different results for some passwords. 
+Because every match contributes its entropy independently and the matches have to tile the password exactly, 
+nbvcxz treats this as a shortest path over the positions in the password and solves it exactly.  zxcvbn scores 
+a decomposition partly by how many matches it contains, so the two are not solving quite the same problem and 
+will not always agree even when both find the best answer to their own.  There is no configuration parameter 
+that makes this one line up.
 
 ## A Rant On Arbitrary Password Policies 
 Lets think up an example scenario which I expect some of you may have run into way too often. 
@@ -151,7 +155,7 @@ Password #2, while not allowed by our policy, is only susceptible to a brute for
 ### Standalone
 To use as a stand-alone program, just compile, and run it by calling:
 `java -jar nbvcxz-1.5.1.jar`
-![alt text](http://i.imgur.com/9c070FX.png)
+![alt text](https://i.imgur.com/9c070FX.png)
 
 ### Library
 `nbvcxz` can also be used as a library for password validation in java back-ends.
@@ -180,7 +184,8 @@ Nbvcxz nbvcxz = new Nbvcxz(configuration);
 Here we're creating a custom configuration with a custom exclusion dictionary and minimum entropy
 ```java
 // Create a map of excluded words on a per-user basis using a hypothetical "User" object that contains this info
-List<Dictionary> dictionaryList = ConfigurationBuilder.getDefaultDictionaries();
+// getDefaultDictionaries() hands back the shared default list, so copy it before adding to it
+List<Dictionary> dictionaryList = new ArrayList<>(ConfigurationBuilder.getDefaultDictionaries());
 dictionaryList.add(new DictionaryBuilder()
         .setDictionaryName("exclude")
         .setExclusion(true)
@@ -295,7 +300,22 @@ MIT License
 
 ## Requires Java
 
-* Java 1.7+
+* Java 1.7+ to run the library
+* JDK 8 through 19 to build it from source
+
+## A Note On Long Passwords
+
+Match finding grows faster than linearly with password length, so `maxLength` is what bounds the cost of an
+estimate and it is worth setting deliberately.  At the default of 256, the most expensive input found so far
+costs about 135ms, which is roughly 7 requests per second per core.  Treat that as a lower bound on the worst
+case rather than a limit; it is what a short search turned up, not a proof.  Raising `maxLength` is expensive:
+1024 characters costs a couple of seconds, and 4096 well over a minute.
+
+`setEstimateTimeout(Long)` caps that regardless, defaulting to 500ms.  It is deliberately a backstop and not
+the primary control: at the default `maxLength` it never fires, so it costs nothing on normal traffic, but it
+bounds any input shape whose cost we failed to anticipate.  A timed out estimate rejects the password rather
+than guessing at it, so a budget set too tight turns into good passwords being refused on a loaded server.
+Set `maxLength` to the length you actually accept, and leave the timeout as the thing that catches surprises.
 
 ## Application using this library
 
