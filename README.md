@@ -306,14 +306,16 @@ MIT License
 ## A Note On Long Passwords
 
 Match finding grows faster than linearly with password length, so `maxLength` is what bounds the cost of an
-estimate and it is worth setting deliberately.  At the default of 256 the worst input we could construct
-takes around 100ms.  Raising it is expensive: 1024 characters takes roughly 2 seconds unbounded, and 4096
-takes over a minute.
+estimate and it is worth setting deliberately.  At the default of 256, the most expensive input found so far
+costs about 135ms, which is roughly 7 requests per second per core.  Treat that as a lower bound on the worst
+case rather than a limit; it is what a short search turned up, not a proof.  Raising `maxLength` is expensive:
+1024 characters costs a couple of seconds, and 4096 well over a minute.
 
-`setEstimateTimeout(Long)` caps that regardless, defaulting to 500ms, but understand what it buys.  A timed
-out estimate rejects the password rather than guessing at it, so on a heavily loaded server a budget which
-is too tight turns into good passwords being refused.  Set `maxLength` to the length you actually accept,
-and treat the timeout as a backstop rather than the primary control.
+`setEstimateTimeout(Long)` caps that regardless, defaulting to 500ms.  It is deliberately a backstop and not
+the primary control: at the default `maxLength` it never fires, so it costs nothing on normal traffic, but it
+bounds any input shape whose cost we failed to anticipate.  A timed out estimate rejects the password rather
+than guessing at it, so a budget set too tight turns into good passwords being refused on a loaded server.
+Set `maxLength` to the length you actually accept, and leave the timeout as the thing that catches surprises.
 
 ## Application using this library
 
