@@ -90,7 +90,7 @@ public class ConfigurationBuilder
     private Integer maxLength;
     private Locale locale;
     private Boolean distanceCalc;
-    private Long combinationAlgorithmTimeout;
+    private Long estimateTimeout;
     private Long crackingHardwareCost;
 
     /**
@@ -223,9 +223,20 @@ public class ConfigurationBuilder
     /**
      * @return The default value for the estimate timeout is 500 (ms).
      */
-    public static long getDefaultCombinationAlgorithmTimeout()
+    public static long getDefaultEstimateTimeout()
     {
         return 500L;
+    }
+
+    /**
+     * @return The default value for the estimate timeout is 500 (ms).
+     * @deprecated the timeout no longer applies to the combination algorithm, which is now exact and runs in
+     * linear time.  Use {@link #getDefaultEstimateTimeout()}.
+     */
+    @Deprecated
+    public static long getDefaultCombinationAlgorithmTimeout()
+    {
+        return getDefaultEstimateTimeout();
     }
 
     /**
@@ -406,7 +417,7 @@ public class ConfigurationBuilder
      */
     public ConfigurationBuilder setEstimateTimeout(final Long estimateTimeout)
     {
-        this.combinationAlgorithmTimeout = estimateTimeout;
+        this.estimateTimeout = estimateTimeout;
         return this;
     }
 
@@ -486,11 +497,11 @@ public class ConfigurationBuilder
         {
             distanceCalc = getDefaultDistanceCalc();
         }
-        if (combinationAlgorithmTimeout == null)
+        if (estimateTimeout == null)
         {
-            combinationAlgorithmTimeout = getDefaultCombinationAlgorithmTimeout();
+            estimateTimeout = getDefaultEstimateTimeout();
         }
-        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, combinationAlgorithmTimeout);
+        return new Configuration(passwordMatchers, guessTypes, dictionaries, adjacencyGraphs, leetTable, yearPattern, minimumEntropy, maxLength, locale, distanceCalc, estimateTimeout);
     }
 
 

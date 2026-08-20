@@ -30,7 +30,7 @@ public class Configuration
     private final boolean distanceCalc;
     private final ResourceBundle mainResource;
     private final ResourceBundle feedbackResource;
-    private final long combinationAlgorithmTimeout;
+    private final long estimateTimeout;
 
     /**
      * @param passwordMatchers            The list of {@link PasswordMatcher}s which will be used for matching
@@ -40,11 +40,12 @@ public class Configuration
      * @param leetTable                   Leet table for use with {@link DictionaryMatcher}
      * @param yearPattern                 Regex {@link Pattern} for use with {@link YearMatcher}
      * @param minimumEntropy              Minimum entropy value passwords should meet
+     * @param maxLength                    Maximum length of password to estimate, anything longer is truncated
      * @param locale                      Locale for localized text and feedback
      * @param distanceCalc                Enable or disable levenshtein distance calculation for dictionary matches
-     * @param combinationAlgorithmTimeout Timeout for the findBestMatches algorithm
+     * @param estimateTimeout             Wall clock budget in ms for a single estimate, or 0 for unbounded
      */
-    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Locale locale, boolean distanceCalc, long combinationAlgorithmTimeout)
+    public Configuration(List<PasswordMatcher> passwordMatchers, Map<String, Long> guessTypes, List<Dictionary> dictionaries, List<AdjacencyGraph> adjacencyGraphs, Map<Character, Character[]> leetTable, Pattern yearPattern, Double minimumEntropy, Integer maxLength, Locale locale, boolean distanceCalc, long estimateTimeout)
     {
         this.passwordMatchers = passwordMatchers;
         this.guessTypes = guessTypes;
@@ -60,7 +61,7 @@ public class Configuration
                 ResourceBundle.Control.FORMAT_PROPERTIES);
         this.mainResource = ResourceBundle.getBundle("main", locale, noFallbackControl);
         this.feedbackResource = ResourceBundle.getBundle("feedback", locale, noFallbackControl);
-        this.combinationAlgorithmTimeout = combinationAlgorithmTimeout;
+        this.estimateTimeout = estimateTimeout;
     }
 
     /**
@@ -150,7 +151,7 @@ public class Configuration
      */
     public long getEstimateTimeout()
     {
-        return combinationAlgorithmTimeout;
+        return estimateTimeout;
     }
 
     /**

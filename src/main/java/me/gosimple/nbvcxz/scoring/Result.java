@@ -26,6 +26,7 @@ public class Result
     /**
      * @param configuration the {@link Configuration} object.
      * @param password      the password this result was generated for
+     * @param full_password the untruncated password this result was generated for
      * @param matches       list of matches which when combined make up the original password
      * @throws IllegalStateException if the matches do not equal the original password, this will be thrown.
      */
@@ -37,6 +38,7 @@ public class Result
     /**
      * @param configuration the {@link Configuration} object.
      * @param password      the password this result was generated for
+     * @param full_password the untruncated password this result was generated for
      * @param matches       list of matches which when combined make up the original password
      * @param timed_out     whether the estimate ran out of time before it finished looking for matches
      * @throws IllegalStateException if the matches do not equal the original password, this will be thrown.
