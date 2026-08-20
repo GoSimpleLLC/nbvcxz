@@ -143,11 +143,25 @@ public class Configuration
     }
 
     /**
-     * @return Return the timeout for the findBestMatches algorithm
+     * The wall clock budget for a single estimate.  When it is exceeded the estimate stops looking for
+     * matches and the {@link me.gosimple.nbvcxz.scoring.Result} is marked as timed out.
+     *
+     * @return Return the timeout in ms for a single estimate, or 0 if estimates are not bounded
      */
-    public long getCombinationAlgorithmTimeout()
+    public long getEstimateTimeout()
     {
         return combinationAlgorithmTimeout;
+    }
+
+    /**
+     * @return Return the timeout in ms for a single estimate
+     * @deprecated the timeout no longer applies to the combination algorithm, which is now exact and
+     * runs in linear time.  Use {@link #getEstimateTimeout()}.
+     */
+    @Deprecated
+    public long getCombinationAlgorithmTimeout()
+    {
+        return getEstimateTimeout();
     }
 
     /**

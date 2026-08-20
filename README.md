@@ -32,6 +32,7 @@ each new method.
   * [Bugs and Feedback](#bugs-and-feedback)
   * [License](#license)
   * [Requires Java](#requires-java)
+  * [A Note On Long Passwords](#a-note-on-long-passwords)
   * [Application using this library](#application-using-this-library)
 
 ## Maven Central
@@ -78,7 +79,8 @@ requires a JDK between 8 and 19.  The library itself still runs on 1.7 and later
         - Telugu (te)
         - Ukrainian (uk)
         - Chinese (zh)
-* Match combination is solved exactly.  The lowest entropy combination of matches is found in a single linear pass over the password, with no search, no timeout, and no heuristic fallback, so the same password always scores the same no matter how fast or how busy the machine is.
+* Match combination is solved exactly.  The lowest entropy combination of matches is found in a single linear pass over the password, with no search and no heuristic fallback.
+* Estimates are bounded by a configurable wall clock budget, and a timed out estimate fails safe.  Stopping early can only find fewer matches, which can only make the entropy come out too high, so a timed out `Result` reports `isTimedOut()`, `isMinimumEntropyMet()` of false, and a basic score of 0 regardless of the entropy it arrived at.  Set it with `ConfigurationBuilder setEstimateTimeout(Long)`, or to 0 to run unbounded.
 * Support for ranked and un-ranked dictionaries.
 * Dictionary matching has the ability to use Levenshtein Distance (LD) calculations to match passwords which are non-exact matches to a dictionary entry.
     * LD calculations happen on full passwords only, and have a `threshold` of 1/4th the length of the password.
@@ -300,6 +302,18 @@ MIT License
 
 * Java 1.7+ to run the library
 * JDK 8 through 19 to build it from source
+
+## A Note On Long Passwords
+
+Match finding grows faster than linearly with password length, so `maxLength` is what bounds the cost of an
+estimate and it is worth setting deliberately.  At the default of 256 the worst input we could construct
+takes around 100ms.  Raising it is expensive: 1024 characters takes roughly 2 seconds unbounded, and 4096
+takes over a minute.
+
+`setEstimateTimeout(Long)` caps that regardless, defaulting to 500ms, but understand what it buys.  A timed
+out estimate rejects the password rather than guessing at it, so on a heavily loaded server a budget which
+is too tight turns into good passwords being refused.  Set `maxLength` to the length you actually accept,
+and treat the timeout as a backstop rather than the primary control.
 
 ## Application using this library
 

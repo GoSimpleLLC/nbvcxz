@@ -221,7 +221,7 @@ public class ConfigurationBuilder
     }
 
     /**
-     * @return The default value for combination algorithm timeout is 500 (ms).
+     * @return The default value for the estimate timeout is 500 (ms).
      */
     public static long getDefaultCombinationAlgorithmTimeout()
     {
@@ -391,18 +391,35 @@ public class ConfigurationBuilder
     }
 
     /**
-     * Timeout for the findBestCombination algorithm. If there are too many possible matches at each position of
-     * the password, the algorithm can take too long to get an answer and we must fall back to a simpler algorithm.
+     * Wall clock budget for a single estimate.  Matching stops once it is exceeded, and the
+     * {@link me.gosimple.nbvcxz.scoring.Result} is marked as timed out.
      * <p>
-     * To disable the findBestMatches calculation and always fall back to the faster, less accurate one, set to 0.
+     * A timed out estimate fails safe.  Stopping early can only find fewer matches, which can only make the
+     * entropy come out too high, so a timed out result reports a minimum entropy of not met and a basic score
+     * of 0 no matter what entropy value it arrived at.  A too tight timeout therefore rejects good passwords
+     * rather than accepting bad ones.
+     * <p>
+     * Set to 0 to run estimates unbounded.
      *
-     * @param combinationAlgorithmTimeout The time in ms to timeout
+     * @param estimateTimeout The time in ms to timeout
      * @return Builder
      */
+    public ConfigurationBuilder setEstimateTimeout(final Long estimateTimeout)
+    {
+        this.combinationAlgorithmTimeout = estimateTimeout;
+        return this;
+    }
+
+    /**
+     * @param combinationAlgorithmTimeout The time in ms to timeout
+     * @return Builder
+     * @deprecated the timeout no longer applies to the combination algorithm, which is now exact and runs in
+     * linear time.  It now bounds the whole estimate.  Use {@link #setEstimateTimeout(Long)}.
+     */
+    @Deprecated
     public ConfigurationBuilder setCombinationAlgorithmTimeout(final Long combinationAlgorithmTimeout)
     {
-        this.combinationAlgorithmTimeout = combinationAlgorithmTimeout;
-        return this;
+        return setEstimateTimeout(combinationAlgorithmTimeout);
     }
 
     /**

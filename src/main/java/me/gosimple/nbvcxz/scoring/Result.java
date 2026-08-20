@@ -21,6 +21,7 @@ public class Result
     final String password;
     final String full_password;
     final List<Match> matches;
+    final boolean timed_out;
 
     /**
      * @param configuration the {@link Configuration} object.
@@ -30,10 +31,23 @@ public class Result
      */
     public Result(final Configuration configuration, final String password, final String full_password, final List<Match> matches) throws IllegalStateException
     {
+        this(configuration, password, full_password, matches, false);
+    }
+
+    /**
+     * @param configuration the {@link Configuration} object.
+     * @param password      the password this result was generated for
+     * @param matches       list of matches which when combined make up the original password
+     * @param timed_out     whether the estimate ran out of time before it finished looking for matches
+     * @throws IllegalStateException if the matches do not equal the original password, this will be thrown.
+     */
+    public Result(final Configuration configuration, final String password, final String full_password, final List<Match> matches, final boolean timed_out) throws IllegalStateException
+    {
         this.configuration = configuration;
         this.password = password;
         this.full_password = full_password;
         this.matches = matches;
+        this.timed_out = timed_out;
 
         if (!this.isValid())
         {
@@ -123,12 +137,33 @@ public class Result
     }
 
     /**
+     * Returns whether the estimate ran out of time before it finished looking for matches.
+     * <br><br>
+     * Stopping early can only find fewer matches, and fewer matches can only make the entropy come out too
+     * high, so the entropy on a timed out result is an upper bound rather than an answer.  Everything which
+     * makes a pass or fail decision from it fails closed while this is {@code true}.
+     *
+     * @return {@code true} if the estimate timed out; {@code false} if it completed.
+     */
+    public boolean isTimedOut()
+    {
+        return timed_out;
+    }
+
+    /**
      * Returns whether the minimum entropy specified in the config was met.
+     * <br><br>
+     * Always {@code false} for a timed out estimate, because the entropy it reports may be higher than the
+     * password deserves and there is no way to tell from the result which it is.
      *
      * @return {@code true} if minimum entropy is met; {@code false} if not.
      */
     public boolean isMinimumEntropyMet()
     {
+        if (timed_out)
+        {
+            return false;
+        }
         return this.getEntropy().compareTo(configuration.getMinimumEntropy()) >= 0;
     }
 
@@ -175,7 +210,7 @@ public class Result
      * This scoring function returns an int from 0-4 to indicate the score of this password
      * using the same semantics as zxcvbn.
      *
-     * @return Score
+     * @return Score, always 0 for a timed out estimate
      * <br>0: risky password: "too guessable"
      * <br>1: modest protection from throttled online attacks: "very guessable"
      * <br>2: modest protection from unthrottled online attacks: "somewhat guessable"
@@ -184,6 +219,10 @@ public class Result
      */
     public int getBasicScore()
     {
+        if (timed_out)
+        {
+            return 0;
+        }
         final BigDecimal guesses = getGuesses();
         if (guesses.compareTo(BigDecimal.valueOf( 1e3)) == -1)
             return 0;

@@ -1,5 +1,6 @@
 package me.gosimple.nbvcxz;
 
+import me.gosimple.nbvcxz.matching.DeadlinePasswordMatcher;
 import me.gosimple.nbvcxz.matching.PasswordMatcher;
 import me.gosimple.nbvcxz.matching.match.BruteForceMatch;
 import me.gosimple.nbvcxz.matching.match.Match;
@@ -249,7 +250,14 @@ public class Nbvcxz
     private Result guessEntropy(final Configuration configuration, final String password)
     {
         final String truncated_password = getTruncatedPassword(configuration, password);
-        return new Result(configuration, truncated_password, password, getBestCombination(configuration, truncated_password));
+
+        final long timeout = configuration.getEstimateTimeout();
+        final long deadline = timeout > 0 ? System.currentTimeMillis() + timeout : 0;
+
+        final List<Match> all_matches = getAllMatches(configuration, truncated_password, deadline);
+        final boolean timed_out = deadline > 0 && System.currentTimeMillis() > deadline;
+
+        return new Result(configuration, truncated_password, password, getBestCombination(configuration, truncated_password, all_matches), timed_out);
     }
 
     /**
@@ -259,11 +267,11 @@ public class Nbvcxz
      *
      * @param configuration the configuration
      * @param password      the password
+     * @param all_matches   every match found for the password
      * @return the best list of matches, sorted by start index.
      */
-    private List<Match> getBestCombination(final Configuration configuration, final String password)
+    private List<Match> getBestCombination(final Configuration configuration, final String password, final List<Match> all_matches)
     {
-        final List<Match> all_matches = getAllMatches(configuration, password);
         final int length = password.length();
 
         final List<List<Match>> matches_ending_at = new ArrayList<>(length + 1);
@@ -357,19 +365,35 @@ public class Nbvcxz
     }
 
     /**
-     * Gets all matches for a given password.
+     * Gets all matches for a given password, stopping once the deadline has passed.
+     * <br><br>
+     * A matcher which implements {@link DeadlinePasswordMatcher} is handed the deadline and can give up part
+     * way through.  Any other matcher is only checked between matchers, so once it has started it is always
+     * allowed to finish.
      *
      * @param configuration the configuration file used to estimate entropy.
      * @param password      the password to get matches for.
+     * @param deadline      the {@code System.currentTimeMillis()} value to stop at, or 0 for no deadline.
      * @return a {@code List} of {@code Match} objects for the supplied password.
      */
-    private List<Match> getAllMatches(final Configuration configuration, final String password)
+    private List<Match> getAllMatches(final Configuration configuration, final String password, final long deadline)
     {
         List<Match> matches = new ArrayList<>();
 
         for (PasswordMatcher passwordMatcher : configuration.getPasswordMatchers())
         {
-            matches.addAll(passwordMatcher.match(configuration, password));
+            if (deadline > 0 && System.currentTimeMillis() > deadline)
+            {
+                break;
+            }
+            if (deadline > 0 && passwordMatcher instanceof DeadlinePasswordMatcher)
+            {
+                matches.addAll(((DeadlinePasswordMatcher) passwordMatcher).match(configuration, password, deadline));
+            }
+            else
+            {
+                matches.addAll(passwordMatcher.match(configuration, password));
+            }
         }
         return matches;
     }
